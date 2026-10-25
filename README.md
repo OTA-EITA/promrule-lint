@@ -15,6 +15,8 @@ test/fixtures/bad/rules.yml:4  MEDIUM PR001  HighErrorRate has no for, so it fir
 test/fixtures/bad/rules.yml:8  MEDIUM PR007  CpuSpike uses irate(), which Prometheus documents for graphs, not alerts
 test/fixtures/bad/rules.yml:22  MEDIUM PR010  CpuSpike duplicates the alert on line 8 with the same labels
 test/fixtures/bad/rules.yml:4  LOW    PR004  HighErrorRate has no runbook_url annotation
+…
+1 file(s), 16 finding(s): 4 high, 5 medium, 7 low
 ```
 
 Works on plain Prometheus rule files and on Kubernetes `PrometheusRule` resources (prometheus-operator, kube-prometheus-stack), including multi-document YAML. Directories are searched for rule files; workflows and other manifests are skipped.
