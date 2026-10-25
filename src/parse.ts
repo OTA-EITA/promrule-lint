@@ -12,12 +12,43 @@ export interface Rule {
   line: number;
   /** Structural problems found while reading the rule. */
   errors: string[];
+  /** Check IDs disabled with a "# promrule-lint-ignore PR001,PR004" comment on the rule. */
+  ignore: string[];
 }
 
 export interface RuleFile {
   file: string;
   rules: Rule[];
   errors: { line: number; message: string }[];
+}
+
+/** IDs listed in "promrule-lint-ignore PR001, PR004" comments; "ALL" disables every check. */
+export function ignoredChecks(comment: string): string[] {
+  const out: string[] = [];
+  for (const m of comment.matchAll(/promrule-lint-ignore\s+([A-Za-z0-9, ]+)/g)) {
+    out.push(
+      ...(m[1] ?? "")
+        .split(/[\s,]+/)
+        .filter(Boolean)
+        .map((x) => x.toUpperCase()),
+    );
+  }
+  return out;
+}
+
+/** The comment lines directly above a rule plus everything inside it, where ignore comments may sit. */
+function commentsAround(source: string, range: [number, number, number] | undefined): string {
+  if (!range) return "";
+  let start = source.lastIndexOf("\n", range[0] - 1) + 1;
+  // Walk up over directly preceding comment lines.
+  for (;;) {
+    const prevEnd = start - 1;
+    if (prevEnd <= 0) break;
+    const prevStart = source.lastIndexOf("\n", prevEnd - 1) + 1;
+    if (!/^\s*#/.test(source.slice(prevStart, prevEnd))) break;
+    start = prevStart;
+  }
+  return source.slice(start, range[1]);
 }
 
 function strMap(v: unknown): Record<string, string> {
@@ -76,6 +107,7 @@ export function parseRuleFile(file: string, source: string): RuleFile {
           group: groupName,
           line: lineAt(node?.range?.[0]),
           errors,
+          ignore: ignoredChecks(commentsAround(source, node?.range)),
         };
         if (typeof raw.for === "string" || typeof raw.for === "number") rule.for = String(raw.for);
         else if (raw.for !== undefined && raw.for !== null) errors.push("has a for that is not a duration");
