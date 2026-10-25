@@ -47,7 +47,8 @@ const keywords = new Set([
 export function calls(expr: string): Call[] {
   const s = maskStrings(expr);
   const out: Call[] = [];
-  const re = /\b([a-zA-Z_][a-zA-Z0-9_]*)\s*\(/g;
+  // The optional group handles aggregations written as "sum by (job) (...)".
+  const re = /\b([a-zA-Z_][a-zA-Z0-9_]*)\s*(?:(?:by|without)\s*\([^()]*\)\s*)?\(/g;
   for (let m = re.exec(s); m; m = re.exec(s)) {
     const name = m[1] ?? "";
     if (keywords.has(name)) continue;
