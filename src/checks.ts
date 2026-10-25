@@ -115,7 +115,9 @@ function finding(file: RuleFile, rule: Rule, f: Omit<Finding, "file" | "line" | 
 
 function checkRule(file: RuleFile, rule: Rule, opt: Options): Finding[] {
   const out: Finding[] = [];
-  const add = (f: Omit<Finding, "file" | "line" | "target">) => out.push(finding(file, rule, f));
+  const add = (f: Omit<Finding, "file" | "line" | "target">) => {
+    if (!rule.ignore.includes(f.ruleId) && !rule.ignore.includes("ALL")) out.push(finding(file, rule, f));
+  };
 
   for (const e of rule.errors) {
     add({ ruleId: "PR011", severity: "high", message: `rule in group "${rule.group}" ${e}` });
@@ -130,7 +132,8 @@ function checkRule(file: RuleFile, rule: Rule, opt: Options): Finding[] {
         severity: "high",
         message: `${rule.name}: for "${rule.for ?? ""}" is not a duration`,
       });
-    } else if (forMs === 0) {
+    } else if (forMs === 0 && !/^\s*vector\(\s*[\d.]+\s*\)\s*$/.test(rule.expr)) {
+      // A constant expression (e.g. a Watchdog heartbeat) is always firing by design.
       add({
         ruleId: "PR001",
         severity: "medium",
@@ -176,7 +179,8 @@ function checkRule(file: RuleFile, rule: Rule, opt: Options): Finding[] {
         help: "Describe the impact and the affected target with {{ $labels.* }} so the notification stands on its own.",
       });
     }
-  } else if (!/^[a-zA-Z_][a-zA-Z0-9_]*:[a-zA-Z0-9_:]*[a-zA-Z0-9_]$/.test(rule.name)) {
+  } else if (!rule.name.includes(":")) {
+    // Empty parts are common on purpose (kubernetes-mixin uses ":metric:sum" and "level:metric:"), so only a missing colon is flagged.
     add({
       ruleId: "PR009",
       severity: "low",
