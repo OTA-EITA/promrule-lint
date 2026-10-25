@@ -1,0 +1,35 @@
+groups:
+  - name: api
+    rules:
+      - alert: HighErrorRate
+        expr: sum(rate(http_requests_total{code=~"5.."}[30s])) / sum(rate(http_requests_total[30s])) > 0.05
+        labels:
+          severity: page
+      - alert: CpuSpike
+        expr: irate(node_cpu_seconds_total{mode!="idle"}[5m]) > 0.9
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: CPU is busy on {{ $labels.instance }}
+          runbook_url: wiki/cpu
+      - alert: RequestsDropped
+        expr: rate(sum(http_requests_total)[5m:]) < 1
+        for: 10m
+        annotations:
+          description: traffic dropped
+          runbook_url: https://runbooks.example.com/requests-dropped
+      - alert: CpuSpike
+        expr: avg(rate(node_cpu_seconds_total{mode!="idle"}[5m])) > 0.95
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: CPU is busy
+          runbook_url: https://runbooks.example.com/cpu
+      - record: http_requests_rate5m
+        expr: sum by (job) (rate(http_requests_total[5m]))
+      - alert: Broken
+      - alert: BadFor
+        expr: up == 0
+        for: soon
