@@ -109,7 +109,10 @@ function finding(file: RuleFile, rule: Rule, f: Omit<Finding, "file" | "line" | 
 function checkRule(file: RuleFile, rule: Rule, opt: Options): Finding[] {
   const out: Finding[] = [];
   const add = (f: Omit<Finding, "file" | "line" | "target">) => {
-    if (!rule.ignore.includes(f.ruleId) && !rule.ignore.includes("ALL")) out.push(finding(file, rule, f));
+    if (rule.ignore.includes(f.ruleId) || rule.ignore.includes("ALL")) return;
+    // The same problem repeated in one expression (e.g. both sides of a ratio) is reported once.
+    if (out.some((x) => x.ruleId === f.ruleId && x.message === f.message)) return;
+    out.push(finding(file, rule, f));
   };
 
   for (const e of rule.errors) {
