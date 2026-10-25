@@ -1,0 +1,112 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version-file: .nvmrc
+          # Always use the newest 24.x, not the runner's cached (possibly unpatched) Node.
+          check-latest: true
+          cache: npm
+      # Install scripts of dependencies never run; none of them need one.
+      - run: npm ci --ignore-scripts
+      - run: npm audit --audit-level=moderate
+      - run: npm audit signatures
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm run coverage
+      - name: dist is up to date
+        run: |
+          npm run build
+          git diff --exit-code dist/ || (echo "::error::dist/ is stale; run npm run build and commit" && exit 1)
+      - name: the packaged CLI runs through a bin symlink
+        # Unpacks the tarball instead of npm install -g, and links the bin the way npm does.
+        run: |
+          npm pack
+          mkdir -p "$RUNNER_TEMP/pkg" "$RUNNER_TEMP/bin"
+          tar xzf promrule-lint-*.tgz -C "$RUNNER_TEMP/pkg"
+          chmod +x "$RUNNER_TEMP/pkg/package/dist/cli.js"
+          ln -s "$RUNNER_TEMP/pkg/package/dist/cli.js" "$RUNNER_TEMP/bin/promrule-lint"
+          "$RUNNER_TEMP/bin/promrule-lint" --version | grep -q '^promrule-lint '
+          "$RUNNER_TEMP/bin/promrule-lint" --fail-on none test/fixtures/bad | grep -q 'PR006'
+          rm promrule-lint-*.tgz
+
+  action:
+    # The committed action must pass clean rules and fail on the planted problems.
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: ./
+        with:
+          path: test/fixtures/good
+          severities: critical,warning,info,none
+          fail-on: low
+      - uses: ./
+        id: bad
+        continue-on-error: true
+        with:
+          path: test/fixtures/bad
+      - name: the bad fixture failed with findings
+        env:
+          OUTCOME: ${{ steps.bad.outcome }}
+          FINDINGS: ${{ steps.bad.outputs.findings }}
+        run: |
+          test "$OUTCOME" = failure
+          test "$FINDINGS" -eq 16
+
+  lockfile-guard:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: OTA-EITA/lockfile-guard@55ee3a46240c2f24b4171787944f541d89834521 # v0.1.1
+        id: guard
+        with:
+          fail-on: medium
+          # Reviewed: esbuild only verifies its platform binary, fsevents builds a macOS addon.
+          allow-scripts: esbuild,fsevents
+      - uses: github/codeql-action/upload-sarif@9b3254085494b55a0f7c4c2b3d2d52cc712ce370 # v4
+        if: always()
+        with:
+          sarif_file: ${{ steps.guard.outputs.sarif-file }}
+          category: lockfile-guard
+
+  gha-guard:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: OTA-EITA/gha-guard@647404df7b2c96877a2043a92e09382a1ee1dde9 # v0.1.2
+        id: guard
+        with:
+          fail-on: low
+      - uses: github/codeql-action/upload-sarif@9b3254085494b55a0f7c4c2b3d2d52cc712ce370 # v4
+        if: always()
+        with:
+          sarif_file: ${{ steps.guard.outputs.sarif-file }}
+          category: gha-guard
