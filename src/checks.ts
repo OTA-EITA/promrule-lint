@@ -96,17 +96,10 @@ export const defaultOptions: Options = {
   severities: ["critical", "warning", "info"],
 };
 
-// Functions whose result needs at least two samples in the range.
-const counterFunctions = new Set([
-  "rate",
-  "irate",
-  "increase",
-  "delta",
-  "idelta",
-  "deriv",
-  "resets",
-  "changes",
-]);
+// Functions that return nothing with fewer than two samples in the range: irate, idelta
+// and deriv per the Prometheus docs, rate/increase/delta per promql/functions.go
+// (extrapolatedRate: "There's a single sample ... Return nothing").
+const counterFunctions = new Set(["rate", "irate", "increase", "delta", "idelta", "deriv"]);
 const resetSensitive = new Set(["rate", "irate", "increase", "resets"]);
 
 function finding(file: RuleFile, rule: Rule, f: Omit<Finding, "file" | "line" | "target">): Finding {
