@@ -1,0 +1,36 @@
+name: promrule-lint
+description: Catch flapping-prone alerts, too-short rate() windows and missing runbooks in Prometheus rules
+author: OTA-EITA
+branding:
+  icon: bell
+  color: orange
+
+inputs:
+  path:
+    description: Space separated rule files or directories to scan
+    default: .
+  fail-on:
+    description: Fail on findings at least this severe (high, medium, low or none)
+    default: high
+  scrape-interval:
+    description: Scrape interval the rules run against
+    default: 1m
+  min-window-factor:
+    description: A range must cover at least this many scrape intervals
+    default: "2"
+  severities:
+    description: Allowed severity label values, comma separated
+    default: critical,warning,info
+  sarif-file:
+    description: Where to write the SARIF report
+    default: promrule-lint.sarif
+
+outputs:
+  sarif-file:
+    description: Path of the SARIF report, for github/codeql-action/upload-sarif
+  findings:
+    description: Number of findings
+
+runs:
+  using: node24
+  main: dist/action.js
