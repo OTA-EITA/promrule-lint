@@ -1,5 +1,5 @@
 name: promrule-lint
-description: Catch flapping-prone alerts, too-short rate() windows and missing runbooks in Prometheus rules
+description: Catch flapping-prone alerts, too-short rate() windows, label mismatches and missing runbooks in Prometheus rules
 author: OTA-EITA
 branding:
   icon: bell
@@ -21,6 +21,12 @@ inputs:
   severities:
     description: Allowed severity label values, comma separated
     default: critical,warning,info
+  target-labels:
+    description: Labels the scrape adds to every series, comma separated; kubernetes adds namespace, service, endpoint, pod, container and cluster
+    default: job,instance
+  metrics-labels:
+    description: JSON file with the labels of more metrics, added to the built-in table
+    default: ""
   sarif-file:
     description: Where to write the SARIF report
     default: promrule-lint.sarif
