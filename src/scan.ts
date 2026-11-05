@@ -1,8 +1,9 @@
 import { readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
-import { lint } from "./checks.js";
+import { lint, recordIndex } from "./checks.js";
 import type { Options } from "./checks.js";
 import { parseRuleFile } from "./parse.js";
+import type { RuleFile } from "./parse.js";
 import type { Finding } from "./types.js";
 
 const skipDirs = new Set(["node_modules", ".git", "dist", "vendor"]);
@@ -41,15 +42,19 @@ export interface ScanResult {
 }
 
 export async function scan(paths: string[], cwd: string, opt: Options): Promise<ScanResult> {
-  const result: ScanResult = { findings: [], files: 0, rules: 0 };
+  const parsed: RuleFile[] = [];
   for (const p of paths) {
     for (const file of await findRuleFiles(p)) {
       const rel = path.relative(cwd, file).split(path.sep).join("/") || file;
-      const parsed = parseRuleFile(rel, await readFile(file, "utf8"));
-      result.files++;
-      result.rules += parsed.rules.length;
-      result.findings.push(...lint(parsed, opt));
+      parsed.push(parseRuleFile(rel, await readFile(file, "utf8")));
     }
+  }
+  // Recording rules from every file, so a rule can use one defined elsewhere.
+  const records = recordIndex(parsed);
+  const result: ScanResult = { findings: [], files: parsed.length, rules: 0 };
+  for (const file of parsed) {
+    result.rules += file.rules.length;
+    result.findings.push(...lint(file, opt, records));
   }
   return result;
 }
