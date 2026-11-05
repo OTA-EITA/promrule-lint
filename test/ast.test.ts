@@ -73,6 +73,7 @@ describe("parsePromQL", () => {
       matching: { on: true, labels: [], card: "one-to-many" },
     });
     expect(parsePromQL("a + fill(0) b")).toMatchObject({ matching: { fill: true } });
+    expect(parsePromQL("SUM BY (x) (a) OR b")).toMatchObject({ op: "or", lhs: { op: "sum", by: ["x"] } });
   });
 
   it("reads functions, unary minus and comments", () => {
