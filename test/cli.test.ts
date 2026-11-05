@@ -61,14 +61,14 @@ describe("main", () => {
       runs: { tool: { driver: { name: string; rules: unknown[] } }; results: unknown[] }[];
     };
     expect(sarif.runs[0]?.tool.driver.name).toBe("promrule-lint");
-    expect(sarif.runs[0]?.tool.driver.rules).toHaveLength(11);
+    expect(sarif.runs[0]?.tool.driver.rules).toHaveLength(13);
     expect(sarif.runs[0]?.results).toHaveLength(16);
   });
 
   it("prints help, version and checks", async () => {
     expect((await run(["-h"])).stdout).toContain("usage: promrule-lint");
     expect((await run(["--version"])).stdout).toBe("promrule-lint dev\n");
-    expect((await run(["--list-checks"])).stdout.trim().split("\n")).toHaveLength(11);
+    expect((await run(["--list-checks"])).stdout.trim().split("\n")).toHaveLength(13);
   });
 
   it.each([

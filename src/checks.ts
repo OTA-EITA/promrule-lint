@@ -1,4 +1,8 @@
+import { parsePromQL } from "./ast.js";
 import { formatDuration, parseDuration } from "./duration.js";
+import { LabelInference } from "./labels.js";
+import type { Issue, LabelSet, MetricInfo, RecordDef } from "./labels.js";
+import { builtinFamilies, metricTable } from "./metrics.js";
 import type { Rule, RuleFile } from "./parse.js";
 import { aggregatedInput, calls, rangeWindows } from "./promql.js";
 import type { Check, Finding } from "./types.js";
@@ -79,6 +83,20 @@ export const checks: Check[] = [
     title: "Invalid rule",
     description: "The rule or file is malformed: Prometheus would refuse to load it.",
   },
+  {
+    id: "PR012",
+    severity: "high",
+    title: "Grouping by a label the input never has",
+    description:
+      "by (...), on (...) or group_left/group_right (...) names a label that the series never carry, so the per-label result silently collapses into one series without it.",
+  },
+  {
+    id: "PR013",
+    severity: "high",
+    title: "Vector match that never matches",
+    description:
+      "The two sides of a binary operation can never have the same matching labels, so the result is always empty and the alert can never fire.",
+  },
 ];
 
 export interface Options {
@@ -88,13 +106,57 @@ export interface Options {
   minWindowFactor: number;
   /** Allowed values of the severity label. */
   severities: string[];
+  /** Labels the scrape adds to every series, on top of the exporter's own (default: job, instance). */
+  targetLabels?: string[];
+  /** Labels of known metrics (default: the built-in table); anything not listed is never flagged by the label checks. */
+  metrics?: ReadonlyMap<string, MetricInfo>;
 }
+
+/** Labels prometheus-operator adds to Pod- and Service-backed targets, plus kubernetes-mixin's cluster label. */
+export const kubernetesTargetLabels = [
+  "job",
+  "instance",
+  "namespace",
+  "service",
+  "endpoint",
+  "pod",
+  "container",
+  "cluster",
+];
+
+/** Reads a comma separated --target-labels value; "kubernetes" stands for the Kubernetes set. */
+export function parseTargetLabels(list: string): string[] {
+  const out = list
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .flatMap((s) => (s === "kubernetes" ? kubernetesTargetLabels : [s]));
+  return [...new Set(out)];
+}
+
+export const defaultTargetLabels = ["job", "instance"];
+
+const builtinMetrics = metricTable(builtinFamilies);
 
 export const defaultOptions: Options = {
   scrapeIntervalMs: 60_000,
   minWindowFactor: 2,
   severities: ["critical", "warning", "info"],
 };
+
+/** Recording rules defined in the files, by name, so other rules can resolve their labels. */
+export function recordIndex(files: RuleFile[]): Map<string, RecordDef[]> {
+  const index = new Map<string, RecordDef[]>();
+  for (const file of files) {
+    for (const rule of file.rules) {
+      if (rule.kind !== "record" || rule.errors.length || !rule.name) continue;
+      const defs = index.get(rule.name) ?? [];
+      defs.push({ expr: parsePromQL(rule.expr), labels: rule.labels });
+      index.set(rule.name, defs);
+    }
+  }
+  return index;
+}
 
 // Functions that return nothing with fewer than two samples in the range: irate, idelta
 // and deriv per the Prometheus docs, rate/increase/delta per promql/functions.go
@@ -106,7 +168,57 @@ function finding(file: RuleFile, rule: Rule, f: Omit<Finding, "file" | "line" | 
   return { ...f, file: file.file, line: rule.line, target: rule.name || rule.group };
 }
 
-function checkRule(file: RuleFile, rule: Rule, opt: Options): Finding[] {
+const short = (s: string, max = 80) => {
+  const one = s.replace(/\s+/g, " ").trim();
+  return one.length > max ? `${one.slice(0, max - 1)}…` : one;
+};
+
+function describe(l: LabelSet): string {
+  const names = [...l.may].sort();
+  return names.length ? names.join(", ") : "no labels";
+}
+
+/** Turns a label inference issue into a PR012/PR013 finding. */
+function labelFinding(name: string, i: Issue): Omit<Finding, "file" | "line" | "target"> {
+  switch (i.kind) {
+    case "by":
+      return {
+        ruleId: "PR012",
+        severity: "high",
+        message: `${name}: ${i.node.op} by (${(i.node.by ?? []).join(", ")}) groups by ${i.label}, which its input never has`,
+        help: `The input of ${short(i.node.text)} can only carry: ${describe(i.input)}. The result is one series without ${i.label} instead of one per ${i.label}; take the label from another metric with a join, or remove it from by().`,
+      };
+    case "on":
+      return {
+        ruleId: "PR012",
+        severity: "high",
+        message: `${name}: on (${i.label}) in ${short(i.node.text, 60)} matches on a label neither side has`,
+        help: `Left side: ${describe(i.lhs)}. Right side: ${describe(i.rhs)}. Matching on a missing label does not separate anything.`,
+      };
+    case "include":
+      return {
+        ruleId: "PR012",
+        severity: "high",
+        message: `${name}: ${short(i.node.text, 60)} copies ${i.label} from a side that never has it`,
+        help: `The "one" side can only carry: ${describe(i.one)}. group_left/group_right removes ${i.label} from the result instead of adding it.`,
+      };
+    case "nomatch": {
+      const op = i.node.op;
+      const effect =
+        op === "unless"
+          ? "so unless never removes anything"
+          : "so the result is always empty and an alert on it can never fire";
+      return {
+        ruleId: "PR013",
+        severity: "high",
+        message: `${name}: the two sides of ${op} in ${short(i.node.text, 60)} never match: ${i.reason}`,
+        help: `Left side: ${describe(i.lhs)}. Right side: ${describe(i.rhs)}. Without a matching label set every pair is dropped, ${effect}; add on (...) or ignoring (...).`,
+      };
+    }
+  }
+}
+
+function checkRule(file: RuleFile, rule: Rule, opt: Options, labels: LabelInference): Finding[] {
   const out: Finding[] = [];
   const add = (f: Omit<Finding, "file" | "line" | "target">) => {
     if (rule.ignore.includes(f.ruleId) || rule.ignore.includes("ALL")) return;
@@ -185,6 +297,12 @@ function checkRule(file: RuleFile, rule: Rule, opt: Options): Finding[] {
     });
   }
 
+  const expr = parsePromQL(rule.expr);
+  if (expr)
+    labels.infer(expr, (i) => {
+      add(labelFinding(rule.name || rule.group, i));
+    });
+
   const minWindow = opt.scrapeIntervalMs * opt.minWindowFactor;
   for (const call of calls(rule.expr)) {
     if (counterFunctions.has(call.name)) {
@@ -221,7 +339,20 @@ function checkRule(file: RuleFile, rule: Rule, opt: Options): Finding[] {
   return out;
 }
 
-export function lint(file: RuleFile, opt: Options = defaultOptions): Finding[] {
+/**
+ * Lints one rule file. records holds the recording rules of every scanned file;
+ * by default only the file's own are known.
+ */
+export function lint(
+  file: RuleFile,
+  opt: Options = defaultOptions,
+  records: ReadonlyMap<string, RecordDef[]> = recordIndex([file]),
+): Finding[] {
+  const labels = new LabelInference({
+    metrics: opt.metrics ?? builtinMetrics,
+    targetLabels: opt.targetLabels ?? defaultTargetLabels,
+    records,
+  });
   const findings: Finding[] = file.errors.map((e) => ({
     ruleId: "PR011",
     severity: "high" as const,
@@ -233,7 +364,7 @@ export function lint(file: RuleFile, opt: Options = defaultOptions): Finding[] {
 
   const seen = new Map<string, Rule>();
   for (const rule of file.rules) {
-    findings.push(...checkRule(file, rule, opt));
+    findings.push(...checkRule(file, rule, opt, labels));
     if (rule.kind !== "alert" || rule.errors.length) continue;
     const key = `${rule.group}\u0000${rule.name}\u0000${JSON.stringify(Object.entries(rule.labels).sort())}`;
     const first = seen.get(key);
