@@ -1,7 +1,7 @@
 {
   "name": "promrule-lint",
-  "version": "0.1.0",
-  "description": "Lint Prometheus alerting and recording rules for flapping-prone alerts, missing runbooks and severities, too-short rate() windows and naming mistakes. CLI + GitHub Action, SARIF",
+  "version": "0.2.0",
+  "description": "Lint Prometheus alerting and recording rules for flapping-prone alerts, missing runbooks and severities, too-short rate() windows, labels that never match and naming mistakes. CLI + GitHub Action, SARIF",
   "license": "MIT",
   "author": "OTA-EITA",
   "repository": {
