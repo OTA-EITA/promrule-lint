@@ -183,7 +183,7 @@ export function parsePromQL(src: string): Expr | undefined {
         const isWithout = mod?.getChild("Without") != null;
         return {
           kind: "aggregate",
-          op: op ? text(op) : "",
+          op: op ? text(op).toLowerCase() : "",
           by: mod && !isWithout ? labels : undefined,
           without: isWithout ? labels : undefined,
           param: args.length > 1 ? args[0] : undefined,
@@ -209,7 +209,7 @@ export function parsePromQL(src: string): Expr | undefined {
         const last = parts[parts.length - 1];
         return {
           kind: "binary",
-          op: opNode ? text(opNode) : "",
+          op: opNode ? text(opNode).toLowerCase() : "",
           bool: n.getChild("BoolModifier") != null,
           lhs: first ? build(first) : { kind: "number", text: "" },
           rhs: last ? build(last) : { kind: "number", text: "" },
@@ -218,7 +218,9 @@ export function parsePromQL(src: string): Expr | undefined {
         };
       }
     }
-    // Anything else (a new grammar construct) is kept as an expression the checks know nothing about.
+    // Anything else (a construct added to the grammar later) is kept as an expression the
+    // checks know nothing about. Every current expression node is handled above.
+    /* v8 ignore next */
     return { kind: "call", func: `<${n.name}>`, args: [], text: t };
   };
   return build(top);
