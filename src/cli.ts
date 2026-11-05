@@ -1,8 +1,10 @@
 import { realpathSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
-import { checks, defaultOptions } from "./checks.js";
+import { checks, defaultOptions, defaultTargetLabels, parseTargetLabels } from "./checks.js";
+import type { Options } from "./checks.js";
 import { formatDuration, parseDuration } from "./duration.js";
+import { loadMetricTable } from "./metrics.js";
 import { formats, render } from "./report.js";
 import type { Format } from "./report.js";
 import { scan } from "./scan.js";
@@ -21,6 +23,9 @@ options:
   --scrape-interval <d>     scrape interval the rules run against (default: ${formatDuration(defaultOptions.scrapeIntervalMs)})
   --min-window-factor <n>   a range must cover this many scrape intervals (default: ${String(defaultOptions.minWindowFactor)})
   --severities <list>       allowed severity values, comma separated (default: ${defaultOptions.severities.join(",")})
+  --target-labels <list>    labels the scrape adds to every series, comma separated; "kubernetes" adds
+                            namespace, service, endpoint, pod, container and cluster (default: ${defaultTargetLabels.join(",")})
+  --metrics-labels <file>   JSON file with the labels of more metrics, added to the built-in table
   --format <format>         text, json, markdown or sarif (default: text)
   --fail-on <severity>      exit 1 on findings at least this severe: high, medium, low or none (default: medium)
   --list-checks             print the checks and exit
@@ -44,6 +49,8 @@ export async function main(argv: string[], io: Io): Promise<number> {
         "scrape-interval": { type: "string" },
         "min-window-factor": { type: "string" },
         severities: { type: "string" },
+        "target-labels": { type: "string" },
+        "metrics-labels": { type: "string" },
         format: { type: "string", default: "text" },
         "fail-on": { type: "string", default: "medium" },
         "list-checks": { type: "boolean", default: false },
@@ -79,7 +86,7 @@ export async function main(argv: string[], io: Io): Promise<number> {
     io.stderr(`error: --fail-on must be high, medium, low or none, got "${failOn}"\n`);
     return 2;
   }
-  const opt = { ...defaultOptions };
+  const opt: Options = { ...defaultOptions };
   if (values["scrape-interval"] !== undefined) {
     const ms = parseDuration(values["scrape-interval"]);
     if (!ms) {
@@ -103,8 +110,11 @@ export async function main(argv: string[], io: Io): Promise<number> {
       .filter(Boolean);
   }
 
+  if (values["target-labels"] !== undefined) opt.targetLabels = parseTargetLabels(values["target-labels"]);
+
   let result;
   try {
+    opt.metrics = await loadMetricTable(values["metrics-labels"]);
     result = await scan(positionals.length ? positionals : ["."], io.cwd, opt);
   } catch (err) {
     io.stderr(`error: ${(err as Error).message}\n`);
