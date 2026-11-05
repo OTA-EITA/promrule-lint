@@ -1,0 +1,804 @@
+{
+  "$comment": "Labels that exporters put on their metrics, read from each project's source code at the linked commit. 'always' lists labels that are never empty. Target labels (job, instance, ...) are not included.",
+  "families": [
+    {
+      "names": ["alertmanager_cluster_failed_peers"],
+      "type": "gauge",
+      "labels": [],
+      "always": [],
+      "source": "https://github.com/prometheus/alertmanager/blob/47403693800ba753b79f61c0fbca5e7d1d74281c/cluster/cluster.go",
+      "note": "Only registered when clustering is enabled (--cluster.listen-address set)."
+    },
+    {
+      "names": ["alertmanager_cluster_members"],
+      "type": "gauge",
+      "labels": [],
+      "always": [],
+      "source": "https://github.com/prometheus/alertmanager/blob/47403693800ba753b79f61c0fbca5e7d1d74281c/cluster/delegate.go",
+      "note": "Only registered when clustering is enabled."
+    },
+    {
+      "names": ["alertmanager_config_hash", "alertmanager_config_last_reload_successful"],
+      "type": "gauge",
+      "labels": [],
+      "always": [],
+      "source": "https://github.com/prometheus/alertmanager/blob/47403693800ba753b79f61c0fbca5e7d1d74281c/config/coordinator.go"
+    },
+    {
+      "names": ["alertmanager_notifications_failed_total"],
+      "type": "counter",
+      "labels": ["integration", "receiver_name", "reason"],
+      "always": ["integration", "reason"],
+      "source": [
+        "https://github.com/prometheus/alertmanager/blob/47403693800ba753b79f61c0fbca5e7d1d74281c/notify/metrics.go",
+        "https://github.com/prometheus/alertmanager/blob/47403693800ba753b79f61c0fbca5e7d1d74281c/notify/retry_stage.go",
+        "https://github.com/prometheus/alertmanager/blob/47403693800ba753b79f61c0fbca5e7d1d74281c/notify/util.go"
+      ],
+      "note": "reason is a fixed Reason.String() value (other, clientError, serverError, contextCanceled, ...); receiver_name only with --enable-feature=receiver-name-in-metrics."
+    },
+    {
+      "names": ["alertmanager_notifications_total"],
+      "type": "counter",
+      "labels": ["integration", "receiver_name"],
+      "always": ["integration"],
+      "source": [
+        "https://github.com/prometheus/alertmanager/blob/47403693800ba753b79f61c0fbca5e7d1d74281c/notify/metrics.go",
+        "https://github.com/prometheus/alertmanager/blob/47403693800ba753b79f61c0fbca5e7d1d74281c/notify/retry_stage.go"
+      ],
+      "note": "integration is the integration type name (email, slack, webhook, ...); receiver_name only present when --enable-feature=receiver-name-in-metrics."
+    },
+    {
+      "names": [
+        "kube_daemonset_status_current_number_scheduled",
+        "kube_daemonset_status_desired_number_scheduled",
+        "kube_daemonset_status_number_available",
+        "kube_daemonset_status_number_misscheduled",
+        "kube_daemonset_status_updated_number_scheduled"
+      ],
+      "type": "gauge",
+      "labels": ["namespace", "daemonset"],
+      "always": ["namespace", "daemonset"],
+      "source": "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/daemonset.go"
+    },
+    {
+      "names": [
+        "kube_deployment_metadata_generation",
+        "kube_deployment_spec_replicas",
+        "kube_deployment_status_observed_generation",
+        "kube_deployment_status_replicas_available",
+        "kube_deployment_status_replicas_updated"
+      ],
+      "type": "gauge",
+      "labels": ["namespace", "deployment"],
+      "always": ["namespace", "deployment"],
+      "source": "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/deployment.go",
+      "note": "kube_deployment_spec_replicas is omitted when spec.replicas is nil"
+    },
+    {
+      "names": ["kube_deployment_status_condition"],
+      "type": "gauge",
+      "labels": ["namespace", "deployment", "reason", "condition", "status"],
+      "always": ["namespace", "deployment", "condition", "status"],
+      "source": [
+        "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/deployment.go",
+        "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/utils.go"
+      ],
+      "note": "status is true/false/unknown; reason is mapped to an allowlist or 'unknown', but an empty condition reason stays empty"
+    },
+    {
+      "names": [
+        "kube_horizontalpodautoscaler_spec_max_replicas",
+        "kube_horizontalpodautoscaler_spec_min_replicas",
+        "kube_horizontalpodautoscaler_status_current_replicas",
+        "kube_horizontalpodautoscaler_status_desired_replicas"
+      ],
+      "type": "gauge",
+      "labels": ["namespace", "horizontalpodautoscaler"],
+      "always": ["namespace", "horizontalpodautoscaler"],
+      "source": "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/horizontalpodautoscaler.go"
+    },
+    {
+      "names": ["kube_job_failed"],
+      "type": "gauge",
+      "labels": ["namespace", "job_name", "condition"],
+      "always": ["namespace", "job_name", "condition"],
+      "source": [
+        "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/job.go",
+        "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/utils.go"
+      ],
+      "note": "condition is true/false/unknown (status of the Failed condition), not the condition type; only emitted when a Failed condition exists"
+    },
+    {
+      "names": ["kube_job_owner"],
+      "type": "gauge",
+      "labels": ["namespace", "job_name", "owner_kind", "owner_name", "owner_is_controller"],
+      "always": ["namespace", "job_name"],
+      "source": "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/job.go",
+      "note": "owner_* are all empty strings when the job has no ownerReferences"
+    },
+    {
+      "names": ["kube_job_status_active", "kube_job_status_start_time"],
+      "type": "gauge",
+      "labels": ["namespace", "job_name"],
+      "always": ["namespace", "job_name"],
+      "source": "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/job.go",
+      "note": "job name label is job_name, not job"
+    },
+    {
+      "names": ["kube_node_info"],
+      "type": "gauge",
+      "labels": [
+        "node",
+        "kernel_version",
+        "os_image",
+        "container_runtime_version",
+        "kubelet_version",
+        "kubeproxy_version",
+        "provider_id",
+        "pod_cidr",
+        "system_uuid",
+        "internal_ip"
+      ],
+      "always": ["node", "kubeproxy_version"],
+      "source": "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/node.go",
+      "note": "kubeproxy_version is hardcoded to 'deprecated'; internal_ip is deprecated (to be removed in v3)"
+    },
+    {
+      "names": ["kube_node_role"],
+      "type": "gauge",
+      "labels": ["node", "role"],
+      "always": ["node", "role"],
+      "source": "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/node.go",
+      "note": "one series per node-role.kubernetes.io/<role> node label; role is the suffix"
+    },
+    {
+      "names": ["kube_node_spec_taint"],
+      "type": "gauge",
+      "labels": ["node", "key", "value", "effect"],
+      "always": ["node", "key", "effect"],
+      "source": "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/node.go",
+      "note": "value is empty for taints without a value"
+    },
+    {
+      "names": ["kube_node_spec_unschedulable"],
+      "type": "gauge",
+      "labels": ["node"],
+      "always": ["node"],
+      "source": "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/node.go"
+    },
+    {
+      "names": ["kube_node_status_allocatable", "kube_node_status_capacity"],
+      "type": "gauge",
+      "labels": ["node", "resource", "unit"],
+      "always": ["node", "resource", "unit"],
+      "source": "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/node.go",
+      "note": "unit is core/byte/integer"
+    },
+    {
+      "names": ["kube_node_status_condition"],
+      "type": "gauge",
+      "labels": ["node", "condition", "status"],
+      "always": ["node", "condition", "status"],
+      "source": [
+        "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/node.go",
+        "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/utils.go"
+      ],
+      "note": "status is true/false/unknown"
+    },
+    {
+      "names": ["kube_persistentvolume_status_phase"],
+      "type": "gauge",
+      "labels": ["persistentvolume", "phase"],
+      "always": ["persistentvolume", "phase"],
+      "source": "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/persistentvolume.go",
+      "note": "phase is one of Pending/Available/Bound/Released/Failed; no series when phase is empty"
+    },
+    {
+      "names": ["kube_persistentvolumeclaim_access_mode"],
+      "type": "gauge",
+      "labels": ["namespace", "persistentvolumeclaim", "access_mode"],
+      "always": ["namespace", "persistentvolumeclaim", "access_mode"],
+      "source": "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/persistentvolumeclaim.go"
+    },
+    {
+      "names": ["kube_pod_container_resource_limits", "kube_pod_container_resource_requests"],
+      "type": "gauge",
+      "labels": ["namespace", "pod", "uid", "container", "node", "resource", "unit"],
+      "always": ["namespace", "pod", "uid", "container", "resource", "unit"],
+      "source": "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/pod.go",
+      "note": "node is spec.nodeName, empty for unscheduled pods; only regular containers (not init)"
+    },
+    {
+      "names": ["kube_pod_container_status_waiting_reason"],
+      "type": "gauge",
+      "labels": ["namespace", "pod", "uid", "container", "reason"],
+      "always": ["namespace", "pod", "uid", "container"],
+      "source": "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/pod.go",
+      "note": "emitted only for containers in Waiting state; reason is the raw waiting reason"
+    },
+    {
+      "names": ["kube_pod_info"],
+      "type": "gauge",
+      "labels": [
+        "namespace",
+        "pod",
+        "uid",
+        "host_ip",
+        "pod_ip",
+        "node",
+        "created_by_kind",
+        "created_by_name",
+        "priority_class",
+        "host_network"
+      ],
+      "always": ["namespace", "pod", "uid"],
+      "source": "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/pod.go",
+      "note": "host_network is true/false; node/host_ip/pod_ip empty until scheduled/running (host_network was added in recent versions, so it is not in always)"
+    },
+    {
+      "names": ["kube_pod_owner"],
+      "type": "gauge",
+      "labels": ["namespace", "pod", "uid", "owner_kind", "owner_name", "owner_is_controller"],
+      "always": ["namespace", "pod", "uid"],
+      "source": "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/pod.go",
+      "note": "owner_* are all empty strings when the pod has no ownerReferences"
+    },
+    {
+      "names": ["kube_pod_status_phase"],
+      "type": "gauge",
+      "labels": ["namespace", "pod", "uid", "phase"],
+      "always": ["namespace", "pod", "uid", "phase"],
+      "source": "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/pod.go",
+      "note": "phase is one of Pending/Succeeded/Failed/Unknown/Running"
+    },
+    {
+      "names": ["kube_pod_status_ready"],
+      "type": "gauge",
+      "labels": ["namespace", "pod", "uid", "condition"],
+      "always": ["namespace", "pod", "uid", "condition"],
+      "source": [
+        "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/pod.go",
+        "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/utils.go"
+      ],
+      "note": "condition is true/false/unknown"
+    },
+    {
+      "names": ["kube_pod_status_reason"],
+      "type": "gauge",
+      "labels": ["namespace", "pod", "uid", "reason"],
+      "always": ["namespace", "pod", "uid", "reason"],
+      "source": "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/pod.go",
+      "note": "reason from a fixed list (Evicted, NodeLost, ...) or 'Other'; only emitted for matching reasons"
+    },
+    {
+      "names": [
+        "kube_poddisruptionbudget_status_current_healthy",
+        "kube_poddisruptionbudget_status_desired_healthy",
+        "kube_poddisruptionbudget_status_expected_pods"
+      ],
+      "type": "gauge",
+      "labels": ["namespace", "poddisruptionbudget"],
+      "always": ["namespace", "poddisruptionbudget"],
+      "source": "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/poddisruptionbudget.go"
+    },
+    {
+      "names": ["kube_replicaset_owner"],
+      "type": "gauge",
+      "labels": ["namespace", "replicaset", "owner_kind", "owner_name", "owner_is_controller"],
+      "always": ["namespace", "replicaset"],
+      "source": "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/replicaset.go",
+      "note": "owner_* are all empty strings when the replicaset has no ownerReferences"
+    },
+    {
+      "names": ["kube_resourcequota"],
+      "type": "gauge",
+      "labels": ["namespace", "resourcequota", "resource", "type"],
+      "always": ["namespace", "resourcequota", "resource", "type"],
+      "source": "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/resourcequota.go",
+      "note": "type is hard or used"
+    },
+    {
+      "names": ["kube_state_metrics_list_total", "kube_state_metrics_watch_total"],
+      "type": "counter",
+      "labels": ["result", "resource"],
+      "always": ["result", "resource"],
+      "source": "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/pkg/watch/watch.go",
+      "note": "self metric on the telemetry port; result is success/error, resource is the Go type string (e.g. *v1.Pod)"
+    },
+    {
+      "names": ["kube_state_metrics_shard_ordinal"],
+      "type": "gauge",
+      "labels": ["shard_ordinal"],
+      "always": ["shard_ordinal"],
+      "source": [
+        "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/pkg/sharding/metrics.go",
+        "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/builder.go"
+      ],
+      "note": "self metric on the telemetry port; shard_ordinal is the shard index as a decimal string"
+    },
+    {
+      "names": ["kube_state_metrics_total_shards"],
+      "type": "gauge",
+      "labels": [],
+      "always": [],
+      "source": "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/pkg/sharding/metrics.go",
+      "note": "self metric on the telemetry port"
+    },
+    {
+      "names": [
+        "kube_statefulset_metadata_generation",
+        "kube_statefulset_replicas",
+        "kube_statefulset_status_observed_generation",
+        "kube_statefulset_status_replicas_ready",
+        "kube_statefulset_status_replicas_updated"
+      ],
+      "type": "gauge",
+      "labels": ["namespace", "statefulset"],
+      "always": ["namespace", "statefulset"],
+      "source": "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/statefulset.go",
+      "note": "kube_statefulset_replicas is omitted when spec.replicas is nil"
+    },
+    {
+      "names": ["kube_statefulset_status_current_revision", "kube_statefulset_status_update_revision"],
+      "type": "gauge",
+      "labels": ["namespace", "statefulset", "revision"],
+      "always": ["namespace", "statefulset"],
+      "source": "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/statefulset.go",
+      "note": "revision comes from status.currentRevision / status.updateRevision and can be empty before the controller sets it"
+    },
+    {
+      "names": ["node_bonding_active", "node_bonding_slaves"],
+      "type": "gauge",
+      "labels": ["master"],
+      "always": ["master"],
+      "source": "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/bonding_linux.go",
+      "note": "master = bond interface name from /sys/class/net/bonding_masters (strings.Fields token)"
+    },
+    {
+      "names": ["node_cpu_seconds_total"],
+      "type": "counter",
+      "labels": ["cpu", "mode"],
+      "always": ["cpu", "mode"],
+      "source": [
+        "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/cpu_common.go",
+        "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/cpu_linux.go"
+      ],
+      "note": "Linux collector: cpu = strconv.Itoa(cpuID); mode in user,nice,system,idle,iowait,irq,softirq,steal"
+    },
+    {
+      "names": ["node_disk_io_time_seconds_total", "node_disk_io_time_weighted_seconds_total"],
+      "type": "counter",
+      "labels": ["device"],
+      "always": ["device"],
+      "source": [
+        "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/diskstats_common.go",
+        "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/diskstats_linux.go"
+      ],
+      "note": "Linux collector: device = DeviceName from /proc/diskstats"
+    },
+    {
+      "names": ["node_filefd_allocated", "node_filefd_maximum"],
+      "type": "gauge",
+      "labels": [],
+      "always": [],
+      "source": "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/filefd_linux.go",
+      "note": "Names built dynamically from /proc/sys/fs/file-nr fields; no labels"
+    },
+    {
+      "names": [
+        "node_filesystem_avail_bytes",
+        "node_filesystem_free_bytes",
+        "node_filesystem_size_bytes",
+        "node_filesystem_files",
+        "node_filesystem_files_free"
+      ],
+      "type": "gauge",
+      "labels": ["device", "mountpoint", "fstype", "device_error"],
+      "always": ["mountpoint", "fstype"],
+      "source": [
+        "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/filesystem_common.go",
+        "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/filesystem_linux.go"
+      ],
+      "note": "Linux collector: device_error is in the label set but always empty on these series (they are skipped when statfs fails), so it is absent in Prometheus; device = mount source"
+    },
+    {
+      "names": ["node_filesystem_readonly"],
+      "type": "gauge",
+      "labels": ["device", "mountpoint", "fstype", "device_error"],
+      "always": ["mountpoint", "fstype"],
+      "source": [
+        "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/filesystem_common.go",
+        "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/filesystem_linux.go"
+      ],
+      "note": "Linux collector: device_error is empty normally, set to the statfs error text or 'mountpoint timeout' when the mount fails (readonly is still emitted then)"
+    },
+    {
+      "names": ["node_load1"],
+      "type": "gauge",
+      "labels": [],
+      "always": [],
+      "source": "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/loadavg.go"
+    },
+    {
+      "names": ["node_md_disks"],
+      "type": "gauge",
+      "labels": ["device", "state"],
+      "always": ["device", "state"],
+      "source": "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/mdadm_linux.go",
+      "note": "device = md name from /proc/mdstat; state in active,failed,spare"
+    },
+    {
+      "names": ["node_md_disks_required"],
+      "type": "gauge",
+      "labels": ["device"],
+      "always": ["device"],
+      "source": "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/mdadm_linux.go",
+      "note": "device = md name from /proc/mdstat"
+    },
+    {
+      "names": [
+        "node_memory_Buffers_bytes",
+        "node_memory_Cached_bytes",
+        "node_memory_MemAvailable_bytes",
+        "node_memory_MemFree_bytes",
+        "node_memory_MemTotal_bytes",
+        "node_memory_Slab_bytes"
+      ],
+      "type": "gauge",
+      "labels": [],
+      "always": [],
+      "source": [
+        "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/meminfo.go",
+        "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/meminfo_linux.go"
+      ],
+      "note": "Linux collector: names built dynamically from /proc/meminfo keys (BuildFQName(node, memory, key)); no labels"
+    },
+    {
+      "names": [
+        "node_network_receive_bytes_total",
+        "node_network_receive_drop_total",
+        "node_network_receive_errs_total",
+        "node_network_receive_packets_total",
+        "node_network_transmit_bytes_total",
+        "node_network_transmit_drop_total",
+        "node_network_transmit_errs_total",
+        "node_network_transmit_packets_total"
+      ],
+      "type": "counter",
+      "labels": ["device", "ifalias"],
+      "always": ["device"],
+      "source": [
+        "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/netdev_common.go",
+        "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/netdev_linux.go"
+      ],
+      "note": "Linux collector: ifalias only with --collector.netdev.label-ifalias (may be empty); *_drop/*_errs names are the default legacy names, --collector.netdev.enable-detailed-metrics renames them to *_dropped/*_errors"
+    },
+    {
+      "names": ["node_network_up"],
+      "type": "gauge",
+      "labels": ["device"],
+      "always": ["device"],
+      "source": [
+        "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/netclass_linux.go",
+        "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/netclass_rtnl_linux.go"
+      ],
+      "note": "Linux netclass collector (sysfs or netlink variant); device = interface name"
+    },
+    {
+      "names": ["node_nf_conntrack_entries", "node_nf_conntrack_entries_limit"],
+      "type": "gauge",
+      "labels": [],
+      "always": [],
+      "source": "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/conntrack_linux.go"
+    },
+    {
+      "names": ["node_systemd_service_restart_total"],
+      "type": "counter",
+      "labels": ["name"],
+      "always": ["name"],
+      "source": "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/systemd_linux.go",
+      "note": "Only with --collector.systemd.enable-restarts-metrics; name = .service unit name"
+    },
+    {
+      "names": ["node_systemd_unit_state"],
+      "type": "gauge",
+      "labels": ["name", "state", "type"],
+      "always": ["name", "state"],
+      "source": "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/systemd_linux.go",
+      "note": "state in active,activating,deactivating,inactive,failed; type is set only for .service/.mount units (empty otherwise)"
+    },
+    {
+      "names": ["node_textfile_scrape_error"],
+      "type": "gauge",
+      "labels": [],
+      "always": [],
+      "source": "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/textfile.go",
+      "note": "Defined by the textfile collector itself, no labels"
+    },
+    {
+      "names": ["node_timex_maxerror_seconds", "node_timex_offset_seconds", "node_timex_sync_status"],
+      "type": "gauge",
+      "labels": [],
+      "always": [],
+      "source": "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/timex.go"
+    },
+    {
+      "names": ["node_uname_info"],
+      "type": "gauge",
+      "labels": ["sysname", "release", "version", "machine", "nodename", "domainname"],
+      "always": ["sysname", "release", "version", "machine"],
+      "source": [
+        "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/uname.go",
+        "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/uname_linux.go"
+      ],
+      "note": "Linux collector: values from uname(2); domainname is often '(none)', nodename left out of always"
+    },
+    {
+      "names": ["node_vmstat_pgmajfault"],
+      "type": "untyped",
+      "labels": [],
+      "always": [],
+      "source": "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/vmstat_linux.go",
+      "note": "Name built dynamically from /proc/vmstat field; exposed as untyped (counter in practice); field set controlled by --collector.vmstat.fields (default includes pg.*fault)"
+    },
+    {
+      "names": ["process_start_time_seconds"],
+      "type": "gauge",
+      "labels": [],
+      "always": [],
+      "source": "https://github.com/prometheus/client_golang/blob/7c6a403efe48803ef2f576009e92ac19d205a6d3/prometheus/process_collector.go",
+      "note": "client_golang process collector, registered by most Go exporters; no labels"
+    },
+    {
+      "names": ["prometheus_config_last_reload_successful"],
+      "type": "gauge",
+      "labels": [],
+      "always": [],
+      "source": "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/cmd/prometheus/main.go"
+    },
+    {
+      "names": ["prometheus_engine_queries", "prometheus_engine_queries_concurrent_max"],
+      "type": "gauge",
+      "labels": [],
+      "always": [],
+      "source": "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/promql/engine.go"
+    },
+    {
+      "names": [
+        "prometheus_notifications_alertmanagers_discovered",
+        "prometheus_notifications_queue_capacity"
+      ],
+      "type": "gauge",
+      "labels": [],
+      "always": [],
+      "source": "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/notifier/metric.go",
+      "note": "queue_capacity is a plain Gauge without labels."
+    },
+    {
+      "names": ["prometheus_notifications_errors_total", "prometheus_notifications_sent_total"],
+      "type": "counter",
+      "labels": ["alertmanager"],
+      "always": ["alertmanager"],
+      "source": [
+        "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/notifier/metric.go",
+        "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/notifier/sendloop.go",
+        "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/notifier/alertmanager.go"
+      ],
+      "note": "alertmanager = Alertmanager URL string built from __scheme__/__address__/__alerts_path__ (path always /.../api/v2/alerts), so never empty."
+    },
+    {
+      "names": ["prometheus_notifications_queue_length"],
+      "type": "gauge",
+      "labels": ["alertmanager"],
+      "always": ["alertmanager"],
+      "source": [
+        "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/notifier/metric.go",
+        "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/notifier/sendloop.go"
+      ],
+      "note": "Per-Alertmanager queue in this version (sendloop); older versions (before per-AM send loops) exposed it without labels."
+    },
+    {
+      "names": [
+        "prometheus_operator_list_operations_failed_total",
+        "prometheus_operator_list_operations_total",
+        "prometheus_operator_watch_operations_failed_total",
+        "prometheus_operator_watch_operations_total"
+      ],
+      "type": "counter",
+      "labels": ["controller"],
+      "always": ["controller"],
+      "source": [
+        "https://github.com/prometheus-operator/prometheus-operator/blob/ec345381c7c054f9330290233743a71a5467f34c/pkg/operator/operator.go",
+        "https://github.com/prometheus-operator/prometheus-operator/blob/ec345381c7c054f9330290233743a71a5467f34c/pkg/prometheus/server/operator.go"
+      ],
+      "note": "controller is a const label from WrapRegistererWith: prometheus, prometheus-agent, alertmanager or thanos."
+    },
+    {
+      "names": ["prometheus_operator_managed_resources"],
+      "type": "gauge",
+      "labels": ["controller", "resource", "state"],
+      "always": ["controller", "resource", "state"],
+      "source": [
+        "https://github.com/prometheus-operator/prometheus-operator/blob/ec345381c7c054f9330290233743a71a5467f34c/pkg/operator/operator.go",
+        "https://github.com/prometheus-operator/prometheus-operator/blob/ec345381c7c054f9330290233743a71a5467f34c/pkg/prometheus/resource_selector.go"
+      ],
+      "note": "resource is a CRD kind constant (ServiceMonitor, PodMonitor, Probe, ScrapeConfig, PrometheusRule, AlertmanagerConfig); state = selected|rejected."
+    },
+    {
+      "names": ["prometheus_operator_node_address_lookup_errors_total"],
+      "type": "counter",
+      "labels": [],
+      "always": [],
+      "source": [
+        "https://github.com/prometheus-operator/prometheus-operator/blob/ec345381c7c054f9330290233743a71a5467f34c/pkg/kubelet/controller.go",
+        "https://github.com/prometheus-operator/prometheus-operator/blob/ec345381c7c054f9330290233743a71a5467f34c/cmd/operator/main.go"
+      ],
+      "note": "Kubelet endpoints controller registers on the unwrapped registry, so no controller label."
+    },
+    {
+      "names": ["prometheus_operator_ready"],
+      "type": "gauge",
+      "labels": ["controller"],
+      "always": ["controller"],
+      "source": [
+        "https://github.com/prometheus-operator/prometheus-operator/blob/ec345381c7c054f9330290233743a71a5467f34c/pkg/operator/operator.go",
+        "https://github.com/prometheus-operator/prometheus-operator/blob/ec345381c7c054f9330290233743a71a5467f34c/pkg/prometheus/server/operator.go"
+      ],
+      "note": "controller = prometheus|prometheus-agent|alertmanager|thanos."
+    },
+    {
+      "names": [
+        "prometheus_operator_reconcile_errors_total",
+        "prometheus_operator_reconcile_operations_total",
+        "prometheus_operator_status_update_errors_total",
+        "prometheus_operator_status_update_operations_total"
+      ],
+      "type": "counter",
+      "labels": ["controller"],
+      "always": ["controller"],
+      "source": [
+        "https://github.com/prometheus-operator/prometheus-operator/blob/ec345381c7c054f9330290233743a71a5467f34c/pkg/operator/resource_reconciler.go",
+        "https://github.com/prometheus-operator/prometheus-operator/blob/ec345381c7c054f9330290233743a71a5467f34c/pkg/prometheus/server/operator.go"
+      ],
+      "note": "Registered on the controller-wrapped registerer; controller = prometheus|prometheus-agent|alertmanager|thanos."
+    },
+    {
+      "names": ["prometheus_operator_syncs"],
+      "type": "gauge",
+      "labels": ["controller", "status"],
+      "always": ["controller", "status"],
+      "source": "https://github.com/prometheus-operator/prometheus-operator/blob/ec345381c7c054f9330290233743a71a5467f34c/pkg/operator/operator.go",
+      "note": "status = ok|failed."
+    },
+    {
+      "names": [
+        "prometheus_remote_storage_queue_highest_sent_timestamp_seconds",
+        "prometheus_remote_storage_queue_highest_timestamp_seconds",
+        "prometheus_remote_storage_shards_desired",
+        "prometheus_remote_storage_shards_max"
+      ],
+      "type": "gauge",
+      "labels": ["remote_name", "url"],
+      "always": ["remote_name", "url"],
+      "source": [
+        "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/storage/remote/queue_manager.go",
+        "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/storage/remote/write.go",
+        "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/storage/remote/storage.go"
+      ],
+      "note": "Const labels per queue (remote_name = name or config hash prefix, url = redacted URL). Not to be confused with the deprecated unlabeled prometheus_remote_storage_highest_timestamp_in_seconds."
+    },
+    {
+      "names": ["prometheus_remote_storage_samples_failed_total", "prometheus_remote_storage_samples_total"],
+      "type": "counter",
+      "labels": ["remote_name", "url"],
+      "always": ["remote_name", "url"],
+      "source": [
+        "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/storage/remote/queue_manager.go",
+        "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/storage/remote/write.go",
+        "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/storage/remote/storage.go"
+      ],
+      "note": "Const labels per queue: remote_name = remote_write name or first 6 chars of config hash; url = redacted remote_write URL (required in config)."
+    },
+    {
+      "names": ["prometheus_rule_evaluation_failures_total", "prometheus_rule_group_iterations_missed_total"],
+      "type": "counter",
+      "labels": ["rule_group"],
+      "always": ["rule_group"],
+      "source": "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/rules/group.go",
+      "note": "rule_group = GroupKey(file, name) = \"<file>;<group>\"."
+    },
+    {
+      "names": ["prometheus_rule_group_rules"],
+      "type": "gauge",
+      "labels": ["rule_group"],
+      "always": ["rule_group"],
+      "source": "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/rules/group.go",
+      "note": "rule_group = \"<file>;<group>\"."
+    },
+    {
+      "names": ["prometheus_sd_kubernetes_failures_total"],
+      "type": "counter",
+      "labels": [],
+      "always": [],
+      "source": "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/discovery/kubernetes/metrics.go",
+      "note": "Shared across all kubernetes_sd configs; no role/config labels."
+    },
+    {
+      "names": ["prometheus_sd_refresh_failures_total"],
+      "type": "counter",
+      "labels": ["mechanism", "config"],
+      "always": ["mechanism", "config"],
+      "source": [
+        "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/discovery/metrics_refresh.go",
+        "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/discovery/refresh/refresh.go",
+        "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/discovery/manager.go"
+      ],
+      "note": "mechanism is a fixed SD name (dns, ec2, gce, http, ...); config is the scrape job_name or the Alertmanager set key (config-N). Older 2.x versions exposed only mechanism."
+    },
+    {
+      "names": ["prometheus_target_metadata_cache_entries"],
+      "type": "gauge",
+      "labels": ["scrape_job"],
+      "always": ["scrape_job"],
+      "source": "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/scrape/metrics.go",
+      "note": "scrape_job = scrape pool / job_name (required non-empty)."
+    },
+    {
+      "names": [
+        "prometheus_target_scrape_pool_exceeded_label_limits_total",
+        "prometheus_target_scrape_pool_exceeded_target_limit_total",
+        "prometheus_target_scrapes_exceeded_body_size_limit_total",
+        "prometheus_target_scrapes_exceeded_sample_limit_total",
+        "prometheus_target_scrapes_sample_duplicate_timestamp_total",
+        "prometheus_target_scrapes_sample_out_of_order_total"
+      ],
+      "type": "counter",
+      "labels": [],
+      "always": [],
+      "source": "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/scrape/metrics.go"
+    },
+    {
+      "names": ["prometheus_target_sync_failed_total"],
+      "type": "counter",
+      "labels": ["scrape_job"],
+      "always": ["scrape_job"],
+      "source": [
+        "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/scrape/metrics.go",
+        "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/scrape/scrape.go"
+      ],
+      "note": "scrape_job = job_name."
+    },
+    {
+      "names": ["prometheus_tsdb_compactions_failed_total", "prometheus_tsdb_reloads_failures_total"],
+      "type": "counter",
+      "labels": [],
+      "always": [],
+      "source": "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/tsdb/db.go"
+    },
+    {
+      "names": ["prometheus_tsdb_head_samples_appended_total"],
+      "type": "counter",
+      "labels": ["type"],
+      "always": ["type"],
+      "source": [
+        "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/tsdb/head.go",
+        "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/tsdb/head_append.go"
+      ],
+      "note": "type is float or histogram (label added in 2.x with native histograms; earlier versions had no labels)."
+    },
+    {
+      "names": [
+        "up",
+        "scrape_duration_seconds",
+        "scrape_samples_scraped",
+        "scrape_samples_post_metric_relabeling",
+        "scrape_series_added"
+      ],
+      "type": "gauge",
+      "labels": [],
+      "always": [],
+      "source": "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/scrape/scrape.go",
+      "note": "Synthetic per-target series; carry only target labels (job, instance and relabeled target labels), none set by the exporter."
+    }
+  ]
+}
