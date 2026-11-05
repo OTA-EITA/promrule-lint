@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { defaultOptions, lint } from "../src/checks.js";
+import { defaultOptions, lint, parseTargetLabels, recordIndex } from "../src/checks.js";
 import { parseRuleFile } from "../src/parse.js";
 
 const load = (p: string) =>
@@ -78,5 +78,72 @@ describe("lint", () => {
 
   it("reports unreadable files as PR011", () => {
     expect(lint(parseRuleFile("x", "foo: 1\n"))).toMatchObject([{ ruleId: "PR011", line: 1, target: "x" }]);
+  });
+
+  const k8s = { ...defaultOptions, targetLabels: parseTargetLabels("kubernetes") };
+
+  it("PR012 and PR013 find the kubernetes-mixin and Prometheus bugs", () => {
+    const found = lint(load("labels/bugs.yml"), k8s);
+    expect(found.map((f) => `${f.ruleId}:${String(f.line)}`)).toEqual(["PR012:8", "PR013:20"]);
+    expect(found[0]?.message).toBe(
+      "node:node_cpu_utilization:ratio_rate5m: avg by (cluster, node) groups by node, which its input never has",
+    );
+    expect(found[0]?.help).toContain("can only carry: cluster, container, cpu, endpoint, instance, job");
+    expect(found[1]?.message).toContain(
+      "every left-hand series has alertmanager, which the right-hand side never has",
+    );
+  });
+
+  it("PR012 and PR013 accept the correct kube-prometheus patterns", () => {
+    expect(lint(load("labels/fine.yml"), k8s)).toEqual([]);
+  });
+
+  it("PR012 depends on the target labels", () => {
+    const ids = lint(load("labels/bugs.yml")).map((f) => f.message);
+    expect(ids).toContain(
+      "node:node_cpu_utilization:ratio_rate5m: avg by (cluster, node) groups by cluster, which its input never has",
+    );
+  });
+
+  it("PR012 and PR013 describe on, group_left and unless", () => {
+    const rec = (expr: string) => `groups:\n- name: g\n  rules:\n  - record: a:b:c\n    expr: '${expr}'\n`;
+    const msgs = (expr: string) => lint(parseRuleFile("x", rec(expr))).map((f) => `${f.ruleId} ${f.message}`);
+    expect(msgs("node_load1 * on (instance, node) group_left (node) up")).toEqual([
+      "PR012 a:b:c: on (node) in node_load1 * on (instance, node) group_left (node) up matches on a label neither side has",
+      "PR012 a:b:c: node_load1 * on (instance, node) group_left (node) up copies node from a side that never has it",
+    ]);
+    expect(msgs("up unless node_cpu_seconds_total")[0]).toMatch(/^PR013 a:b:c: the two sides of unless in/);
+    expect(lint(parseRuleFile("x", rec("up unless node_cpu_seconds_total")))[0]?.help).toContain(
+      "so unless never removes anything",
+    );
+  });
+
+  it("resolves recording rules from other files", () => {
+    const defs = parseRuleFile(
+      "defs.yml",
+      "groups:\n- name: g\n  rules:\n  - record: instance:load:max\n    expr: max by (instance) (node_load1)\n",
+    );
+    const use = parseRuleFile(
+      "use.yml",
+      "groups:\n- name: g\n  rules:\n  - record: node:load:max\n    expr: max by (node) (instance:load:max)\n",
+    );
+    expect(lint(use)).toEqual([]);
+    expect(lint(use, defaultOptions, recordIndex([defs, use])).map((f) => f.ruleId)).toEqual(["PR012"]);
+  });
+});
+
+describe("parseTargetLabels", () => {
+  it("expands kubernetes and drops duplicates", () => {
+    expect(parseTargetLabels(" job, kubernetes,node ,")).toEqual([
+      "job",
+      "instance",
+      "namespace",
+      "service",
+      "endpoint",
+      "pod",
+      "container",
+      "cluster",
+      "node",
+    ]);
   });
 });
