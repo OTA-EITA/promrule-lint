@@ -267,11 +267,11 @@ var require_directives = __commonJS({
     };
     var escapeTagName = (tn) => tn.replace(/[!,[\]{}]/g, (ch) => escapeChars[ch]);
     var Directives = class _Directives {
-      constructor(yaml, tags) {
+      constructor(yaml, tags2) {
         this.docStart = null;
         this.docEnd = false;
         this.yaml = Object.assign({}, _Directives.defaultYaml, yaml);
-        this.tags = Object.assign({}, _Directives.defaultTags, tags);
+        this.tags = Object.assign({}, _Directives.defaultTags, tags2);
       }
       clone() {
         const copy = new _Directives(this.yaml, this.tags);
@@ -310,8 +310,8 @@ var require_directives = __commonJS({
           this.atNextDocument = false;
         }
         const parts = line.trim().split(/[ \t]+/);
-        const name = parts.shift();
-        switch (name) {
+        const name2 = parts.shift();
+        switch (name2) {
           case "%TAG": {
             if (parts.length !== 2) {
               onError(0, "%TAG directive should contain exactly two parts");
@@ -339,7 +339,7 @@ var require_directives = __commonJS({
             }
           }
           default:
-            onError(0, `Unknown directive ${name}`, true);
+            onError(0, `Unknown directive ${name2}`, true);
             return false;
         }
       }
@@ -399,12 +399,12 @@ var require_directives = __commonJS({
         const tagEntries = Object.entries(this.tags);
         let tagNames;
         if (doc && tagEntries.length > 0 && identity.isNode(doc.contents)) {
-          const tags = {};
+          const tags2 = {};
           visit.visit(doc.contents, (_key, node) => {
             if (identity.isNode(node) && node.tag)
-              tags[node.tag] = true;
+              tags2[node.tag] = true;
           });
-          tagNames = Object.keys(tags);
+          tagNames = Object.keys(tags2);
         } else
           tagNames = [];
         for (const [handle, prefix] of tagEntries) {
@@ -448,9 +448,9 @@ var require_anchors = __commonJS({
     }
     function findNewAnchor(prefix, exclude) {
       for (let i = 1; true; ++i) {
-        const name = `${prefix}${i}`;
-        if (!exclude.has(name))
-          return name;
+        const name2 = `${prefix}${i}`;
+        if (!exclude.has(name2))
+          return name2;
       }
     }
     function createNodeAnchors(doc, prefix) {
@@ -769,15 +769,15 @@ var require_createNode = __commonJS({
     var identity = require_identity();
     var Scalar = require_Scalar();
     var defaultTagPrefix = "tag:yaml.org,2002:";
-    function findTagObject(value, tagName, tags) {
+    function findTagObject(value, tagName, tags2) {
       if (tagName) {
-        const match = tags.filter((t) => t.tag === tagName);
-        const tagObj = match.find((t) => !t.format) ?? match[0];
+        const match = tags2.filter((t2) => t2.tag === tagName);
+        const tagObj = match.find((t2) => !t2.format) ?? match[0];
         if (!tagObj)
           throw new Error(`Tag ${tagName} not found`);
         return tagObj;
       }
-      return tags.find((t) => t.identify?.(value) && !t.format);
+      return tags2.find((t2) => t2.identify?.(value) && !t2.format);
     }
     function createNode(value, tagName, ctx) {
       if (identity.isDocument(value))
@@ -984,12 +984,12 @@ var require_stringifyComment = __commonJS({
   "node_modules/yaml/dist/stringify/stringifyComment.js"(exports) {
     "use strict";
     var stringifyComment = (str) => str.replace(/^(?!$)(?: $)?/gm, "#");
-    function indentComment(comment, indent) {
-      if (/^\n+$/.test(comment))
-        return comment.substring(1);
-      return indent ? comment.replace(/^(?! *$)/gm, indent) : comment;
+    function indentComment(comment2, indent) {
+      if (/^\n+$/.test(comment2))
+        return comment2.substring(1);
+      return indent ? comment2.replace(/^(?! *$)/gm, indent) : comment2;
     }
-    var lineComment = (str, indent, comment) => str.endsWith("\n") ? indentComment(comment, indent) : comment.includes("\n") ? "\n" + indentComment(comment, indent) : (str.endsWith(" ") ? "" : " ") + comment;
+    var lineComment = (str, indent, comment2) => str.endsWith("\n") ? indentComment(comment2, indent) : comment2.includes("\n") ? "\n" + indentComment(comment2, indent) : (str.endsWith(" ") ? "" : " ") + comment2;
     exports.indentComment = indentComment;
     exports.lineComment = lineComment;
     exports.stringifyComment = stringifyComment;
@@ -1273,15 +1273,15 @@ ${indent}`) + "'";
     } catch {
       blockEndNewlines = /\n+(?!\n|$)/g;
     }
-    function blockString({ comment, type, value }, ctx, onComment, onChompKeep) {
+    function blockString({ comment: comment2, type, value }, ctx, onComment, onChompKeep) {
       const { blockQuote, commentString, lineWidth } = ctx.options;
       if (!blockQuote || /\n[\t ]+$/.test(value)) {
         return quotedString(value, ctx);
       }
       const indent = ctx.indent || (ctx.forceBlockIndent || containsDocumentMarker(value) ? "  " : "");
-      const literal = blockQuote === "literal" ? true : blockQuote === "folded" || type === Scalar.Scalar.BLOCK_FOLDED ? false : type === Scalar.Scalar.BLOCK_LITERAL ? true : !lineLengthOverLimit(value, lineWidth, indent.length);
+      const literal2 = blockQuote === "literal" ? true : blockQuote === "folded" || type === Scalar.Scalar.BLOCK_FOLDED ? false : type === Scalar.Scalar.BLOCK_LITERAL ? true : !lineLengthOverLimit(value, lineWidth, indent.length);
       if (!value)
-        return literal ? "|\n" : ">\n";
+        return literal2 ? "|\n" : ">\n";
       let chomp;
       let endStart;
       for (endStart = value.length; endStart > 0; --endStart) {
@@ -1325,12 +1325,12 @@ ${indent}`) + "'";
       }
       const indentSize = indent ? "2" : "1";
       let header = (startWithSpace ? indentSize : "") + chomp;
-      if (comment) {
-        header += " " + commentString(comment.replace(/ ?[\r\n]+/g, " "));
+      if (comment2) {
+        header += " " + commentString(comment2.replace(/ ?[\r\n]+/g, " "));
         if (onComment)
           onComment();
       }
-      if (!literal) {
+      if (!literal2) {
         const foldedValue = value.replace(/\n+/g, "\n$&").replace(/(?:^|\n)([\t ].*)(?:([\n\t ]*)\n(?![\n\t ]))?/g, "$1$2").replace(/\n+/g, `$&${indent}`);
         let literalFallback = false;
         const foldOptions = getFoldOptions(ctx, true);
@@ -1372,8 +1372,8 @@ ${indent}${start}${value}${end}`;
 ${indent}`);
       if (actualString) {
         const test = (tag) => tag.default && tag.tag !== "tag:yaml.org,2002:str" && tag.test?.test(str);
-        const { compat, tags } = ctx.doc.schema;
-        if (tags.some(test) || compat?.some(test))
+        const { compat, tags: tags2 } = ctx.doc.schema;
+        if (tags2.some(test) || compat?.some(test))
           return quotedString(value, ctx);
       }
       return implicitKey ? str : foldFlowLines.foldFlowLines(str, indent, foldFlowLines.FOLD_FLOW, getFoldOptions(ctx, false));
@@ -1404,10 +1404,10 @@ ${indent}`);
       let res = _stringify(type);
       if (res === null) {
         const { defaultKeyType, defaultStringType } = ctx.options;
-        const t = implicitKey && defaultKeyType || defaultStringType;
-        res = _stringify(t);
+        const t2 = implicitKey && defaultKeyType || defaultStringType;
+        res = _stringify(t2);
         if (res === null)
-          throw new Error(`Unsupported default string type ${t}`);
+          throw new Error(`Unsupported default string type ${t2}`);
       }
       return res;
     }
@@ -1465,30 +1465,30 @@ var require_stringify = __commonJS({
         options: opt
       };
     }
-    function getTagObject(tags, item) {
+    function getTagObject(tags2, item) {
       if (item.tag) {
-        const match = tags.filter((t) => t.tag === item.tag);
+        const match = tags2.filter((t2) => t2.tag === item.tag);
         if (match.length > 0)
-          return match.find((t) => t.format === item.format) ?? match[0];
+          return match.find((t2) => t2.format === item.format) ?? match[0];
       }
       let tagObj = void 0;
       let obj;
       if (identity.isScalar(item)) {
         obj = item.value;
-        let match = tags.filter((t) => t.identify?.(obj));
+        let match = tags2.filter((t2) => t2.identify?.(obj));
         if (match.length > 1) {
-          const testMatch = match.filter((t) => t.test);
+          const testMatch = match.filter((t2) => t2.test);
           if (testMatch.length > 0)
             match = testMatch;
         }
-        tagObj = match.find((t) => t.format === item.format) ?? match.find((t) => !t.format);
+        tagObj = match.find((t2) => t2.format === item.format) ?? match.find((t2) => !t2.format);
       } else {
         obj = item;
-        tagObj = tags.find((t) => t.nodeClass && obj instanceof t.nodeClass);
+        tagObj = tags2.find((t2) => t2.nodeClass && obj instanceof t2.nodeClass);
       }
       if (!tagObj) {
-        const name = obj?.constructor?.name ?? (obj === null ? "null" : typeof obj);
-        throw new Error(`Tag not resolved for ${name} value`);
+        const name2 = obj?.constructor?.name ?? (obj === null ? "null" : typeof obj);
+        throw new Error(`Tag not resolved for ${name2} value`);
       }
       return tagObj;
     }
@@ -1846,8 +1846,8 @@ var require_Pair = __commonJS({
         return new _Pair(key, value);
       }
       toJSON(_, ctx) {
-        const pair = ctx?.mapAsMap ? /* @__PURE__ */ new Map() : {};
-        return addPairToJSMap.addPairToJSMap(ctx, pair, this);
+        const pair2 = ctx?.mapAsMap ? /* @__PURE__ */ new Map() : {};
+        return addPairToJSMap.addPairToJSMap(ctx, pair2, this);
       }
       toString(ctx, onComment, onChompKeep) {
         return ctx?.doc ? stringifyPair.stringifyPair(this, ctx, onComment, onChompKeep) : JSON.stringify(this);
@@ -1870,20 +1870,20 @@ var require_stringifyCollection = __commonJS({
       const stringify2 = flow ? stringifyFlowCollection : stringifyBlockCollection;
       return stringify2(collection, ctx, options);
     }
-    function stringifyBlockCollection({ comment, items }, ctx, { blockItemPrefix, flowChars, itemIndent, onChompKeep, onComment }) {
+    function stringifyBlockCollection({ comment: comment2, items }, ctx, { blockItemPrefix, flowChars, itemIndent, onChompKeep, onComment }) {
       const { indent, options: { commentString } } = ctx;
       const itemCtx = Object.assign({}, ctx, { indent: itemIndent, type: null });
       let chompKeep = false;
       const lines = [];
       for (let i = 0; i < items.length; ++i) {
         const item = items[i];
-        let comment2 = null;
+        let comment3 = null;
         if (identity.isNode(item)) {
           if (!chompKeep && item.spaceBefore)
             lines.push("");
           addCommentBefore(ctx, lines, item.commentBefore, chompKeep);
           if (item.comment)
-            comment2 = item.comment;
+            comment3 = item.comment;
         } else if (identity.isPair(item)) {
           const ik = identity.isNode(item.key) ? item.key : null;
           if (ik) {
@@ -1893,10 +1893,10 @@ var require_stringifyCollection = __commonJS({
           }
         }
         chompKeep = false;
-        let str2 = stringify.stringify(item, itemCtx, () => comment2 = null, () => chompKeep = true);
-        if (comment2)
-          str2 += stringifyComment.lineComment(str2, itemIndent, commentString(comment2));
-        if (chompKeep && comment2)
+        let str2 = stringify.stringify(item, itemCtx, () => comment3 = null, () => chompKeep = true);
+        if (comment3)
+          str2 += stringifyComment.lineComment(str2, itemIndent, commentString(comment3));
+        if (chompKeep && comment3)
           chompKeep = false;
         lines.push(blockItemPrefix + str2);
       }
@@ -1911,8 +1911,8 @@ var require_stringifyCollection = __commonJS({
 ${indent}${line}` : "\n";
         }
       }
-      if (comment) {
-        str += "\n" + stringifyComment.indentComment(commentString(comment), indent);
+      if (comment2) {
+        str += "\n" + stringifyComment.indentComment(commentString(comment2), indent);
         if (onComment)
           onComment();
       } else if (chompKeep && onChompKeep)
@@ -1932,13 +1932,13 @@ ${indent}${line}` : "\n";
       const lines = [];
       for (let i = 0; i < items.length; ++i) {
         const item = items[i];
-        let comment = null;
+        let comment2 = null;
         if (identity.isNode(item)) {
           if (item.spaceBefore)
             lines.push("");
           addCommentBefore(ctx, lines, item.commentBefore, false);
           if (item.comment)
-            comment = item.comment;
+            comment2 = item.comment;
         } else if (identity.isPair(item)) {
           const ik = identity.isNode(item.key) ? item.key : null;
           if (ik) {
@@ -1951,16 +1951,16 @@ ${indent}${line}` : "\n";
           const iv = identity.isNode(item.value) ? item.value : null;
           if (iv) {
             if (iv.comment)
-              comment = iv.comment;
+              comment2 = iv.comment;
             if (iv.commentBefore)
               reqNewline = true;
           } else if (item.value == null && ik?.comment) {
-            comment = ik.comment;
+            comment2 = ik.comment;
           }
         }
-        if (comment)
+        if (comment2)
           reqNewline = true;
-        let str = stringify.stringify(item, itemCtx, () => comment = null);
+        let str = stringify.stringify(item, itemCtx, () => comment2 = null);
         reqNewline || (reqNewline = lines.length > linesAtValue || str.includes("\n"));
         if (i < items.length - 1) {
           str += ",";
@@ -1972,8 +1972,8 @@ ${indent}${line}` : "\n";
             str += ",";
           }
         }
-        if (comment)
-          str += stringifyComment.lineComment(str, itemIndent, commentString(comment));
+        if (comment2)
+          str += stringifyComment.lineComment(str, itemIndent, commentString(comment2));
         lines.push(str);
         linesAtValue = lines.length;
       }
@@ -1997,11 +1997,11 @@ ${indent}${end}`;
         }
       }
     }
-    function addCommentBefore({ indent, options: { commentString } }, lines, comment, chompKeep) {
-      if (comment && chompKeep)
-        comment = comment.replace(/^\n+/, "");
-      if (comment) {
-        const ic = stringifyComment.indentComment(commentString(comment), indent);
+    function addCommentBefore({ indent, options: { commentString } }, lines, comment2, chompKeep) {
+      if (comment2 && chompKeep)
+        comment2 = comment2.replace(/^\n+/, "");
+      if (comment2) {
+        const ic = stringifyComment.indentComment(commentString(comment2), indent);
         lines.push(ic.trimStart());
       }
     }
@@ -2072,14 +2072,14 @@ var require_YAMLMap = __commonJS({
        * @param overwrite - If not set `true`, using a key that is already in the
        *   collection will throw. Otherwise, overwrites the previous value.
        */
-      add(pair, overwrite) {
+      add(pair2, overwrite) {
         let _pair;
-        if (identity.isPair(pair))
-          _pair = pair;
-        else if (!pair || typeof pair !== "object" || !("key" in pair)) {
-          _pair = new Pair.Pair(pair, pair?.value);
+        if (identity.isPair(pair2))
+          _pair = pair2;
+        else if (!pair2 || typeof pair2 !== "object" || !("key" in pair2)) {
+          _pair = new Pair.Pair(pair2, pair2?.value);
         } else
-          _pair = new Pair.Pair(pair.key, pair.value);
+          _pair = new Pair.Pair(pair2.key, pair2.value);
         const prev = findPair(this.items, _pair.key);
         const sortEntries = this.schema?.sortMapEntries;
         if (prev) {
@@ -2318,7 +2318,7 @@ var require_string = __commonJS({
   "node_modules/yaml/dist/schema/common/string.js"(exports) {
     "use strict";
     var stringifyString = require_stringifyString();
-    var string = {
+    var string2 = {
       identify: (value) => typeof value === "string",
       default: true,
       tag: "tag:yaml.org,2002:str",
@@ -2328,7 +2328,7 @@ var require_string = __commonJS({
         return stringifyString.stringifyString(item, ctx, onComment, onChompKeep);
       }
     };
-    exports.string = string;
+    exports.string = string2;
   }
 });
 
@@ -2499,14 +2499,14 @@ var require_schema = __commonJS({
     var map = require_map();
     var _null = require_null();
     var seq = require_seq();
-    var string = require_string();
+    var string2 = require_string();
     var bool = require_bool();
     var float = require_float();
     var int = require_int();
     var schema = [
       map.map,
       seq.seq,
-      string.string,
+      string2.string,
       _null.nullTag,
       bool.boolTag,
       int.intOct,
@@ -2621,7 +2621,7 @@ var require_binary = __commonJS({
           return src;
         }
       },
-      stringify({ comment, type, value }, ctx, onComment, onChompKeep) {
+      stringify({ comment: comment2, type, value }, ctx, onComment, onChompKeep) {
         if (!value)
           return "";
         const buf = value;
@@ -2646,7 +2646,7 @@ var require_binary = __commonJS({
           }
           str = lines.join(type === Scalar.Scalar.BLOCK_LITERAL ? "\n" : " ");
         }
-        return stringifyString.stringifyString({ comment, type, value: str }, ctx, onComment, onChompKeep);
+        return stringifyString.stringifyString({ comment: comment2, type, value: str }, ctx, onComment, onChompKeep);
       }
     };
     exports.binary = binary;
@@ -2670,16 +2670,16 @@ var require_pairs = __commonJS({
           else if (identity.isMap(item)) {
             if (item.items.length > 1)
               onError("Each pair must have its own sequence indicator");
-            const pair = item.items[0] || new Pair.Pair(new Scalar.Scalar(null));
+            const pair2 = item.items[0] || new Pair.Pair(new Scalar.Scalar(null));
             if (item.commentBefore)
-              pair.key.commentBefore = pair.key.commentBefore ? `${item.commentBefore}
-${pair.key.commentBefore}` : item.commentBefore;
+              pair2.key.commentBefore = pair2.key.commentBefore ? `${item.commentBefore}
+${pair2.key.commentBefore}` : item.commentBefore;
             if (item.comment) {
-              const cn = pair.value ?? pair.key;
+              const cn = pair2.value ?? pair2.key;
               cn.comment = cn.comment ? `${item.comment}
 ${cn.comment}` : item.comment;
             }
-            item = pair;
+            item = pair2;
           }
           seq.items[i] = identity.isPair(item) ? item : new Pair.Pair(item);
         }
@@ -2760,13 +2760,13 @@ var require_omap = __commonJS({
         const map = /* @__PURE__ */ new Map();
         if (ctx?.onCreate)
           ctx.onCreate(map);
-        for (const pair of this.items) {
+        for (const pair2 of this.items) {
           let key, value;
-          if (identity.isPair(pair)) {
-            key = toJS.toJS(pair.key, "", ctx);
-            value = toJS.toJS(pair.value, key, ctx);
+          if (identity.isPair(pair2)) {
+            key = toJS.toJS(pair2.key, "", ctx);
+            value = toJS.toJS(pair2.value, key, ctx);
           } else {
-            key = toJS.toJS(pair, "", ctx);
+            key = toJS.toJS(pair2, "", ctx);
           }
           if (map.has(key))
             throw new Error("Ordered maps must not include duplicate keys");
@@ -2982,24 +2982,24 @@ var require_set = __commonJS({
         this.tag = _YAMLSet.tag;
       }
       add(key) {
-        let pair;
+        let pair2;
         if (identity.isPair(key))
-          pair = key;
+          pair2 = key;
         else if (key && typeof key === "object" && "key" in key && "value" in key && key.value === null)
-          pair = new Pair.Pair(key.key, null);
+          pair2 = new Pair.Pair(key.key, null);
         else
-          pair = new Pair.Pair(key, null);
-        const prev = YAMLMap.findPair(this.items, pair.key);
+          pair2 = new Pair.Pair(key, null);
+        const prev = YAMLMap.findPair(this.items, pair2.key);
         if (!prev)
-          this.items.push(pair);
+          this.items.push(pair2);
       }
       /**
        * If `keepPair` is `true`, returns the Pair matching `key`.
        * Otherwise, returns the value of that Pair's key.
        */
       get(key, keepPair) {
-        const pair = YAMLMap.findPair(this.items, key);
-        return !keepPair && identity.isPair(pair) ? identity.isScalar(pair.key) ? pair.key.value : pair.key : pair;
+        const pair2 = YAMLMap.findPair(this.items, key);
+        return !keepPair && identity.isPair(pair2) ? identity.isScalar(pair2.key) ? pair2.key.value : pair2.key : pair2;
       }
       set(key, value) {
         if (typeof value !== "boolean")
@@ -3153,7 +3153,7 @@ var require_schema3 = __commonJS({
     var map = require_map();
     var _null = require_null();
     var seq = require_seq();
-    var string = require_string();
+    var string2 = require_string();
     var binary = require_binary();
     var bool = require_bool2();
     var float = require_float2();
@@ -3166,7 +3166,7 @@ var require_schema3 = __commonJS({
     var schema = [
       map.map,
       seq.seq,
-      string.string,
+      string2.string,
       _null.nullTag,
       bool.trueTag,
       bool.falseTag,
@@ -3197,7 +3197,7 @@ var require_tags = __commonJS({
     var map = require_map();
     var _null = require_null();
     var seq = require_seq();
-    var string = require_string();
+    var string2 = require_string();
     var bool = require_bool();
     var float = require_float();
     var int = require_int();
@@ -3212,7 +3212,7 @@ var require_tags = __commonJS({
     var timestamp = require_timestamp();
     var schemas = /* @__PURE__ */ new Map([
       ["core", schema.schema],
-      ["failsafe", [map.map, seq.seq, string.string]],
+      ["failsafe", [map.map, seq.seq, string2.string]],
       ["json", schema$1.schema],
       ["yaml11", schema$2.schema],
       ["yaml-1.1", schema$2.schema]
@@ -3250,10 +3250,10 @@ var require_tags = __commonJS({
       if (schemaTags && !customTags) {
         return addMergeTag && !schemaTags.includes(merge.merge) ? schemaTags.concat(merge.merge) : schemaTags.slice();
       }
-      let tags = schemaTags;
-      if (!tags) {
+      let tags2 = schemaTags;
+      if (!tags2) {
         if (Array.isArray(customTags))
-          tags = [];
+          tags2 = [];
         else {
           const keys = Array.from(schemas.keys()).filter((key) => key !== "yaml11").map((key) => JSON.stringify(key)).join(", ");
           throw new Error(`Unknown schema "${schemaName}"; use one of ${keys} or define customTags array`);
@@ -3261,22 +3261,22 @@ var require_tags = __commonJS({
       }
       if (Array.isArray(customTags)) {
         for (const tag of customTags)
-          tags = tags.concat(tag);
+          tags2 = tags2.concat(tag);
       } else if (typeof customTags === "function") {
-        tags = customTags(tags.slice());
+        tags2 = customTags(tags2.slice());
       }
       if (addMergeTag)
-        tags = tags.concat(merge.merge);
-      return tags.reduce((tags2, tag) => {
+        tags2 = tags2.concat(merge.merge);
+      return tags2.reduce((tags3, tag) => {
         const tagObj = typeof tag === "string" ? tagsByName[tag] : tag;
         if (!tagObj) {
           const tagName = JSON.stringify(tag);
           const keys = Object.keys(tagsByName).map((key) => JSON.stringify(key)).join(", ");
           throw new Error(`Unknown custom tag ${tagName}; use one of ${keys}`);
         }
-        if (!tags2.includes(tagObj))
-          tags2.push(tagObj);
-        return tags2;
+        if (!tags3.includes(tagObj))
+          tags3.push(tagObj);
+        return tags3;
       }, []);
     }
     exports.coreKnownTags = coreKnownTags;
@@ -3291,18 +3291,18 @@ var require_Schema = __commonJS({
     var identity = require_identity();
     var map = require_map();
     var seq = require_seq();
-    var string = require_string();
-    var tags = require_tags();
+    var string2 = require_string();
+    var tags2 = require_tags();
     var sortMapEntriesByKey = (a, b) => a.key < b.key ? -1 : a.key > b.key ? 1 : 0;
     var Schema = class _Schema {
       constructor({ compat, customTags, merge, resolveKnownTags, schema, sortMapEntries, toStringDefaults }) {
-        this.compat = Array.isArray(compat) ? tags.getTags(compat, "compat") : compat ? tags.getTags(null, compat) : null;
+        this.compat = Array.isArray(compat) ? tags2.getTags(compat, "compat") : compat ? tags2.getTags(null, compat) : null;
         this.name = typeof schema === "string" && schema || "core";
-        this.knownTags = resolveKnownTags ? tags.coreKnownTags : {};
-        this.tags = tags.getTags(customTags, this.name, merge);
+        this.knownTags = resolveKnownTags ? tags2.coreKnownTags : {};
+        this.tags = tags2.getTags(customTags, this.name, merge);
         this.toStringOptions = toStringDefaults ?? null;
         Object.defineProperty(this, identity.MAP, { value: map.map });
-        Object.defineProperty(this, identity.SCALAR, { value: string.string });
+        Object.defineProperty(this, identity.SCALAR, { value: string2.string });
         Object.defineProperty(this, identity.SEQ, { value: seq.seq });
         this.sortMapEntries = typeof sortMapEntries === "function" ? sortMapEntries : sortMapEntries === true ? sortMapEntriesByKey : null;
       }
@@ -3487,11 +3487,11 @@ var require_Document = __commonJS({
        * `name` will be used as a prefix for a new unique anchor.
        * If `name` is undefined, the generated anchor will use 'a' as a prefix.
        */
-      createAlias(node, name) {
+      createAlias(node, name2) {
         if (!node.anchor) {
           const prev = anchors.anchorNames(this);
           node.anchor = // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-          !name || prev.has(name) ? anchors.findNewAnchor(name || "a", prev) : name;
+          !name2 || prev.has(name2) ? anchors.findNewAnchor(name2 || "a", prev) : name2;
         }
         return new Alias.Alias(node.anchor);
       }
@@ -3710,9 +3710,9 @@ var require_errors = __commonJS({
   "node_modules/yaml/dist/errors.js"(exports) {
     "use strict";
     var YAMLError = class extends Error {
-      constructor(name, pos, code, message) {
+      constructor(name2, pos, code, message) {
         super();
-        this.name = name;
+        this.name = name2;
         this.code = code;
         this.message = message;
         this.pos = pos;
@@ -3778,7 +3778,7 @@ var require_resolve_props = __commonJS({
       let spaceBefore = false;
       let atNewline = startOnNewline;
       let hasSpace = startOnNewline;
-      let comment = "";
+      let comment2 = "";
       let commentSep = "";
       let hasNewline = false;
       let reqSpace = false;
@@ -3812,18 +3812,18 @@ var require_resolve_props = __commonJS({
             if (!hasSpace)
               onError(token, "MISSING_CHAR", "Comments must be separated from other tokens by white space characters");
             const cb = token.source.substring(1) || " ";
-            if (!comment)
-              comment = cb;
+            if (!comment2)
+              comment2 = cb;
             else
-              comment += commentSep + cb;
+              comment2 += commentSep + cb;
             commentSep = "";
             atNewline = false;
             break;
           }
           case "newline":
             if (atNewline) {
-              if (comment)
-                comment += token.source;
+              if (comment2)
+                comment2 += token.source;
               else if (!found || indicator !== "seq-item-ind")
                 spaceBefore = true;
             } else
@@ -3891,7 +3891,7 @@ var require_resolve_props = __commonJS({
         comma,
         found,
         spaceBefore,
-        comment,
+        comment: comment2,
         hasNewline,
         anchor,
         tag,
@@ -3974,7 +3974,7 @@ var require_util_map_includes = __commonJS({
       if (uniqueKeys === false)
         return false;
       const isEqual = typeof uniqueKeys === "function" ? uniqueKeys : (a, b) => a === b || identity.isScalar(a) && identity.isScalar(b) && a.value === b.value;
-      return items.some((pair) => isEqual(pair.key, search));
+      return items.some((pair2) => isEqual(pair2.key, search));
     }
     exports.mapIncludes = mapIncludes;
   }
@@ -4060,10 +4060,10 @@ var require_resolve_block_map = __commonJS({
           if (ctx.schema.compat)
             utilFlowIndentCheck.flowIndentCheck(bm.indent, value, onError);
           offset = valueNode.range[2];
-          const pair = new Pair.Pair(keyNode, valueNode);
+          const pair2 = new Pair.Pair(keyNode, valueNode);
           if (ctx.options.keepSourceTokens)
-            pair.srcToken = collItem;
-          map.items.push(pair);
+            pair2.srcToken = collItem;
+          map.items.push(pair2);
         } else {
           if (implicitKey)
             onError(keyNode.range, "MISSING_CHAR", "Implicit map keys need to be followed by map values");
@@ -4073,10 +4073,10 @@ var require_resolve_block_map = __commonJS({
             else
               keyNode.comment = valueProps.comment;
           }
-          const pair = new Pair.Pair(keyNode);
+          const pair2 = new Pair.Pair(keyNode);
           if (ctx.options.keepSourceTokens)
-            pair.srcToken = collItem;
-          map.items.push(pair);
+            pair2.srcToken = collItem;
+          map.items.push(pair2);
         }
       }
       if (commentEnd && commentEnd < offset)
@@ -4144,7 +4144,7 @@ var require_resolve_end = __commonJS({
   "node_modules/yaml/dist/compose/resolve-end.js"(exports) {
     "use strict";
     function resolveEnd(end, offset, reqSpace, onError) {
-      let comment = "";
+      let comment2 = "";
       if (end) {
         let hasSpace = false;
         let sep = "";
@@ -4158,15 +4158,15 @@ var require_resolve_end = __commonJS({
               if (reqSpace && !hasSpace)
                 onError(token, "MISSING_CHAR", "Comments must be separated from other tokens by white space characters");
               const cb = source.substring(1) || " ";
-              if (!comment)
-                comment = cb;
+              if (!comment2)
+                comment2 = cb;
               else
-                comment += sep + cb;
+                comment2 += sep + cb;
               sep = "";
               break;
             }
             case "newline":
-              if (comment)
+              if (comment2)
                 sep += source;
               hasSpace = true;
               break;
@@ -4176,7 +4176,7 @@ var require_resolve_end = __commonJS({
           offset += source.length;
         }
       }
-      return { comment, offset };
+      return { comment: comment2, offset };
     }
     exports.resolveEnd = resolveEnd;
   }
@@ -4327,18 +4327,18 @@ var require_resolve_flow_collection = __commonJS({
             else
               keyNode.comment = valueProps.comment;
           }
-          const pair = new Pair.Pair(keyNode, valueNode);
+          const pair2 = new Pair.Pair(keyNode, valueNode);
           if (ctx.options.keepSourceTokens)
-            pair.srcToken = collItem;
+            pair2.srcToken = collItem;
           if (isMap) {
             const map = coll;
             if (utilMapIncludes.mapIncludes(ctx, map.items, keyNode))
               onError(keyStart, "DUPLICATE_KEY", "Map keys must be unique");
-            map.items.push(pair);
+            map.items.push(pair2);
           } else {
             const map = new YAMLMap.YAMLMap(ctx.schema);
             map.flow = true;
-            map.items.push(pair);
+            map.items.push(pair2);
             const endRange = (valueNode ?? keyNode).range;
             map.range = [keyNode.range[0], endRange[1], endRange[2]];
             coll.items.push(map);
@@ -4352,8 +4352,8 @@ var require_resolve_flow_collection = __commonJS({
       if (ce?.source === expectedEnd)
         cePos = ce.offset + ce.source.length;
       else {
-        const name = fcName[0].toUpperCase() + fcName.substring(1);
-        const msg = atRoot ? `${name} must end with a ${expectedEnd}` : `${name} in block collection must be sufficiently indented and end with a ${expectedEnd}`;
+        const name2 = fcName[0].toUpperCase() + fcName.substring(1);
+        const msg = atRoot ? `${name2} must end with a ${expectedEnd}` : `${name2} in block collection must be sufficiently indented and end with a ${expectedEnd}`;
         onError(offset, atRoot ? "MISSING_CHAR" : "BAD_INDENT", msg);
         if (ce && ce.source.length !== 1)
           ee.unshift(ce);
@@ -4413,7 +4413,7 @@ var require_compose_collection = __commonJS({
       if (!tagToken || !tagName || tagName === "!" || tagName === YAMLMap.YAMLMap.tagName && expType === "map" || tagName === YAMLSeq.YAMLSeq.tagName && expType === "seq") {
         return resolveCollection(CN, ctx, token, onError, tagName);
       }
-      let tag = ctx.schema.tags.find((t) => t.tag === tagName && t.collection === expType);
+      let tag = ctx.schema.tags.find((t2) => t2.tag === tagName && t2.collection === expType);
       if (!tag) {
         const kt = ctx.schema.knownTags[tagName];
         if (kt?.collection === expType) {
@@ -4455,8 +4455,8 @@ var require_resolve_block_scalar = __commonJS({
       const lines = scalar.source ? splitLines(scalar.source) : [];
       let chompStart = lines.length;
       for (let i = lines.length - 1; i >= 0; --i) {
-        const content = lines[i][1];
-        if (content === "" || content === "\r")
+        const content2 = lines[i][1];
+        if (content2 === "" || content2 === "\r")
           chompStart = i;
         else
           break;
@@ -4472,8 +4472,8 @@ var require_resolve_block_scalar = __commonJS({
       let offset = scalar.offset + header.length;
       let contentStart = 0;
       for (let i = 0; i < chompStart; ++i) {
-        const [indent, content] = lines[i];
-        if (content === "" || content === "\r") {
+        const [indent, content2] = lines[i];
+        if (content2 === "" || content2 === "\r") {
           if (header.indent === 0 && indent.length > trimIndent)
             trimIndent = indent.length;
         } else {
@@ -4490,7 +4490,7 @@ var require_resolve_block_scalar = __commonJS({
           }
           break;
         }
-        offset += indent.length + content.length + 1;
+        offset += indent.length + content2.length + 1;
       }
       for (let i = lines.length - 1; i >= chompStart; --i) {
         if (lines[i][0].length > trimIndent)
@@ -4502,35 +4502,35 @@ var require_resolve_block_scalar = __commonJS({
       for (let i = 0; i < contentStart; ++i)
         value += lines[i][0].slice(trimIndent) + "\n";
       for (let i = contentStart; i < chompStart; ++i) {
-        let [indent, content] = lines[i];
-        offset += indent.length + content.length + 1;
-        const crlf = content[content.length - 1] === "\r";
+        let [indent, content2] = lines[i];
+        offset += indent.length + content2.length + 1;
+        const crlf = content2[content2.length - 1] === "\r";
         if (crlf)
-          content = content.slice(0, -1);
-        if (content && indent.length < trimIndent) {
+          content2 = content2.slice(0, -1);
+        if (content2 && indent.length < trimIndent) {
           const src = header.indent ? "explicit indentation indicator" : "first line";
           const message = `Block scalar lines must not be less indented than their ${src}`;
-          onError(offset - content.length - (crlf ? 2 : 1), "BAD_INDENT", message);
+          onError(offset - content2.length - (crlf ? 2 : 1), "BAD_INDENT", message);
           indent = "";
         }
         if (type === Scalar.Scalar.BLOCK_LITERAL) {
-          value += sep + indent.slice(trimIndent) + content;
+          value += sep + indent.slice(trimIndent) + content2;
           sep = "\n";
-        } else if (indent.length > trimIndent || content[0] === "	") {
+        } else if (indent.length > trimIndent || content2[0] === "	") {
           if (sep === " ")
             sep = "\n";
           else if (!prevMoreIndented && sep === "\n")
             sep = "\n\n";
-          value += sep + indent.slice(trimIndent) + content;
+          value += sep + indent.slice(trimIndent) + content2;
           sep = "\n";
           prevMoreIndented = true;
-        } else if (content === "") {
+        } else if (content2 === "") {
           if (sep === "\n")
             value += "\n";
           else
             sep = "\n";
         } else {
-          value += sep + content;
+          value += sep + content2;
           sep = " ";
           prevMoreIndented = false;
         }
@@ -4575,7 +4575,7 @@ var require_resolve_block_scalar = __commonJS({
       if (error !== -1)
         onError(error, "UNEXPECTED_TOKEN", `Block scalar header includes extra characters: ${source}`);
       let hasSpace = false;
-      let comment = "";
+      let comment2 = "";
       let length = source.length;
       for (let i = 1; i < props.length; ++i) {
         const token = props[i];
@@ -4592,7 +4592,7 @@ var require_resolve_block_scalar = __commonJS({
               onError(token, "MISSING_CHAR", message);
             }
             length += token.source.length;
-            comment = token.source.substring(1);
+            comment2 = token.source.substring(1);
             break;
           case "error":
             onError(token, "UNEXPECTED_TOKEN", token.message);
@@ -4608,7 +4608,7 @@ var require_resolve_block_scalar = __commonJS({
           }
         }
       }
-      return { mode, indent, chomp, comment, length };
+      return { mode, indent, chomp, comment: comment2, length };
     }
     function splitLines(source) {
       const split = source.split(/\n( *)/);
@@ -4854,7 +4854,7 @@ var require_compose_scalar = __commonJS({
     var resolveBlockScalar = require_resolve_block_scalar();
     var resolveFlowScalar = require_resolve_flow_scalar();
     function composeScalar(ctx, token, tagToken, onError) {
-      const { value, type, comment, range } = token.type === "block-scalar" ? resolveBlockScalar.resolveBlockScalar(ctx, token, onError) : resolveFlowScalar.resolveFlowScalar(token, ctx.options.strict, onError);
+      const { value, type, comment: comment2, range } = token.type === "block-scalar" ? resolveBlockScalar.resolveBlockScalar(ctx, token, onError) : resolveFlowScalar.resolveFlowScalar(token, ctx.options.strict, onError);
       const tagName = tagToken ? ctx.directives.tagName(tagToken.source, (msg) => onError(tagToken, "TAG_RESOLVE_FAILED", msg)) : null;
       let tag;
       if (ctx.options.stringKeys && ctx.atKey) {
@@ -4882,8 +4882,8 @@ var require_compose_scalar = __commonJS({
         scalar.tag = tagName;
       if (tag.format)
         scalar.format = tag.format;
-      if (comment)
-        scalar.comment = comment;
+      if (comment2)
+        scalar.comment = comment2;
       return scalar;
     }
     function findScalarTagByName(schema, value, tagName, tagToken, onError) {
@@ -4969,7 +4969,7 @@ var require_compose_node = __commonJS({
     var CN = { composeNode, composeEmptyNode };
     function composeNode(ctx, token, props, onError) {
       const atKey = ctx.atKey;
-      const { spaceBefore, comment, anchor, tag } = props;
+      const { spaceBefore, comment: comment2, anchor, tag } = props;
       let node;
       let isSrcToken = true;
       switch (token.type) {
@@ -5013,17 +5013,17 @@ var require_compose_node = __commonJS({
       }
       if (spaceBefore)
         node.spaceBefore = true;
-      if (comment) {
+      if (comment2) {
         if (token.type === "scalar" && token.source === "")
-          node.comment = comment;
+          node.comment = comment2;
         else
-          node.commentBefore = comment;
+          node.commentBefore = comment2;
       }
       if (ctx.options.keepSourceTokens && isSrcToken)
         node.srcToken = token;
       return node;
     }
-    function composeEmptyNode(ctx, offset, before, pos, { spaceBefore, comment, anchor, tag, end }, onError) {
+    function composeEmptyNode(ctx, offset, before, pos, { spaceBefore, comment: comment2, anchor, tag, end }, onError) {
       const token = {
         type: "scalar",
         offset: utilEmptyScalarPosition.emptyScalarPosition(offset, before, pos),
@@ -5038,8 +5038,8 @@ var require_compose_node = __commonJS({
       }
       if (spaceBefore)
         node.spaceBefore = true;
-      if (comment) {
-        node.comment = comment;
+      if (comment2) {
+        node.comment = comment2;
         node.range[2] = end;
       }
       return node;
@@ -5125,14 +5125,14 @@ var require_composer = __commonJS({
       return [offset, offset + (typeof source === "string" ? source.length : 1)];
     }
     function parsePrelude(prelude) {
-      let comment = "";
+      let comment2 = "";
       let atComment = false;
       let afterEmptyLine = false;
       for (let i = 0; i < prelude.length; ++i) {
         const source = prelude[i];
         switch (source[0]) {
           case "#":
-            comment += (comment === "" ? "" : afterEmptyLine ? "\n\n" : "\n") + (source.substring(1) || " ");
+            comment2 += (comment2 === "" ? "" : afterEmptyLine ? "\n\n" : "\n") + (source.substring(1) || " ");
             atComment = true;
             afterEmptyLine = false;
             break;
@@ -5147,7 +5147,7 @@ var require_composer = __commonJS({
             atComment = false;
         }
       }
-      return { comment, afterEmptyLine };
+      return { comment: comment2, afterEmptyLine };
     }
     var Composer = class {
       constructor(options = {}) {
@@ -5167,25 +5167,25 @@ var require_composer = __commonJS({
         this.options = options;
       }
       decorate(doc, afterDoc) {
-        const { comment, afterEmptyLine } = parsePrelude(this.prelude);
-        if (comment) {
+        const { comment: comment2, afterEmptyLine } = parsePrelude(this.prelude);
+        if (comment2) {
           const dc = doc.contents;
           if (afterDoc) {
             doc.comment = doc.comment ? `${doc.comment}
-${comment}` : comment;
+${comment2}` : comment2;
           } else if (afterEmptyLine || doc.directives.docStart || !dc) {
-            doc.commentBefore = comment;
+            doc.commentBefore = comment2;
           } else if (identity.isCollection(dc) && !dc.flow && dc.items.length > 0) {
             let it = dc.items[0];
             if (identity.isPair(it))
               it = it.key;
             const cb = it.commentBefore;
-            it.commentBefore = cb ? `${comment}
-${cb}` : comment;
+            it.commentBefore = cb ? `${comment2}
+${cb}` : comment2;
           } else {
             const cb = dc.commentBefore;
-            dc.commentBefore = cb ? `${comment}
-${cb}` : comment;
+            dc.commentBefore = cb ? `${comment2}
+${cb}` : comment2;
           }
         }
         if (afterDoc) {
@@ -6440,7 +6440,7 @@ var require_parser = __commonJS({
         }
       }
     }
-    var Parser = class {
+    var Parser2 = class {
       /**
        * @param onNewLine - If defined, called separately with the start position of
        *   each new line (in `parse()`, including the start of input).
@@ -7213,7 +7213,7 @@ var require_parser = __commonJS({
         }
       }
     };
-    exports.Parser = Parser;
+    exports.Parser = Parser2;
   }
 });
 
@@ -7227,7 +7227,7 @@ var require_public_api = __commonJS({
     var log = require_log();
     var identity = require_identity();
     var lineCounter = require_line_counter();
-    var parser = require_parser();
+    var parser2 = require_parser();
     function parseOptions(options) {
       const prettyErrors = options.prettyErrors !== false;
       const lineCounter$1 = options.lineCounter || prettyErrors && new lineCounter.LineCounter() || null;
@@ -7235,7 +7235,7 @@ var require_public_api = __commonJS({
     }
     function parseAllDocuments2(source, options = {}) {
       const { lineCounter: lineCounter2, prettyErrors } = parseOptions(options);
-      const parser$1 = new parser.Parser(lineCounter2?.addNewLine);
+      const parser$1 = new parser2.Parser(lineCounter2?.addNewLine);
       const composer$1 = new composer.Composer(options);
       const docs = Array.from(composer$1.compose(parser$1.parse(source)));
       if (prettyErrors && lineCounter2)
@@ -7249,7 +7249,7 @@ var require_public_api = __commonJS({
     }
     function parseDocument(source, options = {}) {
       const { lineCounter: lineCounter2, prettyErrors } = parseOptions(options);
-      const parser$1 = new parser.Parser(lineCounter2?.addNewLine);
+      const parser$1 = new parser2.Parser(lineCounter2?.addNewLine);
       const composer$1 = new composer.Composer(options);
       let doc = null;
       for (const _doc of composer$1.compose(parser$1.parse(source), true, source.length)) {
@@ -7331,7 +7331,7 @@ var require_dist = __commonJS({
     var cst = require_cst();
     var lexer = require_lexer();
     var lineCounter = require_line_counter();
-    var parser = require_parser();
+    var parser2 = require_parser();
     var publicApi = require_public_api();
     var visit = require_visit();
     exports.Composer = composer.Composer;
@@ -7356,7 +7356,7 @@ var require_dist = __commonJS({
     exports.CST = cst;
     exports.Lexer = lexer.Lexer;
     exports.LineCounter = lineCounter.LineCounter;
-    exports.Parser = parser.Parser;
+    exports.Parser = parser2.Parser;
     exports.parse = publicApi.parse;
     exports.parseAllDocuments = publicApi.parseAllDocuments;
     exports.parseDocument = publicApi.parseDocument;
@@ -7370,6 +7370,4230 @@ var require_dist = __commonJS({
 import { realpathSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
+
+// node_modules/@lezer/common/dist/index.js
+var DefaultBufferLength = 1024;
+var nextPropID = 0;
+var Range = class {
+  constructor(from, to) {
+    this.from = from;
+    this.to = to;
+  }
+};
+var NodeProp = class {
+  /**
+  Create a new node prop type.
+  */
+  constructor(config = {}) {
+    this.id = nextPropID++;
+    this.perNode = !!config.perNode;
+    this.deserialize = config.deserialize || (() => {
+      throw new Error("This node type doesn't define a deserialize function");
+    });
+    this.combine = config.combine || null;
+  }
+  /**
+  This is meant to be used with
+  [`NodeSet.extend`](#common.NodeSet.extend) or
+  [`LRParser.configure`](#lr.ParserConfig.props) to compute
+  prop values for each node type in the set. Takes a [match
+  object](#common.NodeType^match) or function that returns undefined
+  if the node type doesn't get this prop, and the prop's value if
+  it does.
+  */
+  add(match) {
+    if (this.perNode)
+      throw new RangeError("Can't add per-node props to node types");
+    if (typeof match != "function")
+      match = NodeType.match(match);
+    return (type) => {
+      let result = match(type);
+      return result === void 0 ? null : [this, result];
+    };
+  }
+};
+NodeProp.closedBy = new NodeProp({ deserialize: (str) => str.split(" ") });
+NodeProp.openedBy = new NodeProp({ deserialize: (str) => str.split(" ") });
+NodeProp.group = new NodeProp({ deserialize: (str) => str.split(" ") });
+NodeProp.isolate = new NodeProp({ deserialize: (value) => {
+  if (value && value != "rtl" && value != "ltr" && value != "auto")
+    throw new RangeError("Invalid value for isolate: " + value);
+  return value || "auto";
+} });
+NodeProp.contextHash = new NodeProp({ perNode: true });
+NodeProp.lookAhead = new NodeProp({ perNode: true });
+NodeProp.mounted = new NodeProp({ perNode: true });
+var MountedTree = class {
+  constructor(tree, overlay, parser2, bracketed = false) {
+    this.tree = tree;
+    this.overlay = overlay;
+    this.parser = parser2;
+    this.bracketed = bracketed;
+  }
+  /**
+  @internal
+  */
+  static get(tree) {
+    return tree && tree.props && tree.props[NodeProp.mounted.id];
+  }
+};
+var noProps = /* @__PURE__ */ Object.create(null);
+var NodeType = class _NodeType {
+  /**
+  @internal
+  */
+  constructor(name2, props, id, flags = 0) {
+    this.name = name2;
+    this.props = props;
+    this.id = id;
+    this.flags = flags;
+  }
+  /**
+  Define a node type.
+  */
+  static define(spec) {
+    let props = spec.props && spec.props.length ? /* @__PURE__ */ Object.create(null) : noProps;
+    let flags = (spec.top ? 1 : 0) | (spec.skipped ? 2 : 0) | (spec.error ? 4 : 0) | (spec.name == null ? 8 : 0);
+    let type = new _NodeType(spec.name || "", props, spec.id, flags);
+    if (spec.props)
+      for (let src of spec.props) {
+        if (!Array.isArray(src))
+          src = src(type);
+        if (src) {
+          if (src[0].perNode)
+            throw new RangeError("Can't store a per-node prop on a node type");
+          props[src[0].id] = src[1];
+        }
+      }
+    return type;
+  }
+  /**
+  Retrieves a node prop for this type. Will return `undefined` if
+  the prop isn't present on this node.
+  */
+  prop(prop) {
+    return this.props[prop.id];
+  }
+  /**
+  True when this is the top node of a grammar.
+  */
+  get isTop() {
+    return (this.flags & 1) > 0;
+  }
+  /**
+  True when this node is produced by a skip rule.
+  */
+  get isSkipped() {
+    return (this.flags & 2) > 0;
+  }
+  /**
+  Indicates whether this is an error node.
+  */
+  get isError() {
+    return (this.flags & 4) > 0;
+  }
+  /**
+  When true, this node type doesn't correspond to a user-declared
+  named node, for example because it is used to cache repetition.
+  */
+  get isAnonymous() {
+    return (this.flags & 8) > 0;
+  }
+  /**
+  Returns true when this node's name or one of its
+  [groups](#common.NodeProp^group) matches the given string.
+  */
+  is(name2) {
+    if (typeof name2 == "string") {
+      if (this.name == name2)
+        return true;
+      let group = this.prop(NodeProp.group);
+      return group ? group.indexOf(name2) > -1 : false;
+    }
+    return this.id == name2;
+  }
+  /**
+  Create a function from node types to arbitrary values by
+  specifying an object whose property names are node or
+  [group](#common.NodeProp^group) names. Often useful with
+  [`NodeProp.add`](#common.NodeProp.add). You can put multiple
+  names, separated by spaces, in a single property name to map
+  multiple node names to a single value.
+  */
+  static match(map) {
+    let direct = /* @__PURE__ */ Object.create(null);
+    for (let prop in map)
+      for (let name2 of prop.split(" "))
+        direct[name2] = map[prop];
+    return (node) => {
+      for (let groups = node.prop(NodeProp.group), i = -1; i < (groups ? groups.length : 0); i++) {
+        let found = direct[i < 0 ? node.name : groups[i]];
+        if (found)
+          return found;
+      }
+    };
+  }
+};
+NodeType.none = new NodeType(
+  "",
+  /* @__PURE__ */ Object.create(null),
+  0,
+  8
+  /* NodeFlag.Anonymous */
+);
+var NodeSet = class _NodeSet {
+  /**
+  Create a set with the given types. The `id` property of each
+  type should correspond to its position within the array.
+  */
+  constructor(types2) {
+    this.types = types2;
+    for (let i = 0; i < types2.length; i++)
+      if (types2[i].id != i)
+        throw new RangeError("Node type ids should correspond to array positions when creating a node set");
+  }
+  /**
+  Create a copy of this set with some node properties added. The
+  arguments to this method can be created with
+  [`NodeProp.add`](#common.NodeProp.add).
+  */
+  extend(...props) {
+    let newTypes = [];
+    for (let type of this.types) {
+      let newProps = null;
+      for (let source of props) {
+        let add = source(type);
+        if (add) {
+          if (!newProps)
+            newProps = Object.assign({}, type.props);
+          let value = add[1], prop = add[0];
+          if (prop.combine && prop.id in newProps)
+            value = prop.combine(newProps[prop.id], value);
+          newProps[prop.id] = value;
+        }
+      }
+      newTypes.push(newProps ? new NodeType(type.name, newProps, type.id, type.flags) : type);
+    }
+    return new _NodeSet(newTypes);
+  }
+};
+var CachedNode = /* @__PURE__ */ new WeakMap();
+var CachedInnerNode = /* @__PURE__ */ new WeakMap();
+var IterMode;
+(function(IterMode2) {
+  IterMode2[IterMode2["ExcludeBuffers"] = 1] = "ExcludeBuffers";
+  IterMode2[IterMode2["IncludeAnonymous"] = 2] = "IncludeAnonymous";
+  IterMode2[IterMode2["IgnoreMounts"] = 4] = "IgnoreMounts";
+  IterMode2[IterMode2["IgnoreOverlays"] = 8] = "IgnoreOverlays";
+  IterMode2[IterMode2["EnterBracketed"] = 16] = "EnterBracketed";
+})(IterMode || (IterMode = {}));
+var Tree = class _Tree {
+  /**
+  Construct a new tree. See also [`Tree.build`](#common.Tree^build).
+  */
+  constructor(type, children2, positions, length, props) {
+    this.type = type;
+    this.children = children2;
+    this.positions = positions;
+    this.length = length;
+    this.props = null;
+    if (props && props.length) {
+      this.props = /* @__PURE__ */ Object.create(null);
+      for (let [prop, value] of props)
+        this.props[typeof prop == "number" ? prop : prop.id] = value;
+    }
+  }
+  /**
+  @internal
+  */
+  toString() {
+    let mounted = MountedTree.get(this);
+    if (mounted && !mounted.overlay)
+      return mounted.tree.toString();
+    let children2 = "";
+    for (let ch of this.children) {
+      let str = ch.toString();
+      if (str) {
+        if (children2)
+          children2 += ",";
+        children2 += str;
+      }
+    }
+    return !this.type.name ? children2 : (/\W/.test(this.type.name) && !this.type.isError ? JSON.stringify(this.type.name) : this.type.name) + (children2.length ? "(" + children2 + ")" : "");
+  }
+  /**
+  Get a [tree cursor](#common.TreeCursor) positioned at the top of
+  the tree. Mode can be used to [control](#common.IterMode) which
+  nodes the cursor visits.
+  */
+  cursor(mode = 0) {
+    return new TreeCursor(this.topNode, mode);
+  }
+  /**
+  Get a [tree cursor](#common.TreeCursor) pointing into this tree
+  at the given position and side (see
+  [`moveTo`](#common.TreeCursor.moveTo).
+  */
+  cursorAt(pos, side = 0, mode = 0) {
+    let scope = CachedNode.get(this) || this.topNode;
+    let cursor = new TreeCursor(scope);
+    cursor.moveTo(pos, side);
+    CachedNode.set(this, cursor._tree);
+    return cursor;
+  }
+  /**
+  Get a [syntax node](#common.SyntaxNode) object for the top of the
+  tree.
+  */
+  get topNode() {
+    return new TreeNode(this, 0, 0, null);
+  }
+  /**
+  Get the [syntax node](#common.SyntaxNode) at the given position.
+  If `side` is -1, this will move into nodes that end at the
+  position. If 1, it'll move into nodes that start at the
+  position. With 0, it'll only enter nodes that cover the position
+  from both sides.
+  
+  Note that this will not enter
+  [overlays](#common.MountedTree.overlay), and you often want
+  [`resolveInner`](#common.Tree.resolveInner) instead.
+  */
+  resolve(pos, side = 0) {
+    let node = resolveNode(CachedNode.get(this) || this.topNode, pos, side, false);
+    CachedNode.set(this, node);
+    return node;
+  }
+  /**
+  Like [`resolve`](#common.Tree.resolve), but will enter
+  [overlaid](#common.MountedTree.overlay) nodes, producing a syntax node
+  pointing into the innermost overlaid tree at the given position
+  (with parent links going through all parent structure, including
+  the host trees).
+  */
+  resolveInner(pos, side = 0) {
+    let node = resolveNode(CachedInnerNode.get(this) || this.topNode, pos, side, true);
+    CachedInnerNode.set(this, node);
+    return node;
+  }
+  /**
+  In some situations, it can be useful to iterate through all
+  nodes around a position, including those in overlays that don't
+  directly cover the position. This method gives you an iterator
+  that will produce all nodes, from small to big, around the given
+  position.
+  */
+  resolveStack(pos, side = 0) {
+    return stackIterator(this, pos, side);
+  }
+  /**
+  Iterate over the tree and its children, calling `enter` for any
+  node that touches the `from`/`to` region (if given) before
+  running over such a node's children, and `leave` (if given) when
+  leaving the node. When `enter` returns `false`, that node will
+  not have its children iterated over (or `leave` called).
+  */
+  iterate(spec) {
+    let { enter, leave, from = 0, to = this.length } = spec;
+    let mode = spec.mode || 0, anon = (mode & IterMode.IncludeAnonymous) > 0;
+    for (let c = this.cursor(mode | IterMode.IncludeAnonymous); ; ) {
+      let entered = false;
+      if (c.from <= to && c.to >= from && (!anon && c.type.isAnonymous || enter(c) !== false)) {
+        if (c.firstChild())
+          continue;
+        entered = true;
+      }
+      for (; ; ) {
+        if (entered && leave && (anon || !c.type.isAnonymous))
+          leave(c);
+        if (c.nextSibling())
+          break;
+        if (!c.parent())
+          return;
+        entered = true;
+      }
+    }
+  }
+  /**
+  Get the value of the given [node prop](#common.NodeProp) for this
+  node. Works with both per-node and per-type props.
+  */
+  prop(prop) {
+    return !prop.perNode ? this.type.prop(prop) : this.props ? this.props[prop.id] : void 0;
+  }
+  /**
+  Returns the node's [per-node props](#common.NodeProp.perNode) in a
+  format that can be passed to the [`Tree`](#common.Tree)
+  constructor.
+  */
+  get propValues() {
+    let result = [];
+    if (this.props)
+      for (let id in this.props)
+        result.push([+id, this.props[id]]);
+    return result;
+  }
+  /**
+  Balance the direct children of this tree, producing a copy of
+  which may have children grouped into subtrees with type
+  [`NodeType.none`](#common.NodeType^none).
+  */
+  balance(config = {}) {
+    return this.children.length <= 8 ? this : balanceRange(NodeType.none, this.children, this.positions, 0, this.children.length, 0, this.length, (children2, positions, length) => new _Tree(this.type, children2, positions, length, this.propValues), config.makeTree || ((children2, positions, length) => new _Tree(NodeType.none, children2, positions, length)));
+  }
+  /**
+  Build a tree from a postfix-ordered buffer of node information,
+  or a cursor over such a buffer.
+  */
+  static build(data) {
+    return buildTree(data);
+  }
+};
+Tree.empty = new Tree(NodeType.none, [], [], 0);
+var FlatBufferCursor = class _FlatBufferCursor {
+  constructor(buffer, index) {
+    this.buffer = buffer;
+    this.index = index;
+  }
+  get id() {
+    return this.buffer[this.index - 4];
+  }
+  get start() {
+    return this.buffer[this.index - 3];
+  }
+  get end() {
+    return this.buffer[this.index - 2];
+  }
+  get size() {
+    return this.buffer[this.index - 1];
+  }
+  get pos() {
+    return this.index;
+  }
+  next() {
+    this.index -= 4;
+  }
+  fork() {
+    return new _FlatBufferCursor(this.buffer, this.index);
+  }
+};
+var TreeBuffer = class _TreeBuffer {
+  /**
+  Create a tree buffer.
+  */
+  constructor(buffer, length, set) {
+    this.buffer = buffer;
+    this.length = length;
+    this.set = set;
+  }
+  /**
+  @internal
+  */
+  get type() {
+    return NodeType.none;
+  }
+  /**
+  @internal
+  */
+  toString() {
+    let result = [];
+    for (let index = 0; index < this.buffer.length; ) {
+      result.push(this.childString(index));
+      index = this.buffer[index + 3];
+    }
+    return result.join(",");
+  }
+  /**
+  @internal
+  */
+  childString(index) {
+    let id = this.buffer[index], endIndex = this.buffer[index + 3];
+    let type = this.set.types[id], result = type.name;
+    if (/\W/.test(result) && !type.isError)
+      result = JSON.stringify(result);
+    index += 4;
+    if (endIndex == index)
+      return result;
+    let children2 = [];
+    while (index < endIndex) {
+      children2.push(this.childString(index));
+      index = this.buffer[index + 3];
+    }
+    return result + "(" + children2.join(",") + ")";
+  }
+  /**
+  @internal
+  */
+  findChild(startIndex, endIndex, dir, pos, side) {
+    let { buffer } = this, pick = -1;
+    for (let i = startIndex; i != endIndex; i = buffer[i + 3]) {
+      if (checkSide(side, pos, buffer[i + 1], buffer[i + 2])) {
+        pick = i;
+        if (dir > 0)
+          break;
+      }
+    }
+    return pick;
+  }
+  /**
+  @internal
+  */
+  slice(startI, endI, from) {
+    let b = this.buffer;
+    let copy = new Uint16Array(endI - startI), len = 0;
+    for (let i = startI, j = 0; i < endI; ) {
+      copy[j++] = b[i++];
+      copy[j++] = b[i++] - from;
+      let to = copy[j++] = b[i++] - from;
+      copy[j++] = b[i++] - startI;
+      len = Math.max(len, to);
+    }
+    return new _TreeBuffer(copy, len, this.set);
+  }
+};
+function checkSide(side, pos, from, to) {
+  switch (side) {
+    case -2:
+      return from < pos;
+    case -1:
+      return to >= pos && from < pos;
+    case 0:
+      return from < pos && to > pos;
+    case 1:
+      return from <= pos && to > pos;
+    case 2:
+      return to > pos;
+    case 4:
+      return true;
+  }
+}
+function resolveNode(node, pos, side, overlays) {
+  var _a;
+  while (node.from == node.to || (side < 1 ? node.from >= pos : node.from > pos) || (side > -1 ? node.to <= pos : node.to < pos)) {
+    let parent = !overlays && node instanceof TreeNode && node.index < 0 ? null : node.parent;
+    if (!parent)
+      return node;
+    node = parent;
+  }
+  let mode = overlays ? 0 : IterMode.IgnoreOverlays;
+  if (overlays)
+    for (let scan2 = node, parent = scan2.parent; parent; scan2 = parent, parent = scan2.parent) {
+      if (scan2 instanceof TreeNode && scan2.index < 0 && ((_a = parent.enter(pos, side, mode)) === null || _a === void 0 ? void 0 : _a.from) != scan2.from)
+        node = parent;
+    }
+  for (; ; ) {
+    let inner = node.enter(pos, side, mode);
+    if (!inner)
+      return node;
+    node = inner;
+  }
+}
+var BaseNode = class {
+  cursor(mode = 0) {
+    return new TreeCursor(this, mode);
+  }
+  getChild(type, before = null, after = null) {
+    let r = getChildren(this, type, before, after);
+    return r.length ? r[0] : null;
+  }
+  getChildren(type, before = null, after = null) {
+    return getChildren(this, type, before, after);
+  }
+  resolve(pos, side = 0) {
+    return resolveNode(this, pos, side, false);
+  }
+  resolveInner(pos, side = 0) {
+    return resolveNode(this, pos, side, true);
+  }
+  matchContext(context) {
+    return matchNodeContext(this.parent, context);
+  }
+  enterUnfinishedNodesBefore(pos) {
+    let scan2 = this.childBefore(pos), node = this;
+    while (scan2) {
+      let last = scan2.lastChild;
+      if (!last || last.to != scan2.to)
+        break;
+      if (last.type.isError && last.from == last.to) {
+        node = scan2;
+        scan2 = last.prevSibling;
+      } else {
+        scan2 = last;
+      }
+    }
+    return node;
+  }
+  get node() {
+    return this;
+  }
+  get next() {
+    return this.parent;
+  }
+};
+var TreeNode = class _TreeNode extends BaseNode {
+  constructor(_tree, from, index, _parent) {
+    super();
+    this._tree = _tree;
+    this.from = from;
+    this.index = index;
+    this._parent = _parent;
+  }
+  get type() {
+    return this._tree.type;
+  }
+  get name() {
+    return this._tree.type.name;
+  }
+  get to() {
+    return this.from + this._tree.length;
+  }
+  nextChild(i, dir, pos, side, mode = 0) {
+    for (let parent = this; ; ) {
+      for (let { children: children2, positions } = parent._tree, e = dir > 0 ? children2.length : -1; i != e; i += dir) {
+        let next = children2[i], start = positions[i] + parent.from, mounted;
+        if (!(mode & IterMode.EnterBracketed && next instanceof Tree && (mounted = MountedTree.get(next)) && !mounted.overlay && mounted.bracketed && pos >= start && pos <= start + next.length) && !checkSide(side, pos, start, start + next.length))
+          continue;
+        if (next instanceof TreeBuffer) {
+          if (mode & IterMode.ExcludeBuffers)
+            continue;
+          let index = next.findChild(0, next.buffer.length, dir, pos - start, side);
+          if (index > -1)
+            return new BufferNode(new BufferContext(parent, next, i, start), null, index);
+        } else if (mode & IterMode.IncludeAnonymous || (!next.type.isAnonymous || hasChild(next))) {
+          let mounted2;
+          if (!(mode & IterMode.IgnoreMounts) && (mounted2 = MountedTree.get(next)) && !mounted2.overlay)
+            return new _TreeNode(mounted2.tree, start, i, parent);
+          let inner = new _TreeNode(next, start, i, parent);
+          return mode & IterMode.IncludeAnonymous || !inner.type.isAnonymous ? inner : inner.nextChild(dir < 0 ? next.children.length - 1 : 0, dir, pos, side, mode);
+        }
+      }
+      if (mode & IterMode.IncludeAnonymous || !parent.type.isAnonymous)
+        return null;
+      if (parent.index >= 0)
+        i = parent.index + dir;
+      else
+        i = dir < 0 ? -1 : parent._parent._tree.children.length;
+      parent = parent._parent;
+      if (!parent)
+        return null;
+    }
+  }
+  get firstChild() {
+    return this.nextChild(
+      0,
+      1,
+      0,
+      4
+      /* Side.DontCare */
+    );
+  }
+  get lastChild() {
+    return this.nextChild(
+      this._tree.children.length - 1,
+      -1,
+      0,
+      4
+      /* Side.DontCare */
+    );
+  }
+  childAfter(pos) {
+    return this.nextChild(
+      0,
+      1,
+      pos,
+      2
+      /* Side.After */
+    );
+  }
+  childBefore(pos) {
+    return this.nextChild(
+      this._tree.children.length - 1,
+      -1,
+      pos,
+      -2
+      /* Side.Before */
+    );
+  }
+  prop(prop) {
+    return this._tree.prop(prop);
+  }
+  enter(pos, side, mode = 0) {
+    let mounted;
+    if (!(mode & IterMode.IgnoreOverlays) && (mounted = MountedTree.get(this._tree)) && mounted.overlay) {
+      let rPos = pos - this.from, enterBracketed = mode & IterMode.EnterBracketed && mounted.bracketed;
+      for (let { from, to } of mounted.overlay) {
+        if ((side > 0 || enterBracketed ? from <= rPos : from < rPos) && (side < 0 || enterBracketed ? to >= rPos : to > rPos))
+          return new _TreeNode(mounted.tree, mounted.overlay[0].from + this.from, -1, this);
+      }
+    }
+    return this.nextChild(0, 1, pos, side, mode);
+  }
+  nextSignificantParent() {
+    let val = this;
+    while (val.type.isAnonymous && val._parent)
+      val = val._parent;
+    return val;
+  }
+  get parent() {
+    return this._parent ? this._parent.nextSignificantParent() : null;
+  }
+  get nextSibling() {
+    return this._parent && this.index >= 0 ? this._parent.nextChild(
+      this.index + 1,
+      1,
+      0,
+      4
+      /* Side.DontCare */
+    ) : null;
+  }
+  get prevSibling() {
+    return this._parent && this.index >= 0 ? this._parent.nextChild(
+      this.index - 1,
+      -1,
+      0,
+      4
+      /* Side.DontCare */
+    ) : null;
+  }
+  get tree() {
+    return this._tree;
+  }
+  toTree() {
+    return this._tree;
+  }
+  /**
+  @internal
+  */
+  toString() {
+    return this._tree.toString();
+  }
+};
+function getChildren(node, type, before, after) {
+  let cur = node.cursor(), result = [];
+  if (!cur.firstChild())
+    return result;
+  if (before != null)
+    for (let found = false; !found; ) {
+      found = cur.type.is(before);
+      if (!cur.nextSibling())
+        return result;
+    }
+  for (; ; ) {
+    if (after != null && cur.type.is(after))
+      return result;
+    if (cur.type.is(type))
+      result.push(cur.node);
+    if (!cur.nextSibling())
+      return after == null ? result : [];
+  }
+}
+function matchNodeContext(node, context, i = context.length - 1) {
+  for (let p = node; i >= 0; p = p.parent) {
+    if (!p)
+      return false;
+    if (!p.type.isAnonymous) {
+      if (context[i] && context[i] != p.name)
+        return false;
+      i--;
+    }
+  }
+  return true;
+}
+var BufferContext = class {
+  constructor(parent, buffer, index, start) {
+    this.parent = parent;
+    this.buffer = buffer;
+    this.index = index;
+    this.start = start;
+  }
+};
+var BufferNode = class _BufferNode extends BaseNode {
+  get name() {
+    return this.type.name;
+  }
+  get from() {
+    return this.context.start + this.context.buffer.buffer[this.index + 1];
+  }
+  get to() {
+    return this.context.start + this.context.buffer.buffer[this.index + 2];
+  }
+  constructor(context, _parent, index) {
+    super();
+    this.context = context;
+    this._parent = _parent;
+    this.index = index;
+    this.type = context.buffer.set.types[context.buffer.buffer[index]];
+  }
+  child(dir, pos, side) {
+    let { buffer } = this.context;
+    let index = buffer.findChild(this.index + 4, buffer.buffer[this.index + 3], dir, pos - this.context.start, side);
+    return index < 0 ? null : new _BufferNode(this.context, this, index);
+  }
+  get firstChild() {
+    return this.child(
+      1,
+      0,
+      4
+      /* Side.DontCare */
+    );
+  }
+  get lastChild() {
+    return this.child(
+      -1,
+      0,
+      4
+      /* Side.DontCare */
+    );
+  }
+  childAfter(pos) {
+    return this.child(
+      1,
+      pos,
+      2
+      /* Side.After */
+    );
+  }
+  childBefore(pos) {
+    return this.child(
+      -1,
+      pos,
+      -2
+      /* Side.Before */
+    );
+  }
+  prop(prop) {
+    return this.type.prop(prop);
+  }
+  enter(pos, side, mode = 0) {
+    if (mode & IterMode.ExcludeBuffers)
+      return null;
+    let { buffer } = this.context;
+    let index = buffer.findChild(this.index + 4, buffer.buffer[this.index + 3], side > 0 ? 1 : -1, pos - this.context.start, side);
+    return index < 0 ? null : new _BufferNode(this.context, this, index);
+  }
+  get parent() {
+    return this._parent || this.context.parent.nextSignificantParent();
+  }
+  externalSibling(dir) {
+    return this._parent ? null : this.context.parent.nextChild(
+      this.context.index + dir,
+      dir,
+      0,
+      4
+      /* Side.DontCare */
+    );
+  }
+  get nextSibling() {
+    let { buffer } = this.context;
+    let after = buffer.buffer[this.index + 3];
+    if (after < (this._parent ? buffer.buffer[this._parent.index + 3] : buffer.buffer.length))
+      return new _BufferNode(this.context, this._parent, after);
+    return this.externalSibling(1);
+  }
+  get prevSibling() {
+    let { buffer } = this.context;
+    let parentStart = this._parent ? this._parent.index + 4 : 0;
+    if (this.index == parentStart)
+      return this.externalSibling(-1);
+    return new _BufferNode(this.context, this._parent, buffer.findChild(
+      parentStart,
+      this.index,
+      -1,
+      0,
+      4
+      /* Side.DontCare */
+    ));
+  }
+  get tree() {
+    return null;
+  }
+  toTree() {
+    let children2 = [], positions = [];
+    let { buffer } = this.context;
+    let startI = this.index + 4, endI = buffer.buffer[this.index + 3];
+    if (endI > startI) {
+      let from = buffer.buffer[this.index + 1];
+      children2.push(buffer.slice(startI, endI, from));
+      positions.push(0);
+    }
+    return new Tree(this.type, children2, positions, this.to - this.from);
+  }
+  /**
+  @internal
+  */
+  toString() {
+    return this.context.buffer.childString(this.index);
+  }
+};
+function iterStack(heads) {
+  if (!heads.length)
+    return null;
+  let pick = 0, picked = heads[0];
+  for (let i = 1; i < heads.length; i++) {
+    let node = heads[i];
+    if (node.from > picked.from || node.to < picked.to) {
+      picked = node;
+      pick = i;
+    }
+  }
+  let next = picked instanceof TreeNode && picked.index < 0 ? null : picked.parent;
+  let newHeads = heads.slice();
+  if (next)
+    newHeads[pick] = next;
+  else
+    newHeads.splice(pick, 1);
+  return new StackIterator(newHeads, picked);
+}
+var StackIterator = class {
+  constructor(heads, node) {
+    this.heads = heads;
+    this.node = node;
+  }
+  get next() {
+    return iterStack(this.heads);
+  }
+};
+function stackIterator(tree, pos, side) {
+  let inner = tree.resolveInner(pos, side), layers = null;
+  for (let scan2 = inner instanceof TreeNode ? inner : inner.context.parent; scan2; scan2 = scan2.parent) {
+    if (scan2.index < 0) {
+      let parent = scan2.parent;
+      (layers || (layers = [inner])).push(parent.resolve(pos, side));
+      scan2 = parent;
+    } else {
+      let mount = MountedTree.get(scan2.tree);
+      if (mount && mount.overlay && mount.overlay[0].from <= pos && mount.overlay[mount.overlay.length - 1].to >= pos) {
+        let root = new TreeNode(mount.tree, mount.overlay[0].from + scan2.from, -1, scan2);
+        (layers || (layers = [inner])).push(resolveNode(root, pos, side, false));
+      }
+    }
+  }
+  return layers ? iterStack(layers) : inner;
+}
+var TreeCursor = class {
+  /**
+  Shorthand for `.type.name`.
+  */
+  get name() {
+    return this.type.name;
+  }
+  /**
+  @internal
+  */
+  constructor(node, mode = 0) {
+    this.buffer = null;
+    this.stack = [];
+    this.index = 0;
+    this.bufferNode = null;
+    this.mode = mode & ~IterMode.EnterBracketed;
+    if (node instanceof TreeNode) {
+      this.yieldNode(node);
+    } else {
+      this._tree = node.context.parent;
+      this.buffer = node.context;
+      for (let n = node._parent; n; n = n._parent)
+        this.stack.unshift(n.index);
+      this.bufferNode = node;
+      this.yieldBuf(node.index);
+    }
+  }
+  yieldNode(node) {
+    if (!node)
+      return false;
+    this._tree = node;
+    this.type = node.type;
+    this.from = node.from;
+    this.to = node.to;
+    return true;
+  }
+  yieldBuf(index, type) {
+    this.index = index;
+    let { start, buffer } = this.buffer;
+    this.type = type || buffer.set.types[buffer.buffer[index]];
+    this.from = start + buffer.buffer[index + 1];
+    this.to = start + buffer.buffer[index + 2];
+    return true;
+  }
+  /**
+  @internal
+  */
+  yield(node) {
+    if (!node)
+      return false;
+    if (node instanceof TreeNode) {
+      this.buffer = null;
+      return this.yieldNode(node);
+    }
+    this.buffer = node.context;
+    return this.yieldBuf(node.index, node.type);
+  }
+  /**
+  @internal
+  */
+  toString() {
+    return this.buffer ? this.buffer.buffer.childString(this.index) : this._tree.toString();
+  }
+  /**
+  @internal
+  */
+  enterChild(dir, pos, side) {
+    if (!this.buffer)
+      return this.yield(this._tree.nextChild(dir < 0 ? this._tree._tree.children.length - 1 : 0, dir, pos, side, this.mode));
+    let { buffer } = this.buffer;
+    let index = buffer.findChild(this.index + 4, buffer.buffer[this.index + 3], dir, pos - this.buffer.start, side);
+    if (index < 0)
+      return false;
+    this.stack.push(this.index);
+    return this.yieldBuf(index);
+  }
+  /**
+  Move the cursor to this node's first child. When this returns
+  false, the node has no child, and the cursor has not been moved.
+  */
+  firstChild() {
+    return this.enterChild(
+      1,
+      0,
+      4
+      /* Side.DontCare */
+    );
+  }
+  /**
+  Move the cursor to this node's last child.
+  */
+  lastChild() {
+    return this.enterChild(
+      -1,
+      0,
+      4
+      /* Side.DontCare */
+    );
+  }
+  /**
+  Move the cursor to the first child that ends after `pos`.
+  */
+  childAfter(pos) {
+    return this.enterChild(
+      1,
+      pos,
+      2
+      /* Side.After */
+    );
+  }
+  /**
+  Move to the last child that starts before `pos`.
+  */
+  childBefore(pos) {
+    return this.enterChild(
+      -1,
+      pos,
+      -2
+      /* Side.Before */
+    );
+  }
+  /**
+  Move the cursor to the child around `pos`. If side is -1 the
+  child may end at that position, when 1 it may start there. This
+  will also enter [overlaid](#common.MountedTree.overlay)
+  [mounted](#common.NodeProp^mounted) trees unless `overlays` is
+  set to false.
+  */
+  enter(pos, side, mode = this.mode) {
+    if (!this.buffer)
+      return this.yield(this._tree.enter(pos, side, mode));
+    return mode & IterMode.ExcludeBuffers ? false : this.enterChild(1, pos, side);
+  }
+  /**
+  Move to the node's parent node, if this isn't the top node.
+  */
+  parent() {
+    if (!this.buffer)
+      return this.yieldNode(this.mode & IterMode.IncludeAnonymous ? this._tree._parent : this._tree.parent);
+    if (this.stack.length)
+      return this.yieldBuf(this.stack.pop());
+    let parent = this.mode & IterMode.IncludeAnonymous ? this.buffer.parent : this.buffer.parent.nextSignificantParent();
+    this.buffer = null;
+    return this.yieldNode(parent);
+  }
+  /**
+  @internal
+  */
+  sibling(dir) {
+    if (!this.buffer)
+      return !this._tree._parent ? false : this.yield(this._tree.index < 0 ? null : this._tree._parent.nextChild(this._tree.index + dir, dir, 0, 4, this.mode));
+    let { buffer } = this.buffer, d = this.stack.length - 1;
+    if (dir < 0) {
+      let parentStart = d < 0 ? 0 : this.stack[d] + 4;
+      if (this.index != parentStart)
+        return this.yieldBuf(buffer.findChild(
+          parentStart,
+          this.index,
+          -1,
+          0,
+          4
+          /* Side.DontCare */
+        ));
+    } else {
+      let after = buffer.buffer[this.index + 3];
+      if (after < (d < 0 ? buffer.buffer.length : buffer.buffer[this.stack[d] + 3]))
+        return this.yieldBuf(after);
+    }
+    return d < 0 ? this.yield(this.buffer.parent.nextChild(this.buffer.index + dir, dir, 0, 4, this.mode)) : false;
+  }
+  /**
+  Move to this node's next sibling, if any.
+  */
+  nextSibling() {
+    return this.sibling(1);
+  }
+  /**
+  Move to this node's previous sibling, if any.
+  */
+  prevSibling() {
+    return this.sibling(-1);
+  }
+  atLastNode(dir) {
+    let index, parent, { buffer } = this;
+    if (buffer) {
+      if (dir > 0) {
+        if (this.index < buffer.buffer.buffer.length)
+          return false;
+      } else {
+        for (let i = 0; i < this.index; i++)
+          if (buffer.buffer.buffer[i + 3] < this.index)
+            return false;
+      }
+      ({ index, parent } = buffer);
+    } else {
+      ({ index, _parent: parent } = this._tree);
+    }
+    for (; parent; { index, _parent: parent } = parent) {
+      if (index > -1)
+        for (let i = index + dir, e = dir < 0 ? -1 : parent._tree.children.length; i != e; i += dir) {
+          let child = parent._tree.children[i];
+          if (this.mode & IterMode.IncludeAnonymous || child instanceof TreeBuffer || !child.type.isAnonymous || hasChild(child))
+            return false;
+        }
+    }
+    return true;
+  }
+  move(dir, enter) {
+    if (enter && this.enterChild(
+      dir,
+      0,
+      4
+      /* Side.DontCare */
+    ))
+      return true;
+    for (; ; ) {
+      if (this.sibling(dir))
+        return true;
+      if (this.atLastNode(dir) || !this.parent())
+        return false;
+    }
+  }
+  /**
+  Move to the next node in a
+  [pre-order](https://en.wikipedia.org/wiki/Tree_traversal#Pre-order,_NLR)
+  traversal, going from a node to its first child or, if the
+  current node is empty or `enter` is false, its next sibling or
+  the next sibling of the first parent node that has one.
+  */
+  next(enter = true) {
+    return this.move(1, enter);
+  }
+  /**
+  Move to the next node in a last-to-first pre-order traversal. A
+  node is followed by its last child or, if it has none, its
+  previous sibling or the previous sibling of the first parent
+  node that has one.
+  */
+  prev(enter = true) {
+    return this.move(-1, enter);
+  }
+  /**
+  Move the cursor to the innermost node that covers `pos`. If
+  `side` is -1, it will enter nodes that end at `pos`. If it is 1,
+  it will enter nodes that start at `pos`.
+  */
+  moveTo(pos, side = 0) {
+    while (this.from == this.to || (side < 1 ? this.from >= pos : this.from > pos) || (side > -1 ? this.to <= pos : this.to < pos))
+      if (!this.parent())
+        break;
+    while (this.enterChild(1, pos, side)) {
+    }
+    return this;
+  }
+  /**
+  Get a [syntax node](#common.SyntaxNode) at the cursor's current
+  position.
+  */
+  get node() {
+    if (!this.buffer)
+      return this._tree;
+    let cache = this.bufferNode, result = null, depth = 0;
+    if (cache && cache.context == this.buffer) {
+      scan: for (let index = this.index, d = this.stack.length; d >= 0; ) {
+        for (let c = cache; c; c = c._parent)
+          if (c.index == index) {
+            if (index == this.index)
+              return c;
+            result = c;
+            depth = d + 1;
+            break scan;
+          }
+        index = this.stack[--d];
+      }
+    }
+    for (let i = depth; i < this.stack.length; i++)
+      result = new BufferNode(this.buffer, result, this.stack[i]);
+    return this.bufferNode = new BufferNode(this.buffer, result, this.index);
+  }
+  /**
+  Get the [tree](#common.Tree) that represents the current node, if
+  any. Will return null when the node is in a [tree
+  buffer](#common.TreeBuffer).
+  */
+  get tree() {
+    return this.buffer ? null : this._tree._tree;
+  }
+  /**
+  Iterate over the current node and all its descendants, calling
+  `enter` when entering a node and `leave`, if given, when leaving
+  one. When `enter` returns `false`, any children of that node are
+  skipped, and `leave` isn't called for it.
+  */
+  iterate(enter, leave) {
+    for (let depth = 0; ; ) {
+      let mustLeave = false;
+      if (this.type.isAnonymous || enter(this) !== false) {
+        if (this.firstChild()) {
+          depth++;
+          continue;
+        }
+        if (!this.type.isAnonymous)
+          mustLeave = true;
+      }
+      for (; ; ) {
+        if (mustLeave && leave)
+          leave(this);
+        mustLeave = this.type.isAnonymous;
+        if (!depth)
+          return;
+        if (this.nextSibling())
+          break;
+        this.parent();
+        depth--;
+        mustLeave = true;
+      }
+    }
+  }
+  /**
+  Test whether the current node matches a given context—a sequence
+  of direct parent node names. Empty strings in the context array
+  are treated as wildcards.
+  */
+  matchContext(context) {
+    if (!this.buffer)
+      return matchNodeContext(this.node.parent, context);
+    let { buffer } = this.buffer, { types: types2 } = buffer.set;
+    for (let i = context.length - 1, d = this.stack.length - 1; i >= 0; d--) {
+      if (d < 0)
+        return matchNodeContext(this._tree, context, i);
+      let type = types2[buffer.buffer[this.stack[d]]];
+      if (!type.isAnonymous) {
+        if (context[i] && context[i] != type.name)
+          return false;
+        i--;
+      }
+    }
+    return true;
+  }
+};
+function hasChild(tree) {
+  return tree.children.some((ch) => ch instanceof TreeBuffer || !ch.type.isAnonymous || hasChild(ch));
+}
+function buildTree(data) {
+  var _a;
+  let { buffer, nodeSet, maxBufferLength = DefaultBufferLength, reused = [], minRepeatType = nodeSet.types.length } = data;
+  let cursor = Array.isArray(buffer) ? new FlatBufferCursor(buffer, buffer.length) : buffer;
+  let types2 = nodeSet.types;
+  let contextHash = 0, lookAhead = 0;
+  function takeNode(parentStart, minPos, children3, positions2, inRepeat, depth) {
+    let { id, start, end, size } = cursor;
+    let lookAheadAtStart = lookAhead, contextAtStart = contextHash;
+    if (size < 0) {
+      cursor.next();
+      if (size == -1) {
+        let node2 = reused[id];
+        children3.push(node2);
+        positions2.push(start - parentStart);
+        return;
+      } else if (size == -3) {
+        contextHash = id;
+        return;
+      } else if (size == -4) {
+        lookAhead = id;
+        return;
+      } else {
+        throw new RangeError(`Unrecognized record size: ${size}`);
+      }
+    }
+    let type = types2[id], node, buffer2;
+    let startPos = start - parentStart;
+    if (end - start <= maxBufferLength && (buffer2 = findBufferSize(cursor.pos - minPos, inRepeat))) {
+      let data2 = new Uint16Array(buffer2.size - buffer2.skip);
+      let endPos = cursor.pos - buffer2.size, index = data2.length;
+      while (cursor.pos > endPos)
+        index = copyToBuffer(buffer2.start, data2, index);
+      node = new TreeBuffer(data2, end - buffer2.start, nodeSet);
+      startPos = buffer2.start - parentStart;
+    } else {
+      let endPos = cursor.pos - size;
+      cursor.next();
+      let localChildren = [], localPositions = [];
+      let localInRepeat = id >= minRepeatType ? id : -1;
+      let lastGroup = 0, lastEnd = end, groupLookAhead = lookAheadAtStart;
+      while (cursor.pos > endPos) {
+        if (localInRepeat >= 0 && cursor.id == localInRepeat && cursor.size >= 0) {
+          if (cursor.end <= lastEnd - maxBufferLength) {
+            makeRepeatLeaf(localChildren, localPositions, start, lastGroup, cursor.end, lastEnd, localInRepeat, groupLookAhead, contextAtStart);
+            lastGroup = localChildren.length;
+            lastEnd = cursor.end;
+            groupLookAhead = lookAhead;
+          }
+          cursor.next();
+        } else if (depth > 2500) {
+          takeFlatNode(start, endPos, localChildren, localPositions);
+        } else {
+          takeNode(start, endPos, localChildren, localPositions, localInRepeat, depth + 1);
+        }
+      }
+      if (localInRepeat >= 0 && lastGroup > 0 && lastGroup < localChildren.length)
+        makeRepeatLeaf(localChildren, localPositions, start, lastGroup, start, lastEnd, localInRepeat, groupLookAhead, contextAtStart);
+      localChildren.reverse();
+      localPositions.reverse();
+      if (localInRepeat > -1 && lastGroup > 0) {
+        let make = makeBalanced(type, contextAtStart);
+        node = balanceRange(type, localChildren, localPositions, 0, localChildren.length, 0, end - start, make, make);
+      } else {
+        node = makeTree(type, localChildren, localPositions, end - start, lookAheadAtStart - end, contextAtStart);
+      }
+    }
+    children3.push(node);
+    positions2.push(startPos);
+  }
+  function takeFlatNode(parentStart, minPos, children3, positions2) {
+    let nodes = [];
+    let nodeCount = 0, stopAt = -1;
+    while (cursor.pos > minPos) {
+      let { id, start, end, size } = cursor;
+      if (size > 4) {
+        cursor.next();
+      } else if (stopAt > -1 && start < stopAt) {
+        break;
+      } else {
+        if (stopAt < 0)
+          stopAt = end - maxBufferLength;
+        nodes.push(id, start, end);
+        nodeCount++;
+        cursor.next();
+      }
+    }
+    if (nodeCount) {
+      let buffer2 = new Uint16Array(nodeCount * 4);
+      let start = nodes[nodes.length - 2];
+      for (let i = nodes.length - 3, j = 0; i >= 0; i -= 3) {
+        buffer2[j++] = nodes[i];
+        buffer2[j++] = nodes[i + 1] - start;
+        buffer2[j++] = nodes[i + 2] - start;
+        buffer2[j++] = j;
+      }
+      children3.push(new TreeBuffer(buffer2, nodes[2] - start, nodeSet));
+      positions2.push(start - parentStart);
+    }
+  }
+  function makeBalanced(type, contextHash2) {
+    return (children3, positions2, length2) => {
+      let lookAhead2 = 0, lastI = children3.length - 1, last, lookAheadProp;
+      if (lastI >= 0 && (last = children3[lastI]) instanceof Tree) {
+        if (!lastI && last.type == type && last.length == length2)
+          return last;
+        if (lookAheadProp = last.prop(NodeProp.lookAhead))
+          lookAhead2 = positions2[lastI] + last.length + lookAheadProp - length2;
+      }
+      return makeTree(type, children3, positions2, length2, lookAhead2, contextHash2);
+    };
+  }
+  function makeRepeatLeaf(children3, positions2, base, i, from, to, type, lookAhead2, contextHash2) {
+    let localChildren = [], localPositions = [];
+    while (children3.length > i) {
+      localChildren.push(children3.pop());
+      localPositions.push(positions2.pop() + base - from);
+    }
+    children3.push(makeTree(nodeSet.types[type], localChildren, localPositions, to - from, lookAhead2 - to, contextHash2));
+    positions2.push(from - base);
+  }
+  function makeTree(type, children3, positions2, length2, lookAhead2, contextHash2, props) {
+    if (contextHash2) {
+      let pair2 = [NodeProp.contextHash, contextHash2];
+      props = props ? [pair2].concat(props) : [pair2];
+    }
+    if (lookAhead2 > 25) {
+      let pair2 = [NodeProp.lookAhead, lookAhead2];
+      props = props ? [pair2].concat(props) : [pair2];
+    }
+    return new Tree(type, children3, positions2, length2, props);
+  }
+  function findBufferSize(maxSize, inRepeat) {
+    let fork = cursor.fork();
+    let size = 0, start = 0, skip = 0, minStart = fork.end - maxBufferLength;
+    let result = { size: 0, start: 0, skip: 0 };
+    scan: for (let minPos = fork.pos - maxSize; fork.pos > minPos; ) {
+      let nodeSize2 = fork.size;
+      if (fork.id == inRepeat && nodeSize2 >= 0) {
+        result.size = size;
+        result.start = start;
+        result.skip = skip;
+        skip += 4;
+        size += 4;
+        fork.next();
+        continue;
+      }
+      let startPos = fork.pos - nodeSize2;
+      if (nodeSize2 < 0 || startPos < minPos || fork.start < minStart)
+        break;
+      let localSkipped = fork.id >= minRepeatType ? 4 : 0;
+      let nodeStart = fork.start;
+      fork.next();
+      while (fork.pos > startPos) {
+        if (fork.size < 0) {
+          if (fork.size == -3 || fork.size == -4)
+            localSkipped += 4;
+          else
+            break scan;
+        } else if (fork.id >= minRepeatType) {
+          localSkipped += 4;
+        }
+        fork.next();
+      }
+      start = nodeStart;
+      size += nodeSize2;
+      skip += localSkipped;
+    }
+    if (inRepeat < 0 || size == maxSize) {
+      result.size = size;
+      result.start = start;
+      result.skip = skip;
+    }
+    return result.size > 4 ? result : void 0;
+  }
+  function copyToBuffer(bufferStart, buffer2, index) {
+    let { id, start, end, size } = cursor;
+    cursor.next();
+    if (size >= 0 && id < minRepeatType) {
+      let startIndex = index;
+      if (size > 4) {
+        let endPos = cursor.pos - (size - 4);
+        while (cursor.pos > endPos)
+          index = copyToBuffer(bufferStart, buffer2, index);
+      }
+      buffer2[--index] = startIndex;
+      buffer2[--index] = end - bufferStart;
+      buffer2[--index] = start - bufferStart;
+      buffer2[--index] = id;
+    } else if (size == -3) {
+      contextHash = id;
+    } else if (size == -4) {
+      lookAhead = id;
+    }
+    return index;
+  }
+  let children2 = [], positions = [];
+  while (cursor.pos > 0)
+    takeNode(data.start || 0, data.bufferStart || 0, children2, positions, -1, 0);
+  let length = (_a = data.length) !== null && _a !== void 0 ? _a : children2.length ? positions[0] + children2[0].length : 0;
+  return new Tree(types2[data.topID], children2.reverse(), positions.reverse(), length);
+}
+var nodeSizeCache = /* @__PURE__ */ new WeakMap();
+function nodeSize(balanceType, node) {
+  if (!balanceType.isAnonymous || node instanceof TreeBuffer || node.type != balanceType)
+    return 1;
+  let size = nodeSizeCache.get(node);
+  if (size == null) {
+    size = 1;
+    for (let child of node.children) {
+      if (child.type != balanceType || !(child instanceof Tree)) {
+        size = 1;
+        break;
+      }
+      size += nodeSize(balanceType, child);
+    }
+    nodeSizeCache.set(node, size);
+  }
+  return size;
+}
+function balanceRange(balanceType, children2, positions, from, to, start, length, mkTop, mkTree) {
+  let total = 0;
+  for (let i = from; i < to; i++)
+    total += nodeSize(balanceType, children2[i]);
+  let maxChild = Math.ceil(
+    total * 1.5 / 8
+    /* Balance.BranchFactor */
+  );
+  let localChildren = [], localPositions = [];
+  function divide(children3, positions2, from2, to2, offset) {
+    for (let i = from2; i < to2; ) {
+      let groupFrom = i, groupStart = positions2[i], groupSize = nodeSize(balanceType, children3[i]);
+      i++;
+      for (; i < to2; i++) {
+        let nextSize = nodeSize(balanceType, children3[i]);
+        if (groupSize + nextSize >= maxChild)
+          break;
+        groupSize += nextSize;
+      }
+      if (i == groupFrom + 1) {
+        if (groupSize > maxChild) {
+          let only = children3[groupFrom];
+          divide(only.children, only.positions, 0, only.children.length, positions2[groupFrom] + offset);
+          continue;
+        }
+        localChildren.push(children3[groupFrom]);
+      } else {
+        let length2 = positions2[i - 1] + children3[i - 1].length - groupStart;
+        localChildren.push(balanceRange(balanceType, children3, positions2, groupFrom, i, groupStart, length2, null, mkTree));
+      }
+      localPositions.push(groupStart + offset - start);
+    }
+  }
+  divide(children2, positions, from, to, 0);
+  return (mkTop || mkTree)(localChildren, localPositions, length);
+}
+var Parser = class {
+  /**
+  Start a parse, returning a [partial parse](#common.PartialParse)
+  object. [`fragments`](#common.TreeFragment) can be passed in to
+  make the parse incremental.
+  
+  By default, the entire input is parsed. You can pass `ranges`,
+  which should be a sorted array of non-empty, non-overlapping
+  ranges, to parse only those ranges. The tree returned in that
+  case will start at `ranges[0].from`.
+  */
+  startParse(input, fragments, ranges) {
+    if (typeof input == "string")
+      input = new StringInput(input);
+    ranges = !ranges ? [new Range(0, input.length)] : ranges.length ? ranges.map((r) => new Range(r.from, r.to)) : [new Range(0, 0)];
+    return this.createParse(input, fragments || [], ranges);
+  }
+  /**
+  Run a full parse, returning the resulting tree.
+  */
+  parse(input, fragments, ranges) {
+    let parse = this.startParse(input, fragments, ranges);
+    for (; ; ) {
+      let done = parse.advance();
+      if (done)
+        return done;
+    }
+  }
+};
+var StringInput = class {
+  constructor(string2) {
+    this.string = string2;
+  }
+  get length() {
+    return this.string.length;
+  }
+  chunk(from) {
+    return this.string.slice(from);
+  }
+  get lineChunks() {
+    return false;
+  }
+  read(from, to) {
+    return this.string.slice(from, to);
+  }
+};
+var stoppedInner = new NodeProp({ perNode: true });
+
+// node_modules/@lezer/lr/dist/index.js
+var Stack = class _Stack {
+  /**
+  @internal
+  */
+  constructor(p, stack, state, reducePos, pos, score, buffer, bufferBase, curContext, lookAhead = 0, parent) {
+    this.p = p;
+    this.stack = stack;
+    this.state = state;
+    this.reducePos = reducePos;
+    this.pos = pos;
+    this.score = score;
+    this.buffer = buffer;
+    this.bufferBase = bufferBase;
+    this.curContext = curContext;
+    this.lookAhead = lookAhead;
+    this.parent = parent;
+  }
+  /**
+  @internal
+  */
+  toString() {
+    return `[${this.stack.filter((_, i) => i % 3 == 0).concat(this.state)}]@${this.pos}${this.score ? "!" + this.score : ""}`;
+  }
+  // Start an empty stack
+  /**
+  @internal
+  */
+  static start(p, state, pos = 0) {
+    let cx = p.parser.context;
+    return new _Stack(p, [], state, pos, pos, 0, [], 0, cx ? new StackContext(cx, cx.start) : null, 0, null);
+  }
+  /**
+  The stack's current [context](#lr.ContextTracker) value, if
+  any. Its type will depend on the context tracker's type
+  parameter, or it will be `null` if there is no context
+  tracker.
+  */
+  get context() {
+    return this.curContext ? this.curContext.context : null;
+  }
+  // Push a state onto the stack, tracking its start position as well
+  // as the buffer base at that point.
+  /**
+  @internal
+  */
+  pushState(state, start) {
+    this.stack.push(this.state, start, this.bufferBase + this.buffer.length);
+    this.state = state;
+  }
+  // Apply a reduce action
+  /**
+  @internal
+  */
+  reduce(action) {
+    var _a;
+    let depth = action >> 19, type = action & 65535;
+    let { parser: parser2 } = this.p;
+    let lookaheadRecord = this.reducePos < this.pos - 25 && this.setLookAhead(this.pos);
+    let dPrec = parser2.dynamicPrecedence(type);
+    if (dPrec)
+      this.score += dPrec;
+    if (depth == 0) {
+      if (type < parser2.minRepeatTerm && this.reducePos < this.pos)
+        this.reducePos = this.pos;
+      this.pushState(parser2.getGoto(this.state, type, true), this.reducePos);
+      if (type < parser2.minRepeatTerm)
+        this.storeNode(type, this.reducePos, this.reducePos, lookaheadRecord ? 8 : 4, true);
+      this.reduceContext(type, this.reducePos);
+      return;
+    }
+    let base = this.stack.length - (depth - 1) * 3 - (action & 262144 ? 6 : 0);
+    let start = base ? this.stack[base - 2] : this.p.ranges[0].from;
+    if (type < parser2.minRepeatTerm && start == this.reducePos && this.reducePos < this.pos)
+      this.reducePos = this.pos;
+    let size = this.reducePos - start;
+    if (size >= 2e3 && !((_a = this.p.parser.nodeSet.types[type]) === null || _a === void 0 ? void 0 : _a.isAnonymous)) {
+      if (start == this.p.lastBigReductionStart) {
+        this.p.bigReductionCount++;
+        this.p.lastBigReductionSize = size;
+      } else if (this.p.lastBigReductionSize < size) {
+        this.p.bigReductionCount = 1;
+        this.p.lastBigReductionStart = start;
+        this.p.lastBigReductionSize = size;
+      }
+    }
+    let bufferBase = base ? this.stack[base - 1] : 0, count = this.bufferBase + this.buffer.length - bufferBase;
+    if (type < parser2.minRepeatTerm || action & 131072) {
+      let pos = parser2.stateFlag(
+        this.state,
+        1
+        /* StateFlag.Skipped */
+      ) ? this.pos : this.reducePos;
+      this.storeNode(type, start, pos, count + 4, true);
+    }
+    if (action & 262144) {
+      this.state = this.stack[base];
+    } else {
+      let baseStateID = this.stack[base - 3];
+      this.state = parser2.getGoto(baseStateID, type, true);
+    }
+    while (this.stack.length > base)
+      this.stack.pop();
+    this.reduceContext(type, start);
+  }
+  // Shift a value into the buffer
+  /**
+  @internal
+  */
+  storeNode(term, start, end, size = 4, mustSink = false) {
+    if (term == 0 && (!this.stack.length || this.stack[this.stack.length - 1] < this.buffer.length + this.bufferBase)) {
+      let top = this.buffer.length;
+      if (top > 0 && this.buffer[top - 4] == 0 && this.buffer[top - 1] > -1) {
+        if (start == end)
+          return;
+        if (this.buffer[top - 2] >= start) {
+          this.buffer[top - 2] = end;
+          return;
+        }
+      }
+    }
+    if (!mustSink || this.pos == end) {
+      this.buffer.push(term, start, end, size);
+    } else {
+      let index = this.buffer.length;
+      if (index > 0 && (this.buffer[index - 4] != 0 || this.buffer[index - 1] < 0)) {
+        let mustMove = false;
+        for (let scan2 = index; scan2 > 0 && this.buffer[scan2 - 2] > end; scan2 -= 4) {
+          if (this.buffer[scan2 - 1] >= 0) {
+            mustMove = true;
+            break;
+          }
+        }
+        if (mustMove)
+          while (index > 0 && this.buffer[index - 2] > end) {
+            this.buffer[index] = this.buffer[index - 4];
+            this.buffer[index + 1] = this.buffer[index - 3];
+            this.buffer[index + 2] = this.buffer[index - 2];
+            this.buffer[index + 3] = this.buffer[index - 1];
+            index -= 4;
+            if (size > 4)
+              size -= 4;
+          }
+      }
+      this.buffer[index] = term;
+      this.buffer[index + 1] = start;
+      this.buffer[index + 2] = end;
+      this.buffer[index + 3] = size;
+    }
+  }
+  // Apply a shift action
+  /**
+  @internal
+  */
+  shift(action, type, start, end) {
+    if (action & 131072) {
+      this.pushState(action & 65535, this.pos);
+    } else if ((action & 262144) == 0) {
+      let nextState = action, { parser: parser2 } = this.p;
+      this.pos = end;
+      let skipped = parser2.stateFlag(
+        nextState,
+        1
+        /* StateFlag.Skipped */
+      );
+      if (!skipped && (end > start || type <= parser2.maxNode))
+        this.reducePos = end;
+      this.pushState(nextState, skipped ? start : Math.min(start, this.reducePos));
+      this.shiftContext(type, start);
+      if (type <= parser2.maxNode)
+        this.buffer.push(type, start, end, 4);
+    } else {
+      this.pos = end;
+      this.shiftContext(type, start);
+      if (type <= this.p.parser.maxNode)
+        this.buffer.push(type, start, end, 4);
+    }
+  }
+  // Apply an action
+  /**
+  @internal
+  */
+  apply(action, next, nextStart, nextEnd) {
+    if (action & 65536)
+      this.reduce(action);
+    else
+      this.shift(action, next, nextStart, nextEnd);
+  }
+  // Add a prebuilt (reused) node into the buffer.
+  /**
+  @internal
+  */
+  useNode(value, next, start) {
+    let index = this.p.reused.length - 1;
+    if (index < 0 || this.p.reused[index] != value) {
+      this.p.reused.push(value);
+      index++;
+    }
+    let end = this.reducePos = this.pos = start + value.length;
+    this.pushState(next, start);
+    this.buffer.push(
+      index,
+      start,
+      end,
+      -1
+      /* size == -1 means this is a reused value */
+    );
+    if (this.curContext)
+      this.updateContext(this.curContext.tracker.reuse(this.curContext.context, value, this, this.p.stream.reset(this.pos - value.length)));
+  }
+  // Split the stack. Due to the buffer sharing and the fact
+  // that `this.stack` tends to stay quite shallow, this isn't very
+  // expensive.
+  /**
+  @internal
+  */
+  split() {
+    let parent = this;
+    let off = parent.buffer.length;
+    if (off && parent.buffer[off - 4] == 0)
+      off -= 4;
+    while (off > 0 && parent.buffer[off - 2] > parent.reducePos)
+      off -= 4;
+    let buffer = parent.buffer.slice(off), base = parent.bufferBase + off;
+    while (parent && base == parent.bufferBase)
+      parent = parent.parent;
+    return new _Stack(this.p, this.stack.slice(), this.state, this.reducePos, this.pos, this.score, buffer, base, this.curContext, this.lookAhead, parent);
+  }
+  // Try to recover from an error by 'deleting' (ignoring) one token.
+  /**
+  @internal
+  */
+  recoverByDelete(next, nextEnd) {
+    let isNode = next <= this.p.parser.maxNode;
+    if (isNode)
+      this.storeNode(next, this.pos, nextEnd, 4);
+    this.storeNode(0, this.pos, nextEnd, isNode ? 8 : 4);
+    this.pos = this.reducePos = nextEnd;
+    this.score -= 190;
+  }
+  /**
+  Check if the given term would be able to be shifted (optionally
+  after some reductions) on this stack. This can be useful for
+  external tokenizers that want to make sure they only provide a
+  given token when it applies.
+  */
+  canShift(term) {
+    for (let sim = new SimulatedStack(this); ; ) {
+      let action = this.p.parser.stateSlot(
+        sim.state,
+        4
+        /* ParseState.DefaultReduce */
+      ) || this.p.parser.hasAction(sim.state, term);
+      if (action == 0)
+        return false;
+      if ((action & 65536) == 0)
+        return true;
+      sim.reduce(action);
+    }
+  }
+  // Apply up to Recover.MaxNext recovery actions that conceptually
+  // inserts some missing token or rule.
+  /**
+  @internal
+  */
+  recoverByInsert(next) {
+    if (this.stack.length >= 300)
+      return [];
+    let nextStates = this.p.parser.nextStates(this.state);
+    if (nextStates.length > 4 << 1 || this.stack.length >= 120) {
+      let best = [];
+      for (let i = 0, s; i < nextStates.length; i += 2) {
+        if ((s = nextStates[i + 1]) != this.state && this.p.parser.hasAction(s, next))
+          best.push(nextStates[i], s);
+      }
+      if (this.stack.length < 120)
+        for (let i = 0; best.length < 4 << 1 && i < nextStates.length; i += 2) {
+          let s = nextStates[i + 1];
+          if (!best.some((v, i2) => i2 & 1 && v == s))
+            best.push(nextStates[i], s);
+        }
+      nextStates = best;
+    }
+    let result = [];
+    for (let i = 0; i < nextStates.length && result.length < 4; i += 2) {
+      let s = nextStates[i + 1];
+      if (s == this.state)
+        continue;
+      let stack = this.split();
+      stack.pushState(s, this.pos);
+      stack.storeNode(0, stack.pos, stack.pos, 4, true);
+      stack.shiftContext(nextStates[i], this.pos);
+      stack.reducePos = this.pos;
+      stack.score -= 200;
+      result.push(stack);
+    }
+    return result;
+  }
+  // Force a reduce, if possible. Return false if that can't
+  // be done.
+  /**
+  @internal
+  */
+  forceReduce() {
+    let { parser: parser2 } = this.p;
+    let reduce = parser2.stateSlot(
+      this.state,
+      5
+      /* ParseState.ForcedReduce */
+    );
+    if ((reduce & 65536) == 0)
+      return false;
+    if (!parser2.validAction(this.state, reduce)) {
+      let depth = reduce >> 19, term = reduce & 65535;
+      let target = this.stack.length - depth * 3;
+      if (target < 0 || parser2.getGoto(this.stack[target], term, false) < 0) {
+        let backup = this.findForcedReduction();
+        if (backup == null)
+          return false;
+        reduce = backup;
+      }
+      this.storeNode(0, this.pos, this.pos, 4, true);
+      this.score -= 100;
+    }
+    this.reducePos = this.pos;
+    this.reduce(reduce);
+    return true;
+  }
+  /**
+  Try to scan through the automaton to find some kind of reduction
+  that can be applied. Used when the regular ForcedReduce field
+  isn't a valid action. @internal
+  */
+  findForcedReduction() {
+    let { parser: parser2 } = this.p, seen = [];
+    let explore = (state, depth) => {
+      if (seen.includes(state))
+        return;
+      seen.push(state);
+      return parser2.allActions(state, (action) => {
+        if (action & (262144 | 131072)) ;
+        else if (action & 65536) {
+          let rDepth = (action >> 19) - depth;
+          if (rDepth > 1) {
+            let term = action & 65535, target = this.stack.length - rDepth * 3;
+            if (target >= 0 && parser2.getGoto(this.stack[target], term, false) >= 0)
+              return rDepth << 19 | 65536 | term;
+          }
+        } else {
+          let found = explore(action, depth + 1);
+          if (found != null)
+            return found;
+        }
+      });
+    };
+    return explore(this.state, 0);
+  }
+  /**
+  @internal
+  */
+  forceAll() {
+    while (!this.p.parser.stateFlag(
+      this.state,
+      2
+      /* StateFlag.Accepting */
+    )) {
+      if (!this.forceReduce()) {
+        this.storeNode(0, this.pos, this.pos, 4, true);
+        break;
+      }
+    }
+    return this;
+  }
+  /**
+  Check whether this state has no further actions (assumed to be a direct descendant of the
+  top state, since any other states must be able to continue
+  somehow). @internal
+  */
+  get deadEnd() {
+    if (this.stack.length != 3)
+      return false;
+    let { parser: parser2 } = this.p;
+    return parser2.data[parser2.stateSlot(
+      this.state,
+      1
+      /* ParseState.Actions */
+    )] == 65535 && !parser2.stateSlot(
+      this.state,
+      4
+      /* ParseState.DefaultReduce */
+    );
+  }
+  /**
+  Restart the stack (put it back in its start state). Only safe
+  when this.stack.length == 3 (state is directly below the top
+  state). @internal
+  */
+  restart() {
+    this.storeNode(0, this.pos, this.pos, 4, true);
+    this.state = this.stack[0];
+    this.stack.length = 0;
+  }
+  /**
+  @internal
+  */
+  sameState(other) {
+    if (this.state != other.state || this.stack.length != other.stack.length)
+      return false;
+    for (let i = 0; i < this.stack.length; i += 3)
+      if (this.stack[i] != other.stack[i])
+        return false;
+    return true;
+  }
+  /**
+  Get the parser used by this stack.
+  */
+  get parser() {
+    return this.p.parser;
+  }
+  /**
+  Test whether a given dialect (by numeric ID, as exported from
+  the terms file) is enabled.
+  */
+  dialectEnabled(dialectID) {
+    return this.p.parser.dialect.flags[dialectID];
+  }
+  shiftContext(term, start) {
+    if (this.curContext)
+      this.updateContext(this.curContext.tracker.shift(this.curContext.context, term, this, this.p.stream.reset(start)));
+  }
+  reduceContext(term, start) {
+    if (this.curContext)
+      this.updateContext(this.curContext.tracker.reduce(this.curContext.context, term, this, this.p.stream.reset(start)));
+  }
+  /**
+  @internal
+  */
+  emitContext() {
+    let last = this.buffer.length - 1;
+    if (last < 0 || this.buffer[last] != -3)
+      this.storeNode(this.curContext.hash, this.reducePos, this.reducePos, -3, true);
+  }
+  /**
+  @internal
+  */
+  emitLookAhead() {
+    let last = this.buffer.length - 1;
+    if (last < 0 || this.buffer[last] != -4)
+      this.buffer.push(this.lookAhead, this.pos, this.pos, -4);
+  }
+  updateContext(context) {
+    if (context != this.curContext.context) {
+      let newCx = new StackContext(this.curContext.tracker, context);
+      if (newCx.hash != this.curContext.hash)
+        this.emitContext();
+      this.curContext = newCx;
+    }
+  }
+  /**
+  @internal
+  */
+  setLookAhead(lookAhead) {
+    if (lookAhead <= this.lookAhead)
+      return false;
+    this.emitLookAhead();
+    this.lookAhead = lookAhead;
+    return true;
+  }
+  /**
+  @internal
+  */
+  close() {
+    if (this.curContext && this.curContext.tracker.strict)
+      this.emitContext();
+    if (this.lookAhead > 0)
+      this.emitLookAhead();
+  }
+};
+var StackContext = class {
+  constructor(tracker, context) {
+    this.tracker = tracker;
+    this.context = context;
+    this.hash = tracker.strict ? tracker.hash(context) : 0;
+  }
+};
+var SimulatedStack = class {
+  constructor(start) {
+    this.start = start;
+    this.state = start.state;
+    this.stack = start.stack;
+    this.base = this.stack.length;
+  }
+  reduce(action) {
+    let term = action & 65535, depth = action >> 19;
+    if (depth == 0) {
+      if (this.stack == this.start.stack)
+        this.stack = this.stack.slice();
+      this.stack.push(this.state, 0, 0);
+      this.base += 3;
+    } else {
+      this.base -= (depth - 1) * 3;
+    }
+    let goto = this.start.p.parser.getGoto(this.stack[this.base - 3], term, true);
+    this.state = goto;
+  }
+};
+var StackBufferCursor = class _StackBufferCursor {
+  constructor(stack, pos, index) {
+    this.stack = stack;
+    this.pos = pos;
+    this.index = index;
+    this.buffer = stack.buffer;
+    if (this.index == 0)
+      this.maybeNext();
+  }
+  static create(stack, pos = stack.bufferBase + stack.buffer.length) {
+    return new _StackBufferCursor(stack, pos, pos - stack.bufferBase);
+  }
+  maybeNext() {
+    let next = this.stack.parent;
+    if (next != null) {
+      this.index = this.stack.bufferBase - next.bufferBase;
+      this.stack = next;
+      this.buffer = next.buffer;
+    }
+  }
+  get id() {
+    return this.buffer[this.index - 4];
+  }
+  get start() {
+    return this.buffer[this.index - 3];
+  }
+  get end() {
+    return this.buffer[this.index - 2];
+  }
+  get size() {
+    return this.buffer[this.index - 1];
+  }
+  next() {
+    this.index -= 4;
+    this.pos -= 4;
+    if (this.index == 0)
+      this.maybeNext();
+  }
+  fork() {
+    return new _StackBufferCursor(this.stack, this.pos, this.index);
+  }
+};
+function decodeArray(input, Type = Uint16Array) {
+  if (typeof input != "string")
+    return input;
+  let array = null;
+  for (let pos = 0, out = 0; pos < input.length; ) {
+    let value = 0;
+    for (; ; ) {
+      let next = input.charCodeAt(pos++), stop = false;
+      if (next == 126) {
+        value = 65535;
+        break;
+      }
+      if (next >= 92)
+        next--;
+      if (next >= 34)
+        next--;
+      let digit = next - 32;
+      if (digit >= 46) {
+        digit -= 46;
+        stop = true;
+      }
+      value += digit;
+      if (stop)
+        break;
+      value *= 46;
+    }
+    if (array)
+      array[out++] = value;
+    else
+      array = new Type(value);
+  }
+  return array;
+}
+var CachedToken = class {
+  constructor() {
+    this.start = -1;
+    this.value = -1;
+    this.end = -1;
+    this.extended = -1;
+    this.lookAhead = 0;
+    this.mask = 0;
+    this.context = 0;
+  }
+};
+var nullToken = new CachedToken();
+var InputStream = class {
+  /**
+  @internal
+  */
+  constructor(input, ranges) {
+    this.input = input;
+    this.ranges = ranges;
+    this.chunk = "";
+    this.chunkOff = 0;
+    this.chunk2 = "";
+    this.chunk2Pos = 0;
+    this.next = -1;
+    this.token = nullToken;
+    this.rangeIndex = 0;
+    this.pos = this.chunkPos = ranges[0].from;
+    this.range = ranges[0];
+    this.end = ranges[ranges.length - 1].to;
+    this.readNext();
+  }
+  /**
+  @internal
+  */
+  resolveOffset(offset, assoc) {
+    let range = this.range, index = this.rangeIndex;
+    let pos = this.pos + offset;
+    while (pos < range.from) {
+      if (!index)
+        return null;
+      let next = this.ranges[--index];
+      pos -= range.from - next.to;
+      range = next;
+    }
+    while (assoc < 0 ? pos > range.to : pos >= range.to) {
+      if (index == this.ranges.length - 1)
+        return null;
+      let next = this.ranges[++index];
+      pos += next.from - range.to;
+      range = next;
+    }
+    return pos;
+  }
+  /**
+  @internal
+  */
+  clipPos(pos) {
+    if (pos >= this.range.from && pos < this.range.to)
+      return pos;
+    for (let range of this.ranges)
+      if (range.to > pos)
+        return Math.max(pos, range.from);
+    return this.end;
+  }
+  /**
+  Look at a code unit near the stream position. `.peek(0)` equals
+  `.next`, `.peek(-1)` gives you the previous character, and so
+  on.
+  
+  Note that looking around during tokenizing creates dependencies
+  on potentially far-away content, which may reduce the
+  effectiveness incremental parsing—when looking forward—or even
+  cause invalid reparses when looking backward more than 25 code
+  units, since the library does not track lookbehind.
+  */
+  peek(offset) {
+    let idx = this.chunkOff + offset, pos, result;
+    if (idx >= 0 && idx < this.chunk.length) {
+      pos = this.pos + offset;
+      result = this.chunk.charCodeAt(idx);
+    } else {
+      let resolved = this.resolveOffset(offset, 1);
+      if (resolved == null)
+        return -1;
+      pos = resolved;
+      if (pos >= this.chunk2Pos && pos < this.chunk2Pos + this.chunk2.length) {
+        result = this.chunk2.charCodeAt(pos - this.chunk2Pos);
+      } else {
+        let i = this.rangeIndex, range = this.range;
+        while (range.to <= pos)
+          range = this.ranges[++i];
+        this.chunk2 = this.input.chunk(this.chunk2Pos = pos);
+        if (pos + this.chunk2.length > range.to)
+          this.chunk2 = this.chunk2.slice(0, range.to - pos);
+        result = this.chunk2.charCodeAt(0);
+      }
+    }
+    if (pos >= this.token.lookAhead)
+      this.token.lookAhead = pos + 1;
+    return result;
+  }
+  /**
+  Accept a token. By default, the end of the token is set to the
+  current stream position, but you can pass an offset (relative to
+  the stream position) to change that.
+  */
+  acceptToken(token, endOffset = 0) {
+    let end = endOffset ? this.resolveOffset(endOffset, -1) : this.pos;
+    if (end == null || end < this.token.start)
+      throw new RangeError("Token end out of bounds");
+    this.token.value = token;
+    this.token.end = end;
+  }
+  /**
+  Accept a token ending at a specific given position.
+  */
+  acceptTokenTo(token, endPos) {
+    this.token.value = token;
+    this.token.end = endPos;
+  }
+  getChunk() {
+    if (this.pos >= this.chunk2Pos && this.pos < this.chunk2Pos + this.chunk2.length) {
+      let { chunk, chunkPos } = this;
+      this.chunk = this.chunk2;
+      this.chunkPos = this.chunk2Pos;
+      this.chunk2 = chunk;
+      this.chunk2Pos = chunkPos;
+      this.chunkOff = this.pos - this.chunkPos;
+    } else {
+      this.chunk2 = this.chunk;
+      this.chunk2Pos = this.chunkPos;
+      let nextChunk = this.input.chunk(this.pos);
+      let end = this.pos + nextChunk.length;
+      this.chunk = end > this.range.to ? nextChunk.slice(0, this.range.to - this.pos) : nextChunk;
+      this.chunkPos = this.pos;
+      this.chunkOff = 0;
+    }
+  }
+  readNext() {
+    if (this.chunkOff >= this.chunk.length) {
+      this.getChunk();
+      if (this.chunkOff == this.chunk.length)
+        return this.next = -1;
+    }
+    return this.next = this.chunk.charCodeAt(this.chunkOff);
+  }
+  /**
+  Move the stream forward N (defaults to 1) code units. Returns
+  the new value of [`next`](#lr.InputStream.next).
+  */
+  advance(n = 1) {
+    this.chunkOff += n;
+    while (this.pos + n >= this.range.to) {
+      if (this.rangeIndex == this.ranges.length - 1)
+        return this.setDone();
+      n -= this.range.to - this.pos;
+      this.range = this.ranges[++this.rangeIndex];
+      this.pos = this.range.from;
+    }
+    this.pos += n;
+    if (this.pos >= this.token.lookAhead)
+      this.token.lookAhead = this.pos + 1;
+    return this.readNext();
+  }
+  setDone() {
+    this.pos = this.chunkPos = this.end;
+    this.range = this.ranges[this.rangeIndex = this.ranges.length - 1];
+    this.chunk = "";
+    return this.next = -1;
+  }
+  /**
+  @internal
+  */
+  reset(pos, token) {
+    if (token) {
+      this.token = token;
+      token.start = pos;
+      token.lookAhead = pos + 1;
+      token.value = token.extended = -1;
+    } else {
+      this.token = nullToken;
+    }
+    if (this.pos != pos) {
+      this.pos = pos;
+      if (pos == this.end) {
+        this.setDone();
+        return this;
+      }
+      while (pos < this.range.from)
+        this.range = this.ranges[--this.rangeIndex];
+      while (pos >= this.range.to)
+        this.range = this.ranges[++this.rangeIndex];
+      if (pos >= this.chunkPos && pos < this.chunkPos + this.chunk.length) {
+        this.chunkOff = pos - this.chunkPos;
+      } else {
+        this.chunk = "";
+        this.chunkOff = 0;
+      }
+      this.readNext();
+    }
+    return this;
+  }
+  /**
+  @internal
+  */
+  read(from, to) {
+    if (from >= this.chunkPos && to <= this.chunkPos + this.chunk.length)
+      return this.chunk.slice(from - this.chunkPos, to - this.chunkPos);
+    if (from >= this.chunk2Pos && to <= this.chunk2Pos + this.chunk2.length)
+      return this.chunk2.slice(from - this.chunk2Pos, to - this.chunk2Pos);
+    if (from >= this.range.from && to <= this.range.to)
+      return this.input.read(from, to);
+    let result = "";
+    for (let r of this.ranges) {
+      if (r.from >= to)
+        break;
+      if (r.to > from)
+        result += this.input.read(Math.max(r.from, from), Math.min(r.to, to));
+    }
+    return result;
+  }
+};
+var TokenGroup = class {
+  constructor(data, id) {
+    this.data = data;
+    this.id = id;
+  }
+  token(input, stack) {
+    let { parser: parser2 } = stack.p;
+    readToken(this.data, input, stack, this.id, parser2.data, parser2.tokenPrecTable);
+  }
+};
+TokenGroup.prototype.contextual = TokenGroup.prototype.fallback = TokenGroup.prototype.extend = false;
+var LocalTokenGroup = class {
+  constructor(data, precTable, elseToken) {
+    this.precTable = precTable;
+    this.elseToken = elseToken;
+    this.data = typeof data == "string" ? decodeArray(data) : data;
+  }
+  token(input, stack) {
+    let start = input.pos, skipped = 0;
+    for (; ; ) {
+      let atEof = input.next < 0, nextPos = input.resolveOffset(1, 1);
+      readToken(this.data, input, stack, 0, this.data, this.precTable);
+      if (input.token.value > -1)
+        break;
+      if (this.elseToken == null)
+        return;
+      if (!atEof)
+        skipped++;
+      if (nextPos == null)
+        break;
+      input.reset(nextPos, input.token);
+    }
+    if (skipped) {
+      input.reset(start, input.token);
+      input.acceptToken(this.elseToken, skipped);
+    }
+  }
+};
+LocalTokenGroup.prototype.contextual = TokenGroup.prototype.fallback = TokenGroup.prototype.extend = false;
+function readToken(data, input, stack, group, precTable, precOffset) {
+  let state = 0, groupMask = 1 << group, { dialect } = stack.p.parser;
+  scan: for (; ; ) {
+    if ((groupMask & data[state]) == 0)
+      break;
+    let accEnd = data[state + 1];
+    for (let i = state + 3; i < accEnd; i += 2)
+      if ((data[i + 1] & groupMask) > 0) {
+        let term = data[i];
+        if (dialect.allows(term) && (input.token.value == -1 || input.token.value == term || overrides(term, input.token.value, precTable, precOffset))) {
+          input.acceptToken(term);
+          break;
+        }
+      }
+    let next = input.next, low = 0, high = data[state + 2];
+    if (input.next < 0 && high > low && data[accEnd + high * 3 - 3] == 65535) {
+      state = data[accEnd + high * 3 - 1];
+      continue scan;
+    }
+    for (; low < high; ) {
+      let mid = low + high >> 1;
+      let index = accEnd + mid + (mid << 1);
+      let from = data[index], to = data[index + 1] || 65536;
+      if (next < from)
+        high = mid;
+      else if (next >= to)
+        low = mid + 1;
+      else {
+        state = data[index + 2];
+        input.advance();
+        continue scan;
+      }
+    }
+    break;
+  }
+}
+function findOffset(data, start, term) {
+  for (let i = start, next; (next = data[i]) != 65535; i++)
+    if (next == term)
+      return i - start;
+  return -1;
+}
+function overrides(token, prev, tableData, tableOffset) {
+  let iPrev = findOffset(tableData, tableOffset, prev);
+  return iPrev < 0 || findOffset(tableData, tableOffset, token) < iPrev;
+}
+var verbose = typeof process != "undefined" && process.env && /\bparse\b/.test(process.env.LOG);
+var stackIDs = null;
+function cutAt(tree, pos, side) {
+  let cursor = tree.cursor(IterMode.IncludeAnonymous);
+  cursor.moveTo(pos);
+  for (; ; ) {
+    if (!(side < 0 ? cursor.childBefore(pos) : cursor.childAfter(pos)))
+      for (; ; ) {
+        if ((side < 0 ? cursor.to < pos : cursor.from > pos) && !cursor.type.isError)
+          return side < 0 ? Math.max(0, Math.min(
+            cursor.to - 1,
+            pos - 25
+            /* Lookahead.Margin */
+          )) : Math.min(tree.length, Math.max(
+            cursor.from + 1,
+            pos + 25
+            /* Lookahead.Margin */
+          ));
+        if (side < 0 ? cursor.prevSibling() : cursor.nextSibling())
+          break;
+        if (!cursor.parent())
+          return side < 0 ? 0 : tree.length;
+      }
+  }
+}
+var FragmentCursor = class {
+  constructor(fragments, minRepeat) {
+    this.fragments = fragments;
+    this.minRepeat = minRepeat;
+    this.i = 0;
+    this.fragment = null;
+    this.safeFrom = -1;
+    this.safeTo = -1;
+    this.trees = [];
+    this.start = [];
+    this.index = [];
+    this.lastRepeat = null;
+    this.lastRepeatPos = -1;
+    this.nextFragment();
+  }
+  nextFragment() {
+    let fr = this.fragment = this.i == this.fragments.length ? null : this.fragments[this.i++];
+    if (fr) {
+      this.safeFrom = fr.openStart ? cutAt(fr.tree, fr.from + fr.offset, 1) - fr.offset : fr.from;
+      this.safeTo = fr.openEnd ? cutAt(fr.tree, fr.to + fr.offset, -1) - fr.offset : fr.to;
+      while (this.trees.length) {
+        this.trees.pop();
+        this.start.pop();
+        this.index.pop();
+      }
+      this.trees.push(fr.tree);
+      this.start.push(-fr.offset);
+      this.index.push(0);
+      this.nextStart = this.safeFrom;
+    } else {
+      this.nextStart = 1e9;
+    }
+  }
+  // `pos` must be >= any previously given `pos` for this cursor
+  nodeAt(pos) {
+    if (pos < this.nextStart)
+      return null;
+    while (this.fragment && this.safeTo <= pos)
+      this.nextFragment();
+    if (!this.fragment)
+      return null;
+    for (; ; ) {
+      let last = this.trees.length - 1;
+      if (last < 0) {
+        this.nextFragment();
+        return null;
+      }
+      let top = this.trees[last], index = this.index[last];
+      if (index == top.children.length) {
+        this.trees.pop();
+        this.start.pop();
+        this.index.pop();
+        continue;
+      }
+      let next = top.children[index];
+      let start = this.start[last] + top.positions[index];
+      if (start > pos) {
+        this.nextStart = start;
+        return null;
+      }
+      if (next instanceof Tree) {
+        let storeRepeat = start > this.lastRepeatPos && next.type.id >= this.minRepeat;
+        if (start == pos || storeRepeat) {
+          let end = start + next.length, lookahead;
+          if (start >= this.safeFrom && end <= this.safeTo && (!(lookahead = next.prop(NodeProp.lookAhead)) || end + lookahead < this.fragment.to)) {
+            if (storeRepeat) {
+              this.lastRepeat = next;
+              this.lastRepeatPos = start;
+            }
+            if (start == pos)
+              return next;
+          } else if (start == pos) {
+            return null;
+          }
+        }
+        this.index[last]++;
+        if (start + next.length >= Math.max(this.safeFrom, pos)) {
+          this.trees.push(next);
+          this.start.push(start);
+          this.index.push(0);
+        }
+      } else {
+        this.index[last]++;
+        this.nextStart = start + next.length;
+      }
+    }
+  }
+};
+var TokenCache = class {
+  constructor(parser2, stream) {
+    this.stream = stream;
+    this.tokens = [];
+    this.mainToken = null;
+    this.actions = [];
+    this.tokens = parser2.tokenizers.map((_) => new CachedToken());
+  }
+  getActions(stack) {
+    let actionIndex = 0;
+    let main2 = null;
+    let { parser: parser2 } = stack.p, { tokenizers } = parser2;
+    let mask = parser2.stateSlot(
+      stack.state,
+      3
+      /* ParseState.TokenizerMask */
+    );
+    let context = stack.curContext ? stack.curContext.hash : 0;
+    let lookAhead = 0;
+    for (let i = 0; i < tokenizers.length; i++) {
+      if ((1 << i & mask) == 0)
+        continue;
+      let tokenizer = tokenizers[i], token = this.tokens[i];
+      if (main2 && !tokenizer.fallback)
+        continue;
+      if (tokenizer.contextual || token.start != stack.pos || token.mask != mask || token.context != context) {
+        this.updateCachedToken(token, tokenizer, stack);
+        token.mask = mask;
+        token.context = context;
+      }
+      if (token.lookAhead > token.end + 25)
+        lookAhead = Math.max(token.lookAhead, lookAhead);
+      if (token.value != 0) {
+        let startIndex = actionIndex;
+        if (token.extended > -1)
+          actionIndex = this.addActions(stack, token.extended, token.end, actionIndex);
+        actionIndex = this.addActions(stack, token.value, token.end, actionIndex);
+        if (!tokenizer.extend) {
+          main2 = token;
+          if (actionIndex > startIndex)
+            break;
+        }
+      }
+    }
+    while (this.actions.length > actionIndex)
+      this.actions.pop();
+    if (lookAhead)
+      stack.setLookAhead(lookAhead);
+    if (!main2 && stack.pos == this.stream.end) {
+      main2 = new CachedToken();
+      main2.value = stack.p.parser.eofTerm;
+      main2.start = main2.end = stack.pos;
+      actionIndex = this.addActions(stack, main2.value, main2.end, actionIndex);
+    }
+    this.mainToken = main2;
+    return this.actions;
+  }
+  getMainToken(stack) {
+    if (this.mainToken)
+      return this.mainToken;
+    let main2 = new CachedToken(), { pos, p } = stack;
+    main2.start = pos;
+    main2.end = Math.min(pos + 1, p.stream.end);
+    main2.value = pos == p.stream.end ? p.parser.eofTerm : 0;
+    return main2;
+  }
+  updateCachedToken(token, tokenizer, stack) {
+    let start = this.stream.clipPos(stack.pos);
+    tokenizer.token(this.stream.reset(start, token), stack);
+    if (token.value > -1) {
+      let { parser: parser2 } = stack.p;
+      for (let i = 0; i < parser2.specialized.length; i++)
+        if (parser2.specialized[i] == token.value) {
+          let result = parser2.specializers[i](this.stream.read(token.start, token.end), stack);
+          if (result >= 0 && stack.p.parser.dialect.allows(result >> 1)) {
+            if ((result & 1) == 0)
+              token.value = result >> 1;
+            else
+              token.extended = result >> 1;
+            break;
+          }
+        }
+    } else {
+      token.value = 0;
+      token.end = this.stream.clipPos(start + 1);
+    }
+  }
+  putAction(action, token, end, index) {
+    for (let i = 0; i < index; i += 3)
+      if (this.actions[i] == action)
+        return index;
+    this.actions[index++] = action;
+    this.actions[index++] = token;
+    this.actions[index++] = end;
+    return index;
+  }
+  addActions(stack, token, end, index) {
+    let { state } = stack, { parser: parser2 } = stack.p, { data } = parser2;
+    for (let set = 0; set < 2; set++) {
+      for (let i = parser2.stateSlot(
+        state,
+        set ? 2 : 1
+        /* ParseState.Actions */
+      ); ; i += 3) {
+        if (data[i] == 65535) {
+          if (data[i + 1] == 1) {
+            i = pair(data, i + 2);
+          } else {
+            if (index == 0 && data[i + 1] == 2)
+              index = this.putAction(pair(data, i + 2), token, end, index);
+            break;
+          }
+        }
+        if (data[i] == token)
+          index = this.putAction(pair(data, i + 1), token, end, index);
+      }
+    }
+    return index;
+  }
+};
+var Parse = class {
+  constructor(parser2, input, fragments, ranges) {
+    this.parser = parser2;
+    this.input = input;
+    this.ranges = ranges;
+    this.recovering = 0;
+    this.nextStackID = 9812;
+    this.minStackPos = 0;
+    this.reused = [];
+    this.stoppedAt = null;
+    this.lastBigReductionStart = -1;
+    this.lastBigReductionSize = 0;
+    this.bigReductionCount = 0;
+    this.stream = new InputStream(input, ranges);
+    this.tokens = new TokenCache(parser2, this.stream);
+    this.topTerm = parser2.top[1];
+    let { from } = ranges[0];
+    this.stacks = [Stack.start(this, parser2.top[0], from)];
+    this.fragments = fragments.length && this.stream.end - from > parser2.bufferLength * 4 ? new FragmentCursor(fragments, parser2.minRepeatTerm) : null;
+  }
+  get parsedPos() {
+    return this.minStackPos;
+  }
+  // Move the parser forward. This will process all parse stacks at
+  // `this.pos` and try to advance them to a further position. If no
+  // stack for such a position is found, it'll start error-recovery.
+  //
+  // When the parse is finished, this will return a syntax tree. When
+  // not, it returns `null`.
+  advance() {
+    let stacks = this.stacks, pos = this.minStackPos;
+    let newStacks = this.stacks = [];
+    let stopped, stoppedTokens;
+    if (this.bigReductionCount > 300 && stacks.length == 1) {
+      let [s] = stacks;
+      while (s.forceReduce() && s.stack.length && s.stack[s.stack.length - 2] >= this.lastBigReductionStart) {
+      }
+      this.bigReductionCount = this.lastBigReductionSize = 0;
+    }
+    for (let i = 0; i < stacks.length; i++) {
+      let stack = stacks[i];
+      for (; ; ) {
+        this.tokens.mainToken = null;
+        if (stack.pos > pos) {
+          newStacks.push(stack);
+        } else if (this.advanceStack(stack, newStacks, stacks)) {
+          continue;
+        } else {
+          if (!stopped) {
+            stopped = [];
+            stoppedTokens = [];
+          }
+          stopped.push(stack);
+          let tok = this.tokens.getMainToken(stack);
+          stoppedTokens.push(tok.value, tok.end);
+        }
+        break;
+      }
+    }
+    if (!newStacks.length) {
+      let finished = stopped && findFinished(stopped);
+      if (finished) {
+        if (verbose)
+          console.log("Finish with " + this.stackID(finished));
+        return this.stackToTree(finished);
+      }
+      if (this.parser.strict) {
+        if (verbose && stopped)
+          console.log("Stuck with token " + (this.tokens.mainToken ? this.parser.getName(this.tokens.mainToken.value) : "none"));
+        throw new SyntaxError("No parse at " + pos);
+      }
+      if (!this.recovering)
+        this.recovering = 5;
+    }
+    if (this.recovering && stopped) {
+      let finished = this.stoppedAt != null && stopped[0].pos > this.stoppedAt ? stopped[0] : this.runRecovery(stopped, stoppedTokens, newStacks);
+      if (finished) {
+        if (verbose)
+          console.log("Force-finish " + this.stackID(finished));
+        return this.stackToTree(finished.forceAll());
+      }
+    }
+    if (this.recovering) {
+      let maxRemaining = this.recovering == 1 ? 1 : this.recovering * 3;
+      if (newStacks.length > maxRemaining) {
+        newStacks.sort((a, b) => b.score - a.score);
+        while (newStacks.length > maxRemaining)
+          newStacks.pop();
+      }
+      if (newStacks.some((s) => s.reducePos > pos))
+        this.recovering--;
+    } else if (newStacks.length > 1) {
+      outer: for (let i = 0; i < newStacks.length - 1; i++) {
+        let stack = newStacks[i];
+        for (let j = i + 1; j < newStacks.length; j++) {
+          let other = newStacks[j];
+          if (stack.sameState(other) || stack.buffer.length > 500 && other.buffer.length > 500) {
+            if ((stack.score - other.score || stack.buffer.length - other.buffer.length) > 0) {
+              newStacks.splice(j--, 1);
+            } else {
+              newStacks.splice(i--, 1);
+              continue outer;
+            }
+          }
+        }
+      }
+      if (newStacks.length > 12) {
+        newStacks.sort((a, b) => b.score - a.score);
+        newStacks.splice(
+          12,
+          newStacks.length - 12
+          /* Rec.MaxStackCount */
+        );
+      }
+    }
+    this.minStackPos = newStacks[0].pos;
+    for (let i = 1; i < newStacks.length; i++)
+      if (newStacks[i].pos < this.minStackPos)
+        this.minStackPos = newStacks[i].pos;
+    return null;
+  }
+  stopAt(pos) {
+    if (this.stoppedAt != null && this.stoppedAt < pos)
+      throw new RangeError("Can't move stoppedAt forward");
+    this.stoppedAt = pos;
+  }
+  // See if a given tree, or a descendant right at its start, can be
+  // reused in the given stack.
+  tryReuse(stack, start, tree, repeatOnly) {
+    if (!tree)
+      return null;
+    let strictCx = stack.curContext && stack.curContext.tracker.strict, cxHash = strictCx ? stack.curContext.hash : 0;
+    for (; tree; ) {
+      let match = this.parser.nodeSet.types[tree.type.id] != tree.type ? -1 : this.parser.getGoto(stack.state, tree.type.id);
+      if (match > -1 && tree.length && (!strictCx || (tree.prop(NodeProp.contextHash) || 0) == cxHash)) {
+        stack.useNode(tree, match, start);
+        return tree;
+      }
+      if (tree.children.length == 0 || tree.positions[0] > 0)
+        break;
+      let inner = tree.children[0];
+      if (inner instanceof Tree && (!repeatOnly || inner.type.id >= this.parser.minRepeatTerm))
+        tree = inner;
+      else
+        break;
+    }
+    return null;
+  }
+  // Returns an updated version of the given stack, or null if the
+  // stack can't advance normally. When `split` and `stacks` are
+  // given, stacks split off by ambiguous operations will be pushed to
+  // `split`, or added to `stacks` if they move `pos` forward.
+  advanceStack(stack, stacks, split) {
+    let start = stack.pos, { parser: parser2 } = this;
+    let base = verbose ? this.stackID(stack) + " -> " : "";
+    if (this.stoppedAt != null && start > this.stoppedAt)
+      return stack.forceReduce() ? stack : null;
+    if (this.fragments) {
+      let reused = stack.reducePos < start && stack.buffer.length && stack.buffer[stack.buffer.length - 2] <= stack.reducePos && this.fragments.lastRepeatPos == stack.reducePos && this.tryReuse(stack, stack.reducePos, this.fragments.lastRepeat, true) || this.tryReuse(stack, start, this.fragments.nodeAt(start), false);
+      if (reused) {
+        if (verbose)
+          console.log(base + this.stackID(stack) + ` (via reuse of ${parser2.getName(reused.type.id)})`);
+        return true;
+      }
+    }
+    let defaultReduce = parser2.stateSlot(
+      stack.state,
+      4
+      /* ParseState.DefaultReduce */
+    );
+    if (defaultReduce > 0) {
+      stack.reduce(defaultReduce);
+      if (verbose)
+        console.log(base + this.stackID(stack) + ` (via always-reduce ${parser2.getName(
+          defaultReduce & 65535
+          /* Action.ValueMask */
+        )})`);
+      return true;
+    }
+    if (stack.stack.length >= 8400) {
+      while (stack.stack.length > 6e3 && stack.forceReduce()) {
+      }
+    }
+    let actions = this.tokens.getActions(stack);
+    for (let i = 0; i < actions.length; ) {
+      let action = actions[i++], term = actions[i++], end = actions[i++];
+      let last = i == actions.length || !split;
+      let localStack = last ? stack : stack.split();
+      let main2 = this.tokens.mainToken;
+      localStack.apply(action, term, main2 ? main2.start : localStack.pos, end);
+      if (verbose)
+        console.log(base + this.stackID(localStack) + ` (via ${(action & 65536) == 0 ? "shift" : `reduce of ${parser2.getName(
+          action & 65535
+          /* Action.ValueMask */
+        )}`} for ${parser2.getName(term)} @ ${start}${localStack == stack ? "" : ", split"})`);
+      if (last)
+        return true;
+      else if (localStack.pos > start)
+        stacks.push(localStack);
+      else
+        split.push(localStack);
+    }
+    return false;
+  }
+  // Advance a given stack forward as far as it will go. Returns the
+  // (possibly updated) stack if it got stuck, or null if it moved
+  // forward and was given to `pushStackDedup`.
+  advanceFully(stack, newStacks) {
+    let pos = stack.pos;
+    for (; ; ) {
+      if (!this.advanceStack(stack, null, null))
+        return false;
+      if (stack.pos > pos) {
+        pushStackDedup(stack, newStacks);
+        return true;
+      }
+    }
+  }
+  runRecovery(stacks, tokens, newStacks) {
+    let finished = null, restarted = false;
+    for (let i = 0; i < stacks.length; i++) {
+      let stack = stacks[i], token = tokens[i << 1], tokenEnd = tokens[(i << 1) + 1];
+      let base = verbose ? this.stackID(stack) + " -> " : "";
+      if (stack.deadEnd) {
+        if (restarted)
+          continue;
+        restarted = true;
+        stack.restart();
+        if (verbose)
+          console.log(base + this.stackID(stack) + " (restarted)");
+        let done = this.advanceFully(stack, newStacks);
+        if (done)
+          continue;
+      }
+      let force = stack.split(), forceBase = base;
+      for (let j = 0; j < 10 && force.forceReduce(); j++) {
+        if (verbose)
+          console.log(forceBase + this.stackID(force) + " (via force-reduce)");
+        let done = this.advanceFully(force, newStacks);
+        if (done)
+          break;
+        if (verbose)
+          forceBase = this.stackID(force) + " -> ";
+      }
+      for (let insert of stack.recoverByInsert(token)) {
+        if (verbose)
+          console.log(base + this.stackID(insert) + " (via recover-insert)");
+        this.advanceFully(insert, newStacks);
+      }
+      if (this.stream.end > stack.pos) {
+        if (tokenEnd == stack.pos) {
+          tokenEnd++;
+          token = 0;
+        }
+        stack.recoverByDelete(token, tokenEnd);
+        if (verbose)
+          console.log(base + this.stackID(stack) + ` (via recover-delete ${this.parser.getName(token)})`);
+        pushStackDedup(stack, newStacks);
+      } else if (!finished || finished.score < force.score) {
+        finished = force;
+      }
+    }
+    return finished;
+  }
+  // Convert the stack's buffer to a syntax tree.
+  stackToTree(stack) {
+    stack.close();
+    return Tree.build({
+      buffer: StackBufferCursor.create(stack),
+      nodeSet: this.parser.nodeSet,
+      topID: this.topTerm,
+      maxBufferLength: this.parser.bufferLength,
+      reused: this.reused,
+      start: this.ranges[0].from,
+      length: stack.pos - this.ranges[0].from,
+      minRepeatType: this.parser.minRepeatTerm
+    });
+  }
+  stackID(stack) {
+    let id = (stackIDs || (stackIDs = /* @__PURE__ */ new WeakMap())).get(stack);
+    if (!id)
+      stackIDs.set(stack, id = String.fromCodePoint(this.nextStackID++));
+    return id + stack;
+  }
+};
+function pushStackDedup(stack, newStacks) {
+  for (let i = 0; i < newStacks.length; i++) {
+    let other = newStacks[i];
+    if (other.pos == stack.pos && other.sameState(stack)) {
+      if (newStacks[i].score < stack.score)
+        newStacks[i] = stack;
+      return;
+    }
+  }
+  newStacks.push(stack);
+}
+var Dialect = class {
+  constructor(source, flags, disabled) {
+    this.source = source;
+    this.flags = flags;
+    this.disabled = disabled;
+  }
+  allows(term) {
+    return !this.disabled || this.disabled[term] == 0;
+  }
+};
+var LRParser = class _LRParser extends Parser {
+  /**
+  @internal
+  */
+  constructor(spec) {
+    super();
+    this.wrappers = [];
+    if (spec.version != 14)
+      throw new RangeError(`Parser version (${spec.version}) doesn't match runtime version (${14})`);
+    let nodeNames = spec.nodeNames.split(" ");
+    this.minRepeatTerm = nodeNames.length;
+    for (let i = 0; i < spec.repeatNodeCount; i++)
+      nodeNames.push("");
+    let topTerms = Object.keys(spec.topRules).map((r) => spec.topRules[r][1]);
+    let nodeProps = [];
+    for (let i = 0; i < nodeNames.length; i++)
+      nodeProps.push([]);
+    function setProp(nodeID, prop, value) {
+      nodeProps[nodeID].push([prop, prop.deserialize(String(value))]);
+    }
+    if (spec.nodeProps)
+      for (let propSpec of spec.nodeProps) {
+        let prop = propSpec[0];
+        if (typeof prop == "string")
+          prop = NodeProp[prop];
+        for (let i = 1; i < propSpec.length; ) {
+          let next = propSpec[i++];
+          if (next >= 0) {
+            setProp(next, prop, propSpec[i++]);
+          } else {
+            let value = propSpec[i + -next];
+            for (let j = -next; j > 0; j--)
+              setProp(propSpec[i++], prop, value);
+            i++;
+          }
+        }
+      }
+    this.nodeSet = new NodeSet(nodeNames.map((name2, i) => NodeType.define({
+      name: i >= this.minRepeatTerm ? void 0 : name2,
+      id: i,
+      props: nodeProps[i],
+      top: topTerms.indexOf(i) > -1,
+      error: i == 0,
+      skipped: spec.skippedNodes && spec.skippedNodes.indexOf(i) > -1
+    })));
+    if (spec.propSources)
+      this.nodeSet = this.nodeSet.extend(...spec.propSources);
+    this.strict = false;
+    this.bufferLength = DefaultBufferLength;
+    let tokenArray = decodeArray(spec.tokenData);
+    this.context = spec.context;
+    this.specializerSpecs = spec.specialized || [];
+    this.specialized = new Uint16Array(this.specializerSpecs.length);
+    for (let i = 0; i < this.specializerSpecs.length; i++)
+      this.specialized[i] = this.specializerSpecs[i].term;
+    this.specializers = this.specializerSpecs.map(getSpecializer);
+    this.states = decodeArray(spec.states, Uint32Array);
+    this.data = decodeArray(spec.stateData);
+    this.goto = decodeArray(spec.goto);
+    this.maxTerm = spec.maxTerm;
+    this.tokenizers = spec.tokenizers.map((value) => typeof value == "number" ? new TokenGroup(tokenArray, value) : value);
+    this.topRules = spec.topRules;
+    this.dialects = spec.dialects || {};
+    this.dynamicPrecedences = spec.dynamicPrecedences || null;
+    this.tokenPrecTable = spec.tokenPrec;
+    this.termNames = spec.termNames || null;
+    this.maxNode = this.nodeSet.types.length - 1;
+    this.dialect = this.parseDialect();
+    this.top = this.topRules[Object.keys(this.topRules)[0]];
+  }
+  createParse(input, fragments, ranges) {
+    let parse = new Parse(this, input, fragments, ranges);
+    for (let w of this.wrappers)
+      parse = w(parse, input, fragments, ranges);
+    return parse;
+  }
+  /**
+  Get a goto table entry @internal
+  */
+  getGoto(state, term, loose = false) {
+    let table = this.goto;
+    if (term >= table[0])
+      return -1;
+    for (let pos = table[term + 1]; ; ) {
+      let groupTag = table[pos++], last = groupTag & 1;
+      let target = table[pos++];
+      if (last && loose)
+        return target;
+      for (let end = pos + (groupTag >> 1); pos < end; pos++)
+        if (table[pos] == state)
+          return target;
+      if (last)
+        return -1;
+    }
+  }
+  /**
+  Check if this state has an action for a given terminal @internal
+  */
+  hasAction(state, terminal) {
+    let data = this.data;
+    for (let set = 0; set < 2; set++) {
+      for (let i = this.stateSlot(
+        state,
+        set ? 2 : 1
+        /* ParseState.Actions */
+      ), next; ; i += 3) {
+        if ((next = data[i]) == 65535) {
+          if (data[i + 1] == 1)
+            next = data[i = pair(data, i + 2)];
+          else if (data[i + 1] == 2)
+            return pair(data, i + 2);
+          else
+            break;
+        }
+        if (next == terminal || next == 0)
+          return pair(data, i + 1);
+      }
+    }
+    return 0;
+  }
+  /**
+  @internal
+  */
+  stateSlot(state, slot) {
+    return this.states[state * 6 + slot];
+  }
+  /**
+  @internal
+  */
+  stateFlag(state, flag) {
+    return (this.stateSlot(
+      state,
+      0
+      /* ParseState.Flags */
+    ) & flag) > 0;
+  }
+  /**
+  @internal
+  */
+  validAction(state, action) {
+    return !!this.allActions(state, (a) => a == action ? true : null);
+  }
+  /**
+  @internal
+  */
+  allActions(state, action) {
+    let deflt = this.stateSlot(
+      state,
+      4
+      /* ParseState.DefaultReduce */
+    );
+    let result = deflt ? action(deflt) : void 0;
+    for (let i = this.stateSlot(
+      state,
+      1
+      /* ParseState.Actions */
+    ); result == null; i += 3) {
+      if (this.data[i] == 65535) {
+        if (this.data[i + 1] == 1)
+          i = pair(this.data, i + 2);
+        else
+          break;
+      }
+      result = action(pair(this.data, i + 1));
+    }
+    return result;
+  }
+  /**
+  Get the states that can follow this one through shift actions or
+  goto jumps. @internal
+  */
+  nextStates(state) {
+    let result = [];
+    for (let i = this.stateSlot(
+      state,
+      1
+      /* ParseState.Actions */
+    ); ; i += 3) {
+      if (this.data[i] == 65535) {
+        if (this.data[i + 1] == 1)
+          i = pair(this.data, i + 2);
+        else
+          break;
+      }
+      if ((this.data[i + 2] & 65536 >> 16) == 0) {
+        let value = this.data[i + 1];
+        if (!result.some((v, i2) => i2 & 1 && v == value))
+          result.push(this.data[i], value);
+      }
+    }
+    return result;
+  }
+  /**
+  Configure the parser. Returns a new parser instance that has the
+  given settings modified. Settings not provided in `config` are
+  kept from the original parser.
+  */
+  configure(config) {
+    let copy = Object.assign(Object.create(_LRParser.prototype), this);
+    if (config.props)
+      copy.nodeSet = this.nodeSet.extend(...config.props);
+    if (config.top) {
+      let info = this.topRules[config.top];
+      if (!info)
+        throw new RangeError(`Invalid top rule name ${config.top}`);
+      copy.top = info;
+    }
+    if (config.tokenizers)
+      copy.tokenizers = this.tokenizers.map((t2) => {
+        let found = config.tokenizers.find((r) => r.from == t2);
+        return found ? found.to : t2;
+      });
+    if (config.specializers) {
+      copy.specializers = this.specializers.slice();
+      copy.specializerSpecs = this.specializerSpecs.map((s, i) => {
+        let found = config.specializers.find((r) => r.from == s.external);
+        if (!found)
+          return s;
+        let spec = Object.assign(Object.assign({}, s), { external: found.to });
+        copy.specializers[i] = getSpecializer(spec);
+        return spec;
+      });
+    }
+    if (config.contextTracker)
+      copy.context = config.contextTracker;
+    if (config.dialect)
+      copy.dialect = this.parseDialect(config.dialect);
+    if (config.strict != null)
+      copy.strict = config.strict;
+    if (config.wrap)
+      copy.wrappers = copy.wrappers.concat(config.wrap);
+    if (config.bufferLength != null)
+      copy.bufferLength = config.bufferLength;
+    return copy;
+  }
+  /**
+  Tells you whether any [parse wrappers](#lr.ParserConfig.wrap)
+  are registered for this parser.
+  */
+  hasWrappers() {
+    return this.wrappers.length > 0;
+  }
+  /**
+  Returns the name associated with a given term. This will only
+  work for all terms when the parser was generated with the
+  `--names` option. By default, only the names of tagged terms are
+  stored.
+  */
+  getName(term) {
+    return this.termNames ? this.termNames[term] : String(term <= this.maxNode && this.nodeSet.types[term].name || term);
+  }
+  /**
+  The eof term id is always allocated directly after the node
+  types. @internal
+  */
+  get eofTerm() {
+    return this.maxNode + 1;
+  }
+  /**
+  The type of top node produced by the parser.
+  */
+  get topNode() {
+    return this.nodeSet.types[this.top[1]];
+  }
+  /**
+  @internal
+  */
+  dynamicPrecedence(term) {
+    let prec = this.dynamicPrecedences;
+    return prec == null ? 0 : prec[term] || 0;
+  }
+  /**
+  @internal
+  */
+  parseDialect(dialect) {
+    let values = Object.keys(this.dialects), flags = values.map(() => false);
+    if (dialect)
+      for (let part of dialect.split(" ")) {
+        let id = values.indexOf(part);
+        if (id >= 0)
+          flags[id] = true;
+      }
+    let disabled = null;
+    for (let i = 0; i < values.length; i++)
+      if (!flags[i]) {
+        for (let j = this.dialects[values[i]], id; (id = this.data[j++]) != 65535; )
+          (disabled || (disabled = new Uint8Array(this.maxTerm + 1)))[id] = 1;
+      }
+    return new Dialect(dialect, flags, disabled);
+  }
+  /**
+  Used by the output of the parser generator. Not available to
+  user code. @hide
+  */
+  static deserialize(spec) {
+    return new _LRParser(spec);
+  }
+};
+function pair(data, off) {
+  return data[off] | data[off + 1] << 16;
+}
+function findFinished(stacks) {
+  let best = null;
+  for (let stack of stacks) {
+    let stopped = stack.p.stoppedAt;
+    if ((stack.pos == stack.p.stream.end || stopped != null && stack.pos > stopped) && stack.p.parser.stateFlag(
+      stack.state,
+      2
+      /* StateFlag.Accepting */
+    ) && (!best || best.score < stack.score))
+      best = stack;
+  }
+  return best;
+}
+function getSpecializer(spec) {
+  if (spec.external) {
+    let mask = spec.extend ? 1 : 0;
+    return (value, stack) => spec.external(value, stack) << 1 | mask;
+  }
+  return spec.get;
+}
+
+// node_modules/@lezer/highlight/dist/index.js
+var nextTagID = 0;
+var Tag = class _Tag {
+  /**
+  @internal
+  */
+  constructor(name2, set, base, modified) {
+    this.name = name2;
+    this.set = set;
+    this.base = base;
+    this.modified = modified;
+    this.id = nextTagID++;
+  }
+  toString() {
+    let { name: name2 } = this;
+    for (let mod of this.modified)
+      if (mod.name)
+        name2 = `${mod.name}(${name2})`;
+    return name2;
+  }
+  static define(nameOrParent, parent) {
+    let name2 = typeof nameOrParent == "string" ? nameOrParent : "?";
+    if (nameOrParent instanceof _Tag)
+      parent = nameOrParent;
+    if (parent === null || parent === void 0 ? void 0 : parent.base)
+      throw new Error("Can not derive from a modified tag");
+    let tag = new _Tag(name2, [], null, []);
+    tag.set.push(tag);
+    if (parent)
+      for (let t2 of parent.set)
+        tag.set.push(t2);
+    return tag;
+  }
+  /**
+  Define a tag _modifier_, which is a function that, given a tag,
+  will return a tag that is a subtag of the original. Applying the
+  same modifier to a twice tag will return the same value (`m1(t1)
+  == m1(t1)`) and applying multiple modifiers will, regardless or
+  order, produce the same tag (`m1(m2(t1)) == m2(m1(t1))`).
+  
+  When multiple modifiers are applied to a given base tag, each
+  smaller set of modifiers is registered as a parent, so that for
+  example `m1(m2(m3(t1)))` is a subtype of `m1(m2(t1))`,
+  `m1(m3(t1)`, and so on.
+  */
+  static defineModifier(name2) {
+    let mod = new Modifier(name2);
+    return (tag) => {
+      if (tag.modified.indexOf(mod) > -1)
+        return tag;
+      return Modifier.get(tag.base || tag, tag.modified.concat(mod).sort((a, b) => a.id - b.id));
+    };
+  }
+};
+var nextModifierID = 0;
+var Modifier = class _Modifier {
+  constructor(name2) {
+    this.name = name2;
+    this.instances = [];
+    this.id = nextModifierID++;
+  }
+  static get(base, mods) {
+    if (!mods.length)
+      return base;
+    let exists = mods[0].instances.find((t2) => t2.base == base && sameArray(mods, t2.modified));
+    if (exists)
+      return exists;
+    let set = [], tag = new Tag(base.name, set, base, mods);
+    for (let m of mods)
+      m.instances.push(tag);
+    let configs = powerSet(mods);
+    for (let parent of base.set)
+      if (!parent.modified.length)
+        for (let config of configs)
+          set.push(_Modifier.get(parent, config));
+    return tag;
+  }
+};
+function sameArray(a, b) {
+  return a.length == b.length && a.every((x, i) => x == b[i]);
+}
+function powerSet(array) {
+  let sets = [[]];
+  for (let i = 0; i < array.length; i++) {
+    for (let j = 0, e = sets.length; j < e; j++) {
+      sets.push(sets[j].concat(array[i]));
+    }
+  }
+  return sets.sort((a, b) => b.length - a.length);
+}
+function styleTags(spec) {
+  let byName = /* @__PURE__ */ Object.create(null);
+  for (let prop in spec) {
+    let tags2 = spec[prop];
+    if (!Array.isArray(tags2))
+      tags2 = [tags2];
+    for (let part of prop.split(" "))
+      if (part) {
+        let pieces = [], mode = 2, rest = part;
+        for (let pos = 0; ; ) {
+          if (rest == "..." && pos > 0 && pos + 3 == part.length) {
+            mode = 1;
+            break;
+          }
+          let m = /^"(?:[^"\\]|\\.)*?"|[^\/!]+/.exec(rest);
+          if (!m)
+            throw new RangeError("Invalid path: " + part);
+          pieces.push(m[0] == "*" ? "" : m[0][0] == '"' ? JSON.parse(m[0]) : m[0]);
+          pos += m[0].length;
+          if (pos == part.length)
+            break;
+          let next = part[pos++];
+          if (pos == part.length && next == "!") {
+            mode = 0;
+            break;
+          }
+          if (next != "/")
+            throw new RangeError("Invalid path: " + part);
+          rest = part.slice(pos);
+        }
+        let last = pieces.length - 1, inner = pieces[last];
+        if (!inner)
+          throw new RangeError("Invalid path: " + part);
+        let rule = new Rule(tags2, mode, last > 0 ? pieces.slice(0, last) : null);
+        byName[inner] = rule.sort(byName[inner]);
+      }
+  }
+  return ruleNodeProp.add(byName);
+}
+var ruleNodeProp = new NodeProp({
+  combine(a, b) {
+    let cur, root, take;
+    while (a || b) {
+      if (!a || b && a.depth <= b.depth) {
+        take = b;
+        b = b.next;
+      } else {
+        take = a;
+        a = a.next;
+      }
+      if (cur && cur.mode == take.mode && !take.context && !cur.context)
+        continue;
+      let copy = new Rule(take.tags, take.mode, take.context);
+      if (cur)
+        cur.next = copy;
+      else
+        root = copy;
+      cur = copy;
+    }
+    return root;
+  }
+});
+var Rule = class {
+  constructor(tags2, mode, context, next) {
+    this.tags = tags2;
+    this.mode = mode;
+    this.context = context;
+    this.next = next;
+  }
+  get opaque() {
+    return this.mode == 0;
+  }
+  get inherit() {
+    return this.mode == 1;
+  }
+  sort(other) {
+    if (!other || other.depth < this.depth) {
+      this.next = other;
+      return this;
+    }
+    other.next = this.sort(other.next);
+    return other;
+  }
+  get depth() {
+    return this.context ? this.context.length : 0;
+  }
+};
+Rule.empty = new Rule([], 2, null);
+function tagHighlighter(tags2, options) {
+  let map = /* @__PURE__ */ Object.create(null);
+  for (let style of tags2) {
+    if (!Array.isArray(style.tag))
+      map[style.tag.id] = style.class;
+    else
+      for (let tag of style.tag)
+        map[tag.id] = style.class;
+  }
+  let { scope, all = null } = options || {};
+  return {
+    style: (tags3) => {
+      let cls = all;
+      for (let tag of tags3) {
+        for (let sub of tag.set) {
+          let tagClass = map[sub.id];
+          if (tagClass) {
+            cls = cls ? cls + " " + tagClass : tagClass;
+            break;
+          }
+        }
+      }
+      return cls;
+    },
+    scope
+  };
+}
+var t = Tag.define;
+var comment = t();
+var name = t();
+var typeName = t(name);
+var propertyName = t(name);
+var literal = t();
+var string = t(literal);
+var number = t(literal);
+var content = t();
+var heading = t(content);
+var keyword = t();
+var operator = t();
+var punctuation = t();
+var bracket = t(punctuation);
+var meta = t();
+var tags = {
+  /**
+  A comment.
+  */
+  comment,
+  /**
+  A line [comment](#highlight.tags.comment).
+  */
+  lineComment: t(comment),
+  /**
+  A block [comment](#highlight.tags.comment).
+  */
+  blockComment: t(comment),
+  /**
+  A documentation [comment](#highlight.tags.comment).
+  */
+  docComment: t(comment),
+  /**
+  Any kind of identifier.
+  */
+  name,
+  /**
+  The [name](#highlight.tags.name) of a variable.
+  */
+  variableName: t(name),
+  /**
+  A type [name](#highlight.tags.name).
+  */
+  typeName,
+  /**
+  A tag name (subtag of [`typeName`](#highlight.tags.typeName)).
+  */
+  tagName: t(typeName),
+  /**
+  A property or field [name](#highlight.tags.name).
+  */
+  propertyName,
+  /**
+  An attribute name (subtag of [`propertyName`](#highlight.tags.propertyName)).
+  */
+  attributeName: t(propertyName),
+  /**
+  The [name](#highlight.tags.name) of a class.
+  */
+  className: t(name),
+  /**
+  A label [name](#highlight.tags.name).
+  */
+  labelName: t(name),
+  /**
+  A namespace [name](#highlight.tags.name).
+  */
+  namespace: t(name),
+  /**
+  The [name](#highlight.tags.name) of a macro.
+  */
+  macroName: t(name),
+  /**
+  A literal value.
+  */
+  literal,
+  /**
+  A string [literal](#highlight.tags.literal).
+  */
+  string,
+  /**
+  A documentation [string](#highlight.tags.string).
+  */
+  docString: t(string),
+  /**
+  A character literal (subtag of [string](#highlight.tags.string)).
+  */
+  character: t(string),
+  /**
+  An attribute value (subtag of [string](#highlight.tags.string)).
+  */
+  attributeValue: t(string),
+  /**
+  A number [literal](#highlight.tags.literal).
+  */
+  number,
+  /**
+  An integer [number](#highlight.tags.number) literal.
+  */
+  integer: t(number),
+  /**
+  A floating-point [number](#highlight.tags.number) literal.
+  */
+  float: t(number),
+  /**
+  A boolean [literal](#highlight.tags.literal).
+  */
+  bool: t(literal),
+  /**
+  Regular expression [literal](#highlight.tags.literal).
+  */
+  regexp: t(literal),
+  /**
+  An escape [literal](#highlight.tags.literal), for example a
+  backslash escape in a string.
+  */
+  escape: t(literal),
+  /**
+  A color [literal](#highlight.tags.literal).
+  */
+  color: t(literal),
+  /**
+  A URL [literal](#highlight.tags.literal).
+  */
+  url: t(literal),
+  /**
+  A language keyword.
+  */
+  keyword,
+  /**
+  The [keyword](#highlight.tags.keyword) for the self or this
+  object.
+  */
+  self: t(keyword),
+  /**
+  The [keyword](#highlight.tags.keyword) for null.
+  */
+  null: t(keyword),
+  /**
+  A [keyword](#highlight.tags.keyword) denoting some atomic value.
+  */
+  atom: t(keyword),
+  /**
+  A [keyword](#highlight.tags.keyword) that represents a unit.
+  */
+  unit: t(keyword),
+  /**
+  A modifier [keyword](#highlight.tags.keyword).
+  */
+  modifier: t(keyword),
+  /**
+  A [keyword](#highlight.tags.keyword) that acts as an operator.
+  */
+  operatorKeyword: t(keyword),
+  /**
+  A control-flow related [keyword](#highlight.tags.keyword).
+  */
+  controlKeyword: t(keyword),
+  /**
+  A [keyword](#highlight.tags.keyword) that defines something.
+  */
+  definitionKeyword: t(keyword),
+  /**
+  A [keyword](#highlight.tags.keyword) related to defining or
+  interfacing with modules.
+  */
+  moduleKeyword: t(keyword),
+  /**
+  An operator.
+  */
+  operator,
+  /**
+  An [operator](#highlight.tags.operator) that dereferences something.
+  */
+  derefOperator: t(operator),
+  /**
+  Arithmetic-related [operator](#highlight.tags.operator).
+  */
+  arithmeticOperator: t(operator),
+  /**
+  Logical [operator](#highlight.tags.operator).
+  */
+  logicOperator: t(operator),
+  /**
+  Bit [operator](#highlight.tags.operator).
+  */
+  bitwiseOperator: t(operator),
+  /**
+  Comparison [operator](#highlight.tags.operator).
+  */
+  compareOperator: t(operator),
+  /**
+  [Operator](#highlight.tags.operator) that updates its operand.
+  */
+  updateOperator: t(operator),
+  /**
+  [Operator](#highlight.tags.operator) that defines something.
+  */
+  definitionOperator: t(operator),
+  /**
+  Type-related [operator](#highlight.tags.operator).
+  */
+  typeOperator: t(operator),
+  /**
+  Control-flow [operator](#highlight.tags.operator).
+  */
+  controlOperator: t(operator),
+  /**
+  Program or markup punctuation.
+  */
+  punctuation,
+  /**
+  [Punctuation](#highlight.tags.punctuation) that separates
+  things.
+  */
+  separator: t(punctuation),
+  /**
+  Bracket-style [punctuation](#highlight.tags.punctuation).
+  */
+  bracket,
+  /**
+  Angle [brackets](#highlight.tags.bracket) (usually `<` and `>`
+  tokens).
+  */
+  angleBracket: t(bracket),
+  /**
+  Square [brackets](#highlight.tags.bracket) (usually `[` and `]`
+  tokens).
+  */
+  squareBracket: t(bracket),
+  /**
+  Parentheses (usually `(` and `)` tokens). Subtag of
+  [bracket](#highlight.tags.bracket).
+  */
+  paren: t(bracket),
+  /**
+  Braces (usually `{` and `}` tokens). Subtag of
+  [bracket](#highlight.tags.bracket).
+  */
+  brace: t(bracket),
+  /**
+  Content, for example plain text in XML or markup documents.
+  */
+  content,
+  /**
+  [Content](#highlight.tags.content) that represents a heading.
+  */
+  heading,
+  /**
+  A level 1 [heading](#highlight.tags.heading).
+  */
+  heading1: t(heading),
+  /**
+  A level 2 [heading](#highlight.tags.heading).
+  */
+  heading2: t(heading),
+  /**
+  A level 3 [heading](#highlight.tags.heading).
+  */
+  heading3: t(heading),
+  /**
+  A level 4 [heading](#highlight.tags.heading).
+  */
+  heading4: t(heading),
+  /**
+  A level 5 [heading](#highlight.tags.heading).
+  */
+  heading5: t(heading),
+  /**
+  A level 6 [heading](#highlight.tags.heading).
+  */
+  heading6: t(heading),
+  /**
+  A prose [content](#highlight.tags.content) separator (such as a horizontal rule).
+  */
+  contentSeparator: t(content),
+  /**
+  [Content](#highlight.tags.content) that represents a list.
+  */
+  list: t(content),
+  /**
+  [Content](#highlight.tags.content) that represents a quote.
+  */
+  quote: t(content),
+  /**
+  [Content](#highlight.tags.content) that is emphasized.
+  */
+  emphasis: t(content),
+  /**
+  [Content](#highlight.tags.content) that is styled strong.
+  */
+  strong: t(content),
+  /**
+  [Content](#highlight.tags.content) that is part of a link.
+  */
+  link: t(content),
+  /**
+  [Content](#highlight.tags.content) that is styled as code or
+  monospace.
+  */
+  monospace: t(content),
+  /**
+  [Content](#highlight.tags.content) that has a strike-through
+  style.
+  */
+  strikethrough: t(content),
+  /**
+  Inserted text in a change-tracking format.
+  */
+  inserted: t(),
+  /**
+  Deleted text.
+  */
+  deleted: t(),
+  /**
+  Changed text.
+  */
+  changed: t(),
+  /**
+  An invalid or unsyntactic element.
+  */
+  invalid: t(),
+  /**
+  Metadata or meta-instruction.
+  */
+  meta,
+  /**
+  [Metadata](#highlight.tags.meta) that applies to the entire
+  document.
+  */
+  documentMeta: t(meta),
+  /**
+  [Metadata](#highlight.tags.meta) that annotates or adds
+  attributes to a given syntactic element.
+  */
+  annotation: t(meta),
+  /**
+  Processing instruction or preprocessor directive. Subtag of
+  [meta](#highlight.tags.meta).
+  */
+  processingInstruction: t(meta),
+  /**
+  [Modifier](#highlight.Tag^defineModifier) that indicates that a
+  given element is being defined. Expected to be used with the
+  various [name](#highlight.tags.name) tags.
+  */
+  definition: Tag.defineModifier("definition"),
+  /**
+  [Modifier](#highlight.Tag^defineModifier) that indicates that
+  something is constant. Mostly expected to be used with
+  [variable names](#highlight.tags.variableName).
+  */
+  constant: Tag.defineModifier("constant"),
+  /**
+  [Modifier](#highlight.Tag^defineModifier) used to indicate that
+  a [variable](#highlight.tags.variableName) or [property
+  name](#highlight.tags.propertyName) is being called or defined
+  as a function.
+  */
+  function: Tag.defineModifier("function"),
+  /**
+  [Modifier](#highlight.Tag^defineModifier) that can be applied to
+  [names](#highlight.tags.name) to indicate that they belong to
+  the language's standard environment.
+  */
+  standard: Tag.defineModifier("standard"),
+  /**
+  [Modifier](#highlight.Tag^defineModifier) that indicates a given
+  [names](#highlight.tags.name) is local to some scope.
+  */
+  local: Tag.defineModifier("local"),
+  /**
+  A generic variant [modifier](#highlight.Tag^defineModifier) that
+  can be used to tag language-specific alternative variants of
+  some common tag. It is recommended for themes to define special
+  forms of at least the [string](#highlight.tags.string) and
+  [variable name](#highlight.tags.variableName) tags, since those
+  come up a lot.
+  */
+  special: Tag.defineModifier("special")
+};
+for (let name2 in tags) {
+  let val = tags[name2];
+  if (val instanceof Tag)
+    val.name = name2;
+}
+var classHighlighter = tagHighlighter([
+  { tag: tags.link, class: "tok-link" },
+  { tag: tags.heading, class: "tok-heading" },
+  { tag: tags.emphasis, class: "tok-emphasis" },
+  { tag: tags.strong, class: "tok-strong" },
+  { tag: tags.keyword, class: "tok-keyword" },
+  { tag: tags.atom, class: "tok-atom" },
+  { tag: tags.bool, class: "tok-bool" },
+  { tag: tags.url, class: "tok-url" },
+  { tag: tags.labelName, class: "tok-labelName" },
+  { tag: tags.inserted, class: "tok-inserted" },
+  { tag: tags.deleted, class: "tok-deleted" },
+  { tag: tags.literal, class: "tok-literal" },
+  { tag: tags.string, class: "tok-string" },
+  { tag: tags.number, class: "tok-number" },
+  { tag: [tags.regexp, tags.escape, tags.special(tags.string)], class: "tok-string2" },
+  { tag: tags.variableName, class: "tok-variableName" },
+  { tag: tags.local(tags.variableName), class: "tok-variableName tok-local" },
+  { tag: tags.definition(tags.variableName), class: "tok-variableName tok-definition" },
+  { tag: tags.special(tags.variableName), class: "tok-variableName2" },
+  { tag: tags.definition(tags.propertyName), class: "tok-propertyName tok-definition" },
+  { tag: tags.typeName, class: "tok-typeName" },
+  { tag: tags.namespace, class: "tok-namespace" },
+  { tag: tags.className, class: "tok-className" },
+  { tag: tags.macroName, class: "tok-macroName" },
+  { tag: tags.propertyName, class: "tok-propertyName" },
+  { tag: tags.operator, class: "tok-operator" },
+  { tag: tags.comment, class: "tok-comment" },
+  { tag: tags.meta, class: "tok-meta" },
+  { tag: tags.invalid, class: "tok-invalid" },
+  { tag: tags.punctuation, class: "tok-punctuation" }
+]);
+
+// node_modules/@prometheus-io/lezer-promql/dist/index.es.js
+var inf$1 = 188;
+var nan$1 = 189;
+var Bool$1 = 1;
+var Ignoring$1 = 2;
+var On$1 = 3;
+var GroupLeft$1 = 4;
+var GroupRight$1 = 5;
+var Offset$1 = 6;
+var Atan2$1 = 7;
+var Avg$1 = 8;
+var Bottomk$1 = 9;
+var Count$1 = 10;
+var CountValues$1 = 11;
+var Group$1 = 12;
+var Max$1 = 13;
+var Min$1 = 14;
+var Quantile$1 = 15;
+var LimitK$1 = 16;
+var LimitRatio$1 = 17;
+var Stddev$1 = 18;
+var Stdvar$1 = 19;
+var Sum$1 = 20;
+var Topk$1 = 21;
+var By$1 = 22;
+var Without$1 = 23;
+var And$1 = 24;
+var Or$1 = 25;
+var Unless$1 = 26;
+var StartFn$1 = 27;
+var EndFn$1 = 28;
+var AtStart$1 = 29;
+var AtEnd$1 = 30;
+var Smoothed$1 = 31;
+var Anchored$1 = 32;
+var Fill$1 = 33;
+var FillLeft$1 = 34;
+var FillRight$1 = 35;
+var keywordTokens = {
+  inf: inf$1,
+  nan: nan$1,
+  bool: Bool$1,
+  ignoring: Ignoring$1,
+  on: On$1,
+  group_left: GroupLeft$1,
+  group_right: GroupRight$1,
+  offset: Offset$1
+};
+var specializeIdentifier = (value, stack) => {
+  return keywordTokens[value.toLowerCase()] || -1;
+};
+var contextualKeywordTokens = {
+  avg: Avg$1,
+  atan2: Atan2$1,
+  bottomk: Bottomk$1,
+  count: Count$1,
+  count_values: CountValues$1,
+  group: Group$1,
+  max: Max$1,
+  min: Min$1,
+  quantile: Quantile$1,
+  limitk: LimitK$1,
+  limit_ratio: LimitRatio$1,
+  stddev: Stddev$1,
+  stdvar: Stdvar$1,
+  sum: Sum$1,
+  topk: Topk$1,
+  by: By$1,
+  without: Without$1,
+  and: And$1,
+  or: Or$1,
+  unless: Unless$1,
+  smoothed: Smoothed$1,
+  anchored: Anchored$1,
+  fill: Fill$1,
+  fill_left: FillLeft$1,
+  fill_right: FillRight$1
+};
+var extendIdentifier = (value, stack) => {
+  if (value === "start" && stack.canShift(StartFn$1)) {
+    return StartFn$1;
+  }
+  if (value === "end" && stack.canShift(EndFn$1)) {
+    return EndFn$1;
+  }
+  if (value.toLowerCase() === "start" && stack.canShift(AtStart$1)) {
+    return AtStart$1;
+  }
+  if (value.toLowerCase() === "end" && stack.canShift(AtEnd$1)) {
+    return AtEnd$1;
+  }
+  const token = contextualKeywordTokens[value.toLowerCase()];
+  if (token !== void 0 && stack.canShift(token)) {
+    return token;
+  }
+  return -1;
+};
+var promQLHighLight = styleTags({
+  LineComment: tags.comment,
+  LabelName: tags.labelName,
+  StringLiteral: tags.string,
+  NumberDurationLiteral: tags.number,
+  NumberDurationLiteralInDurationContext: tags.number,
+  Identifier: tags.variableName,
+  "Abs Absent AbsentOverTime Acos Acosh Asin Asinh Atan Atanh AvgOverTime Ceil Changes Clamp ClampMax ClampMin Cos Cosh CountOverTime DaysInMonth DayOfMonth DayOfWeek DayOfYear Deg Delta Deriv EndFn Exp Floor HistogramAvg HistogramCount HistogramFraction HistogramQuantile HistogramSum DoubleExponentialSmoothing Hour Idelta Increase Irate LabelReplace LabelJoin LastOverTime Ln Log10 Log2 MaxOverTime MinOverTime Minute Month Pi PredictLinear PresentOverTime QuantileOverTime Rad Range Rate Resets Round Scalar Sgn Sin Sinh Sort SortDesc SortByLabel SortByLabelDesc Sqrt StartFn Step StddevOverTime StdvarOverTime SumOverTime Tan Tanh Time Timestamp Vector Year": tags.function(tags.variableName),
+  "Avg Bottomk Count Count_values Group LimitK LimitRatio Max Min Quantile Stddev Stdvar Sum Topk": tags.operatorKeyword,
+  "AtModifierPreprocessors By Without Bool On Ignoring GroupLeft GroupRight Offset Smoothed Anchored": tags.modifier,
+  "DurationExpr/DurationStep DurationExpr/DurationRange DurationExpr/DurationMinOf DurationExpr/DurationMaxOf OffsetDurationExpr/DurationStep OffsetDurationExpr/DurationRange OffsetDurationExpr/DurationMinOf OffsetDurationExpr/DurationMaxOf": tags.function(tags.variableName),
+  "And Unless Or": tags.logicOperator,
+  "Sub Add Mul Mod Div Atan2 Eql Neq Lte Lss Gte Gtr EqlRegex EqlSingle NeqRegex Pow At": tags.operator,
+  UnaryOp: tags.arithmeticOperator,
+  "( )": tags.paren,
+  "[ ]": tags.squareBracket,
+  "{ }": tags.brace,
+  "\u26A0": tags.invalid
+});
+var spec_Identifier = { __proto__: null, absent_over_time: 401, absent: 403, abs: 405, acos: 407, acosh: 409, asin: 411, asinh: 413, atan: 415, atanh: 417, avg_over_time: 419, ceil: 421, changes: 423, clamp: 425, clamp_max: 427, clamp_min: 429, cos: 431, cosh: 433, count_over_time: 435, days_in_month: 437, day_of_month: 439, day_of_week: 441, day_of_year: 443, deg: 445, delta: 447, deriv: 449, exp: 451, first_over_time: 453, floor: 455, histogram_count: 457, histogram_fraction: 459, histogram_quantile: 461, histogram_quantiles: 463, histogram_stddev: 465, histogram_stdvar: 467, histogram_sum: 469, histogram_avg: 471, double_exponential_smoothing: 473, hour: 475, idelta: 477, increase: 479, info: 481, irate: 483, label_replace: 485, label_join: 487, last_over_time: 489, ln: 491, log10: 493, log2: 495, mad_over_time: 497, max_over_time: 499, min_over_time: 501, ts_of_first_over_time: 503, ts_of_max_over_time: 505, ts_of_min_over_time: 507, ts_of_last_over_time: 509, minute: 511, month: 513, pi: 515, predict_linear: 517, present_over_time: 519, quantile_over_time: 521, rad: 523, rate: 525, resets: 527, round: 529, scalar: 531, sgn: 533, sin: 535, sinh: 537, sort: 539, sort_desc: 541, sort_by_label: 543, sort_by_label_desc: 545, start_timestamp: 547, range: 549, step: 551, sqrt: 553, stddev_over_time: 555, stdvar_over_time: 557, sum_over_time: 559, tan: 561, tanh: 563, timestamp: 565, time: 567, vector: 569, year: 571, min_of: 575, max_of: 577 };
+var parser = LRParser.deserialize({
+  version: 14,
+  states: "BnOYQPOOO(gQPOOOOQO'#DT'#DTO(lQPO'#DSOOQO'#Db'#DbO(wQPO'#FqQ0_QQOOOOQO'#Ds'#DsO(rQPO'#DrOYQPO'#F{OYQPO'#F}O1xQSO'#GPO2TQQO'#GOOOQO'#GO'#GOOOQO'#Gd'#GdOOQO'#Dt'#DtOOQO'#Dv'#DvOOQO'#Dw'#DwOOQO'#Dx'#DxOOQO'#Dy'#DyOOQO'#Dz'#DzOOQO'#D{'#D{OOQO'#D|'#D|OOQO'#D}'#D}OOQO'#EO'#EOOOQO'#EP'#EPOOQO'#EQ'#EQOOQO'#ER'#EROOQO'#ES'#ESOOQO'#ET'#ETOOQO'#EU'#EUOOQO'#EV'#EVOOQO'#EW'#EWOOQO'#EX'#EXOOQO'#EY'#EYOOQO'#EZ'#EZOOQO'#E['#E[OOQO'#E]'#E]OOQO'#E^'#E^OOQO'#E_'#E_OOQO'#E`'#E`OOQO'#Ea'#EaOOQO'#Eb'#EbOOQO'#Ec'#EcOOQO'#Ed'#EdOOQO'#Ee'#EeOOQO'#Ef'#EfOOQO'#Eg'#EgOOQO'#Eh'#EhOOQO'#Ei'#EiOOQO'#Ej'#EjOOQO'#Ek'#EkOOQO'#El'#ElOOQO'#Em'#EmOOQO'#En'#EnOOQO'#Eo'#EoOOQO'#Ep'#EpOOQO'#Eq'#EqOOQO'#Er'#ErOOQO'#Es'#EsOOQO'#Et'#EtOOQO'#Eu'#EuOOQO'#Ev'#EvOOQO'#Ew'#EwOOQO'#Ex'#ExOOQO'#Ey'#EyOOQO'#Ez'#EzOOQO'#E{'#E{OOQO'#E|'#E|OOQO'#E}'#E}OOQO'#FO'#FOOOQO'#FP'#FPOOQO'#FQ'#FQOOQO'#FR'#FROOQO'#FS'#FSOOQO'#FT'#FTOOQO'#FU'#FUOOQO'#FV'#FVOOQO'#FW'#FWOOQO'#FX'#FXOOQO'#FY'#FYOOQO'#FZ'#FZOOQO'#F['#F[OOQO'#F]'#F]OOQO'#F^'#F^OOQO'#F_'#F_OOQO'#F`'#F`OOQO'#Fa'#FaOOQO'#Fb'#FbOOQO'#Fc'#FcOOQO'#Fd'#FdOOQO'#Fe'#FeOOQO'#Ff'#FfOOQO'#Fg'#FgOOQO'#Fh'#FhOOQO'#Fi'#FiOOQO'#Fj'#FjOOQO'#Fk'#FkOOQO'#Fl'#FlOOQO'#Fm'#FmOOQO'#Fn'#FnQOQPOOO3zQPO'#DUO4PQPO'#DZO(rQPO,59nO4WQQO,59nOOQO,59|,59|O6QQPO,59vO6QQPO,59vO6QQPO,59vO6QQPO,59vO6QQPO,59vO=qQPO,5<ZO>cQPO,5<cOOQO,5<e,5<eOOQO,5<f,5<fO?fQPO,5<rOOQO,5:^,5:^O?pQQO,5<gO?wQQO,5<iOOQO'#DX'#DXOAkQPO'#GQOAyQPO,5<kOOQO,5<k,5<kOBVQPO,5<kOOQO,5<j,5<jOB_QSO'#DVOOQO,59p,59pOOQO,59u,59uOBjQQO,59uOOQO1G/Y1G/YOOQO'#D^'#D^O3zQPO'#D_OBtQPO'#DaOByQPO'#DcOCOQPO'#DdOOQO'#D`'#D`OJbQPO'#D`OJiQPO'#D`OOQO'#Gh'#GhOJpQPO'#GhO!$WQPO'#GhOYQPO1G/bOYQPO1G/bOYQPO1G/bOYQPO1G/bOYQPO1G/bOOQO'#Fq'#FqOOQO'#Fv'#FvO!$bQSO1G1uO=qQPO'#FpOOQO'#Fr'#FrOOQO'#Fs'#FsOOQO'#Ft'#FtOOQO'#Fu'#FuO!$|QPO'#FpO!%RQPO'#FpO=qQPO'#FpOOQO'#Fp'#FpO>cQPO'#FxOOQO1G1}1G1}O!%WQPO'#FxO!%]QPO'#FxO=qQPO'#FxOOQO'#Fx'#FxO!%bQPO'#DbOOQO'#GY'#GYOOQO1G2^1G2^O!%mQPO1G2^OOQO1G2R1G2ROOQO'#GR'#GRO!%rQPO,5<lO!%wQPO,5<qO!%|QSO1G2VO!&XQPO1G2VOOQO1G2V1G2VOOQO,59q,59qO!&aQPO,59qOYQPO'#G]O!&iQPO1G/aOOQO1G/a1G/aO!&qQPO,59yO?TQPO,59{O?TQPO,59}O?TQPO,5:OOOQO,59z,59zOOQO,5=S,5=SO!._QPO,5=SO!7]QQO7+$|O!7mQQO7+$|O!9XQQO7+$|O!9uQQO7+$|O!;jQQO7+$|O=qQPO,5<[O=qQPO,5<[OOQO7+'a7+'aO!<ZQPO7+'nO!<vQSO,5<[O!=QQPO,5<[O=qQPO,5<[O!=kQQO,5<[OOQO,5<d,5<dO!=rQPO,5<dO=qQPO,5<dO!=wQQO,5<dO!>OQPO7+'xOOQO1G2W1G2WOOQO1G2]1G2]O!>TQPO,5<xOOQO,5<x,5<xOOQO7+'q7+'qO!>iQSO7+'qOOQO-E:[-E:[O!>tQSO1G/]O!?PQPO1G/]OOQO1G/]1G/]O!?XQQO,5<wOOQO-E:Z-E:ZOOQO7+${7+${O!?cQPO1G/eO!FyQPO1G/gO!GOQPO1G/iO!GTQPO1G/jOOQO1G2n1G2nO!GnQSO1G1vO!GxQSO1G1vO!HdQQO<<KYOOQO<<KY<<KYOOQO1G1v1G1vO!HkQQO1G1vO!HrQQO,5<[OOQO1G2O1G2OO!IPQQO1G2OOOQO<<Kd<<KdOOQO<<K]<<K]P!IWQSO'#G^OOQO,5<v,5<vOOQO7+$w7+$wO!I`QSO7+$wOOQO-E:Y-E:YOOQO7+%P7+%POOQO7+%R7+%ROOQO7+%T7+%TOOQO7+%U7+%UOOQOAN@tAN@tO=qQPO7+'bO!IkQQO1G1vO!IxQQO1G1vO=qQPO7+'jOOQO<<Hc<<HcP!JgQSO'#G[O!JoQQO<<J|O!JvQQO<<KUOOQOAN@hAN@hOOQOAN@pAN@pO=qQPO'#FpO=qQPO,5<[O=qQPO,5<[",
+  stateData: "!J}~O%VOStOS~OWQOXQOYQOZQO[QO]QO^QO_QO`QOaQObQOcQOdQOeQOkVOlVO|^O!i[O%SSO%TSO%XXO%]TO%^TO%_SO%`_O%a`O%baO%cbO%dcO%edO%feO%gfO%hgO%ihO%jiO%kjO%lkO%mlO%nmO%onO%poO%qpO%rqO%srO%tsO%utO%vuO%wvO%xwO%yxO%zyO%{zO%|{O%}|O&O}O&P!OO&Q!PO&R!QO&S!RO&T!SO&U!TO&V!UO&W!VO&X!WO&Y!XO&Z!YO&[!ZO&]![O&^!]O&_!^O&`!_O&a!`O&b!aO&c!bO&d!cO&e!dO&f!eO&g!fO&h!gO&i!hO&j!iO&k!jO&l!kO&m!lO&n!mO&o!nO&p!oO&q!pO&r!qO&s!rO&t!sO&u!tO&v!uO&w!vO&x!wO&y!xO&z!yO&{!zO&|!{O&}!|O'O!}O'P#OO'Q#PO'R#QO'S#RO'T#SO'U#TO'V#UO'W#VO'X#WO'_ZO~O!i#XO~Of#YOg#YO%X#ZO~O%S#^O%T#^O%_#^OW$eXX$eXY$eXZ$eX[$eX]$eX^$eX_$eX`$eXa$eXb$eXc$eXd$eXe$eXk$eXl$eX|$eX!i$eX%S$eX%T$eX%X$eX%]$eX%^$eX%_$eX%`$eX%a$eX%b$eX%c$eX%d$eX%e$eX%f$eX%g$eX%h$eX%i$eX%j$eX%k$eX%l$eX%m$eX%n$eX%o$eX%p$eX%q$eX%r$eX%s$eX%t$eX%u$eX%v$eX%w$eX%x$eX%y$eX%z$eX%{$eX%|$eX%}$eX&O$eX&P$eX&Q$eX&R$eX&S$eX&T$eX&U$eX&V$eX&W$eX&X$eX&Y$eX&Z$eX&[$eX&]$eX&^$eX&_$eX&`$eX&a$eX&b$eX&c$eX&d$eX&e$eX&f$eX&g$eX&h$eX&i$eX&j$eX&k$eX&l$eX&m$eX&n$eX&o$eX&p$eX&q$eX&r$eX&s$eX&t$eX&u$eX&v$eX&w$eX&x$eX&y$eX&z$eX&{$eX&|$eX&}$eX'O$eX'P$eX'Q$eX'R$eX'S$eX'T$eX'U$eX'V$eX'W$eX'X$eX'_$eX~OU#eOV#_Oh#bOi#cOj#bOo#gOp#fO!P#_O!X#_O!Y#_O!Z#_O![#`O!]#`O!^#aO!_#aO!`#aO!a#aO!b#aO!c#aO!d#aO!e#aO${#hO'Y#dO~Oz#mO|#lO'`#oO~O'_ZOU$rXV$rXh$rXi$rXj$rXo$rXp$rX!P$rX!X$rX!Y$rX!Z$rX![$rX!]$rX!^$rX!_$rX!`$rX!a$rX!b$rX!c$rX!d$rX!e$rX${$rX%R$rX'Y$rX%Z$rX%Y$rX~O%X#rO~O%Z#tO~PYOf#YOg#YOUvaVvahvaivajvaovapva!Pva!Xva!Yva!Zva![va!]va!^va!_va!`va!ava!bva!cva!dva!eva${va%Rva'Yva%Zva%Yva~OP#wOQ#xOR#xOq#yOr#zOs#{OW%[PX%[PY%[PZ%[P[%[P]%[P^%[P_%[P`%[Pa%[Pb%[Pc%[Pd%[Pe%[Pk%[Pl%[P|%[P!i%[P%S%[P%T%[P%X%[P%]%[P%^%[P%_%[P%`%[P%a%[P%b%[P%c%[P%d%[P%e%[P%f%[P%g%[P%h%[P%i%[P%j%[P%k%[P%l%[P%m%[P%n%[P%o%[P%p%[P%q%[P%r%[P%s%[P%t%[P%u%[P%v%[P%w%[P%x%[P%y%[P%z%[P%{%[P%|%[P%}%[P&O%[P&P%[P&Q%[P&R%[P&S%[P&T%[P&U%[P&V%[P&W%[P&X%[P&Y%[P&Z%[P&[%[P&]%[P&^%[P&_%[P&`%[P&a%[P&b%[P&c%[P&d%[P&e%[P&f%[P&g%[P&h%[P&i%[P&j%[P&k%[P&l%[P&m%[P&n%[P&o%[P&p%[P&q%[P&r%[P&s%[P&t%[P&u%[P&v%[P&w%[P&x%[P&y%[P&z%[P&{%[P&|%[P&}%[P'O%[P'P%[P'Q%[P'R%[P'S%[P'T%[P'U%[P'V%[P'W%[P'X%[P'_%[P~O%S$YO%T$YO%X$cO%]$XO%^$XO%_$YO&|$^O&}$]O'Z$_O'[$`O~O%S$YO%T$YO%X$iO%]$XO%^$XO%_$YO&|$^O&}$]O'Z$_O'[$`O~O%SSO%TSO%]$kO%^$kO%_SO~Om$lOn$lO~P?TO%Z$oO~P0_O!P#_OU$qaV$qah$qai$qaj$qao$qap$qa!X$qa!Y$qa!Z$qa![$qa!]$qa!^$qa!_$qa!`$qa!a$qa!b$qa!c$qa!d$qa!e$qa${$qa%R$qa'Y$qa%Z$qa%Y$qa~O!e$pO$v$pO$w$pO$x$pO~O!e$pO$v$pO$w$pO$x$pO%Y$sO'`$uO~Oz$wO|#lO%Z$vO~O%Y$xO%Z$zO~P0_O%X$|O~O%X$}O~O%X%OO~OW!SXX!SXY!SXZ!SX[!SX]!SX^!SX_!SX`!SXa!SXb!SXc!SXd!SXe!SXk!SXl!SX|!SX!i!SX%S!SX%T!SX%X!SX%]!SX%^!SX%_!SX%`!SX%a!SX%b!SX%c!SX%d!SX%e!SX%f!SX%g!SX%h!SX%i!SX%j!SX%k!SX%l!SX%m!SX%n!SX%o!SX%p!SX%q!SX%r!SX%s!SX%t!SX%u!SX%v!SX%w!SX%x!SX%y!SX%z!SX%{!SX%|!SX%}!SX&O!SX&P!SX&Q!SX&R!SX&S!SX&T!SX&U!SX&V!SX&W!SX&X!SX&Y!SX&Z!SX&[!SX&]!SX&^!SX&_!SX&`!SX&a!SX&b!SX&c!SX&d!SX&e!SX&f!SX&g!SX&h!SX&i!SX&j!SX&k!SX&l!SX&m!SX&n!SX&o!SX&p!SX&q!SX&r!SX&s!SX&t!SX&u!SX&v!SX&w!SX&x!SX&y!SX&z!SX&{!SX&|!SX&}!SX'O!SX'P!SX'Q!SX'R!SX'S!SX'T!SX'U!SX'V!SX'W!SX'X!SX'_!SX~Os#{O~PCTOr#zO~PCTOq#yOr#zOs#{OW%[XX%[XY%[XZ%[X[%[X]%[X^%[X_%[X`%[Xa%[Xb%[Xc%[Xd%[Xe%[Xk%[Xl%[X|%[X!i%[X%S%[X%T%[X%X%[X%]%[X%^%[X%_%[X%`%[X%a%[X%b%[X%c%[X%d%[X%e%[X%f%[X%g%[X%h%[X%i%[X%j%[X%k%[X%l%[X%m%[X%n%[X%o%[X%p%[X%q%[X%r%[X%s%[X%t%[X%u%[X%v%[X%w%[X%x%[X%y%[X%z%[X%{%[X%|%[X%}%[X&O%[X&P%[X&Q%[X&R%[X&S%[X&T%[X&U%[X&V%[X&W%[X&X%[X&Y%[X&Z%[X&[%[X&]%[X&^%[X&_%[X&`%[X&a%[X&b%[X&c%[X&d%[X&e%[X&f%[X&g%[X&h%[X&i%[X&j%[X&k%[X&l%[X&m%[X&n%[X&o%[X&p%[X&q%[X&r%[X&s%[X&t%[X&u%[X&v%[X&w%[X&x%[X&y%[X&z%[X&{%[X&|%[X&}%[X'O%[X'P%[X'Q%[X'R%[X'S%[X'T%[X'U%[X'V%[X'W%[X'X%[X'_%[X~OQ#xOR#xO~PJpO!P%XO!X%XO!Y%XO!Z%XO![%YO!]%YO']%ZO'^%[O~O%X%^O~O%X%_O~O%X%bO~O%X%cO~O%S#^O%T#^O%_#^O~O%X%eO~O|%fO~O|%gO~Oz#mO|#lO'`%jO~O%Y%kO'`%jO~O%Y%mO%Z%oO~O%Y$xO%Z%rO~OS%sOT%sOW!RaX!RaY!RaZ!Ra[!Ra]!Ra^!Ra_!Ra`!Raa!Rab!Rac!Rad!Rae!Rak!Ral!Raq!Rar!Ras!Ra|!Ra!i!Ra%S!Ra%T!Ra%X!Ra%]!Ra%^!Ra%_!Ra%`!Ra%a!Ra%b!Ra%c!Ra%d!Ra%e!Ra%f!Ra%g!Ra%h!Ra%i!Ra%j!Ra%k!Ra%l!Ra%m!Ra%n!Ra%o!Ra%p!Ra%q!Ra%r!Ra%s!Ra%t!Ra%u!Ra%v!Ra%w!Ra%x!Ra%y!Ra%z!Ra%{!Ra%|!Ra%}!Ra&O!Ra&P!Ra&Q!Ra&R!Ra&S!Ra&T!Ra&U!Ra&V!Ra&W!Ra&X!Ra&Y!Ra&Z!Ra&[!Ra&]!Ra&^!Ra&_!Ra&`!Ra&a!Ra&b!Ra&c!Ra&d!Ra&e!Ra&f!Ra&g!Ra&h!Ra&i!Ra&j!Ra&k!Ra&l!Ra&m!Ra&n!Ra&o!Ra&p!Ra&q!Ra&r!Ra&s!Ra&t!Ra&u!Ra&v!Ra&w!Ra&x!Ra&y!Ra&z!Ra&{!Ra&|!Ra&}!Ra'O!Ra'P!Ra'Q!Ra'R!Ra'S!Ra'T!Ra'U!Ra'V!Ra'W!Ra'X!Ra'_!Ra~Oq#yOr#zOs#{OW%[aX%[aY%[aZ%[a[%[a]%[a^%[a_%[a`%[aa%[ab%[ac%[ad%[ae%[ak%[al%[a|%[a!i%[a%S%[a%T%[a%X%[a%]%[a%^%[a%_%[a%`%[a%a%[a%b%[a%c%[a%d%[a%e%[a%f%[a%g%[a%h%[a%i%[a%j%[a%k%[a%l%[a%m%[a%n%[a%o%[a%p%[a%q%[a%r%[a%s%[a%t%[a%u%[a%v%[a%w%[a%x%[a%y%[a%z%[a%{%[a%|%[a%}%[a&O%[a&P%[a&Q%[a&R%[a&S%[a&T%[a&U%[a&V%[a&W%[a&X%[a&Y%[a&Z%[a&[%[a&]%[a&^%[a&_%[a&`%[a&a%[a&b%[a&c%[a&d%[a&e%[a&f%[a&g%[a&h%[a&i%[a&j%[a&k%[a&l%[a&m%[a&n%[a&o%[a&p%[a&q%[a&r%[a&s%[a&t%[a&u%[a&v%[a&w%[a&x%[a&y%[a&z%[a&{%[a&|%[a&}%[a'O%[a'P%[a'Q%[a'R%[a'S%[a'T%[a'U%[a'V%[a'W%[a'X%[a'_%[a~O!P#_OU!Oqh!Oqi!Oqj!Oqo!Oqp!Oq![!Oq!]!Oq!^!Oq!_!Oq!`!Oq!a!Oq!b!Oq!c!Oq!d!Oq!e!Oq${!Oq%R!Oq'Y!Oq%Z!Oq%Y!Oq~OV!Oq!X!Oq!Y!Oq!Z!Oq~P!5uOV#_O!X#_O!Y#_O!Z#_O~P!5uOV#_O!P#_O!X#_O!Y#_O!Z#_O![#`O!]#`OU!Oqh!Oqi!Oqj!Oqo!Oqp!Oq${!Oq%R!Oq'Y!Oq%Z!Oq%Y!Oq~O!^!Oq!_!Oq!`!Oq!a!Oq!b!Oq!c!Oq!d!Oq!e!Oq~P!7}O!^#aO!_#aO!`#aO!a#aO!b#aO!c#aO!d#aO!e#aO~P!7}OV#_Oh#bOj#bO!P#_O!X#_O!Y#_O!Z#_O![#`O!]#`O!^#aO!_#aO!`#aO!a#aO!b#aO!c#aO!d#aO!e#aO~OU!Oqi!Oqo!Oqp!Oq${!Oq%R!Oq'Y!Oq%Z!Oq%Y!Oq~P!:cO']%{O~P=qO!X$da!Y$da!Z$da![$da!]$da']$da~O!P%XO'^$da~P!<bO%Z%|O~O!P&jO!X&jO!Y&jO!Z&jO![&kO!]&kO~O%Z%|O~P!=VO%Z&PO~O%Z&PO~P!=VO%Z&RO~O!e$pO$v$pO$w$pO$x$pO%Y%Qa'`%Qa~Oz#mO|#lO'`&SO~Oz&UO|#lO%Z&VO~O%Y&WO%Z&VO~O%Y%Pa%Z%Pa~P0_O%X#rOW!RiX!RiY!RiZ!Ri[!Ri]!Ri^!Ri_!Ri`!Ria!Rib!Ric!Rid!Rie!Rik!Ril!Riq!Rir!Ris!Ri|!Ri!i!Ri%S!Ri%T!Ri%]!Ri%^!Ri%_!Ri%`!Ri%a!Ri%b!Ri%c!Ri%d!Ri%e!Ri%f!Ri%g!Ri%h!Ri%i!Ri%j!Ri%k!Ri%l!Ri%m!Ri%n!Ri%o!Ri%p!Ri%q!Ri%r!Ri%s!Ri%t!Ri%u!Ri%v!Ri%w!Ri%x!Ri%y!Ri%z!Ri%{!Ri%|!Ri%}!Ri&O!Ri&P!Ri&Q!Ri&R!Ri&S!Ri&T!Ri&U!Ri&V!Ri&W!Ri&X!Ri&Y!Ri&Z!Ri&[!Ri&]!Ri&^!Ri&_!Ri&`!Ri&a!Ri&b!Ri&c!Ri&d!Ri&e!Ri&f!Ri&g!Ri&h!Ri&i!Ri&j!Ri&k!Ri&l!Ri&m!Ri&n!Ri&o!Ri&p!Ri&q!Ri&r!Ri&s!Ri&t!Ri&u!Ri&v!Ri&w!Ri&x!Ri&y!Ri&z!Ri&{!Ri&|!Ri&}!Ri'O!Ri'P!Ri'Q!Ri'R!Ri'S!Ri'T!Ri'U!Ri'V!Ri'W!Ri'X!Ri'_!Ri~O%Z&ZO~O%Z&[O~O%Z&]O~O!X$di!Y$di!Z$di![$di!]$di']$di~O!P%XO'^$di~P!GYO!P%XO!X%XO!Y%XO!Z%XO![$di!]$di']$di'^$di~O']&^O~P!=VO%Y&_O~P!=VO!P&jO%Z$da%Y$da~P!<bO%Y&bO~P!=VOz#mO|#lO~Oz&UO|#lO%Z&cO~O!P&jO%Z$di%Y$di~P!GYO!P&jO!X&jO!Y&jO!Z&jO![$di!]$di%Z$di']$di%Y$di~Oz&UO|#lO~O%Z&gO~P!=VO%Z&hO~P!=VO",
+  goto: ".b%]PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP%^%j%v%|P&VP&g%^P&p&w'R'a'k(T(bPPPPPPPPPPPPP%^(o({P({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({%^)X*T*w*w+]+]+q%^,V%^%^%^%^%^%^,],l,tPPP,l%^P,{P-O-U-[PPPPP-cPPP.Re^OXY#Z$S$T$U$V$W$xeROXY#Z$S$T$U$V$W$xQ#[RR#v#]Q#s#YQ${#xR&Y%sQ#nZQ$w#rU%h$s%k&TV&U%m&W&dQ#]RQ#iWR#v#[Z$R#_#`#a#b#cY$Q#_#`#a#b#cR%R$RY$P#_#`#a#b#cS%Q$Q$RR%w%Ra#|#_#`#a#b#c$Q$R%Rd^OXY#Z$S$T$U$V$W$xQ$m#hQ%t$|Q%u$}R%v%O`#}#_#`#a#b#c$Q$R%RR%P$O`$O#_#`#a#b#c$Q$R%RR%P#}eWOXY#Z$S$T$U$V$W$xeVOXY#Z$S$T$U$V$W$xQ$Z#dQ%]$[Q%`$cQ%d$iQ%x%XQ%y%YQ%z%[Q%}%_Q&O&iQ&Q%cQ&`&jQ&a&kQ&e&_R&f&bdYOXY#Z$S$T$U$V$W$xW$[#d$[%X%YS$e#e$ee&i$c$i%[%_%c&_&b&i&j&kl$a#d$[$c$i%X%Y%[%_%c&_&b&i&j&kT$g#e$el$b#d$[$c$i%X%Y%[%_%c&_&b&i&j&kT$h#e$el$d#d$[$c$i%X%Y%[%_%c&_&b&i&j&kT$j#e$eQ$f#eR%a$ed]OXY#Z$S$T$U$V$W$xR#q[Q#pZV%i$s%k&TQ$q#mT$r#n%hR$n#hQ%n$wR&X%nQ$y#uR%q$yS$t#n#pR%l$tQUOQ#jXQ#kYQ#u#ZQ%S$SQ%T$TQ%U$UQ%V$VQ%W$WR%p$xQ$S#_Q$T#`Q$U#aQ$V#bR$W#c",
+  nodeNames: "\u26A0 Bool Ignoring On GroupLeft GroupRight Offset Atan2 Avg Bottomk Count CountValues Group Max Min Quantile LimitK LimitRatio Stddev Stdvar Sum Topk By Without And Or Unless StartFn EndFn AtStart AtEnd Smoothed Anchored Fill FillLeft FillRight LineComment PromQL AggregateExpr AggregateOp AggregateModifier GroupingLabels LabelName QuotedLabelName StringLiteral FunctionCallBody BinaryExpr Pow BoolModifier MatchingModifierClause FillModifier FillClause NumberDurationLiteral FillLeftClause FillRightClause Mul Div Mod Add Sub Eql Gte Gtr TrimUpper TrimLower Lte Lss Neq FunctionCall FunctionIdentifier AbsentOverTime Identifier Absent Abs Acos Acosh Asin Asinh Atan Atanh AvgOverTime Ceil Changes Clamp ClampMax ClampMin Cos Cosh CountOverTime DaysInMonth DayOfMonth DayOfWeek DayOfYear Deg Delta Deriv Exp FirstOverTime Floor HistogramCount HistogramFraction HistogramQuantile HistogramQuantiles HistogramStdDev HistogramStdVar HistogramSum HistogramAvg DoubleExponentialSmoothing Hour Idelta Increase Info Irate LabelReplace LabelJoin LastOverTime Ln Log10 Log2 MadOverTime MaxOverTime MinOverTime TsOfFirstOverTime TsOfMaxOverTime TsOfMinOverTime TsOfLastOverTime Minute Month Pi PredictLinear PresentOverTime QuantileOverTime Rad Rate Resets Round Scalar Sgn Sin Sinh Sort SortDesc SortByLabel SortByLabelDesc StartTimestamp Range Step Sqrt StddevOverTime StdvarOverTime SumOverTime Tan Tanh Timestamp Time Vector Year MatrixSelector DurationExpr UnaryOp DurationStep DurationRange DurationMinOf DurationMaxOf NumberDurationLiteralInDurationContext OffsetExpr OffsetDurationExpr AnchoredExpr SmoothedExpr ParenExpr SubqueryExpr UnaryExpr VectorSelector LabelMatchers UnquotedLabelMatcher MatchOp EqlSingle EqlRegex NeqRegex QuotedLabelMatcher StepInvariantExpr At AtModifierPreprocessors MetricName",
+  maxTerm: 292,
+  nodeProps: [
+    ["group", -14, 38, 44, 46, 52, 68, 157, 165, 167, 168, 169, 170, 171, 172, 180, "Expr"]
+  ],
+  propSources: [promQLHighLight],
+  skippedNodes: [0, 36],
+  repeatNodeCount: 3,
+  tokenData: "4{~RwX^#lpq#lqr$ars$tst&luv'Twx'Yxy({yz)Qz{)V{|)[|})c}!O)h!O!P)o!P!Q*u!Q!R*z!R![+u![!]1O!^!_1z!_!`2a!`!a2v!b!c3]!c!}3b!}#O3x#P#Q3}#Q#R4S#R#S3b#S#T4X#T#o3b#o#p4q#q#r4v#y#z#l$f$g#l#BY#BZ#l$IS$I_#l$I|$JO#l$JT$JU#l$KV$KW#l&FU&FV#l~#qY%V~X^#lpq#l#y#z#l$f$g#l#BY#BZ#l$IS$I_#l$I|$JO#l$JT$JU#l$KV$KW#l&FU&FV#l~$dQ!_!`$j#r#s$o~$oO!e~~$tO$x~~$yW|~OY$tZr$trs%cs#O$t#O#P%h#P;'S$t;'S;=`&f<%lO$t~%hO|~~%kRO;'S$t;'S;=`%t;=`O$t~%yX|~OY$tZr$trs%cs#O$t#O#P%h#P;'S$t;'S;=`&f;=`<%l$t<%lO$t~&iP;=`<%l$t~&qSt~OY&lZ;'S&l;'S;=`&}<%lO&l~'QP;=`<%l&l~'YO!Z~~'_W|~OY'YZw'Ywx%cx#O'Y#O#P'w#P;'S'Y;'S;=`(u<%lO'Y~'zRO;'S'Y;'S;=`(T;=`O'Y~(YX|~OY'YZw'Ywx%cx#O'Y#O#P'w#P;'S'Y;'S;=`(u;=`<%l'Y<%lO'Y~(xP;=`<%l'Y~)QO%X~~)VO%Z~~)[O!X~V)cO%^P![U~)hO%Y~V)oO%]P!]U~)rP!Q![)u~)zS%_~!Q![)u!g!h*W#R#S)o#X#Y*W~*ZR{|*d}!O*d!Q![*j~*gP!Q![*j~*oQ%_~!Q![*j#R#S*d~*zO!Y~~+P[%_~!O!P)o!Q![+u!g!h*W#R#S,m#W#X-X#X#Y*W#[#]-p#a#b.U#g#h.x#k#l/Z#l#m0d#m#n/u~+zZ%_~!O!P)o!Q![+u!g!h*W#R#S,m#W#X-X#X#Y*W#[#]-p#a#b.U#g#h.x#k#l/Z#m#n/u~,pP!Q![,s~,xT%_~!O!P)o!Q![,s!g!h*W#R#S,m#X#Y*W~-^P%_~!Q![-a~-dS!Q![-a#[#]-p#a#b.U#g#h.x~-uP%_~!Q![-x~-{R!Q![-x#a#b.U#g#h.x~.ZQ%_~!Q![.a#g#h.s~.dR!Q![.a#a#b.m#g#h.x~.pP#g#h.s~.xO%_~~.}P%_~!Q![/Q~/TQ!Q![/Q#a#b.m~/`P%_~!Q![/c~/fT!Q![/c#W#X-X#[#]-p#a#b.U#g#h.x~/zP%_~!Q![/}~0QU!Q![/}#W#X-X#[#]-p#a#b.U#g#h.x#k#l/Z~0gR!Q![0p!c!i0p#T#Z0p~0uR%_~!Q![0p!c!i0p#T#Z0pV1VT'^S!iR!Q![1f![!]1f!c!}1f#R#S1f#T#o1fR1kT!iR!Q![1f![!]1f!c!}1f#R#S1f#T#o1f~2PQ!d~!P!Q2V!_!`2[~2[O!a~~2aO!c~~2fQ$vP!_!`2l#r#s2qQ2qO!^Q~2vO$w~~2{Q!`~!P!Q3R!_!`3W~3WO!b~~3]O!_~~3bO${~V3iT!iRzS!Q![3b![!]1f!c!}3b#R#S3b#T#o3b~3}O'Y~~4SO']~~4XO!P~~4[TO#S4X#S#T%c#T;'S4X;'S;=`4k<%lO4X~4nP;=`<%l4X~4vO'_~~4{O'`~",
+  tokenizers: [0, 1, 2],
+  topRules: { "PromQL": [0, 37], "MetricName": [1, 183] },
+  specialized: [{ term: 71, get: (value, stack) => specializeIdentifier(value) << 1, external: specializeIdentifier }, { term: 71, get: (value, stack) => extendIdentifier(value, stack) << 1 | 1, external: extendIdentifier, extend: true }, { term: 71, get: (value) => spec_Identifier[value] || -1 }],
+  tokenPrec: 0
+});
+
+// src/ast.ts
+function unquote(lit) {
+  const quote = lit.charAt(0);
+  const body = lit.slice(1, -1);
+  if (quote === "`") return body;
+  const simple = {
+    a: "\x07",
+    b: "\b",
+    f: "\f",
+    n: "\n",
+    r: "\r",
+    t: "	",
+    v: "\v",
+    "\\": "\\",
+    '"': '"',
+    "'": "'"
+  };
+  return body.replace(/\\(x[0-9a-fA-F]{2}|u[0-9a-fA-F]{4}|U[0-9a-fA-F]{8}|[0-7]{3}|.)/g, (m, e) => {
+    const c = e.charAt(0);
+    if (c === "x" || c === "u" || c === "U") return String.fromCodePoint(parseInt(e.slice(1), 16));
+    if (/[0-7]/.test(c)) return String.fromCodePoint(parseInt(e, 8));
+    return simple[e] ?? m;
+  });
+}
+var children = (n) => {
+  const out = [];
+  for (let c = n.firstChild; c; c = c.nextSibling) if (c.name !== "LineComment") out.push(c);
+  return out;
+};
+var transparent = /* @__PURE__ */ new Set([
+  "ParenExpr",
+  "MatrixSelector",
+  "SubqueryExpr",
+  "OffsetExpr",
+  "StepInvariantExpr",
+  "AnchoredExpr",
+  "SmoothedExpr"
+]);
+var binaryOps = /* @__PURE__ */ new Set([
+  "Pow",
+  "Mul",
+  "Div",
+  "Mod",
+  "Atan2",
+  "Add",
+  "Sub",
+  "Eql",
+  "Gte",
+  "Gtr",
+  "Lte",
+  "Lss",
+  "Neq",
+  "TrimUpper",
+  "TrimLower",
+  "And",
+  "Or",
+  "Unless"
+]);
+function parsePromQL(src) {
+  const tree = parser.parse(src);
+  for (const c = tree.cursor(); c.next(); ) if (c.type.isError) return void 0;
+  const top = children(tree.topNode)[0];
+  if (!top) return void 0;
+  const text2 = (n) => src.slice(n.from, n.to);
+  const labelName = (n) => {
+    const lit = n.name === "QuotedLabelName" ? n.firstChild : null;
+    return lit ? unquote(text2(lit)) : text2(n);
+  };
+  const grouping = (n) => n ? children(n).filter((c) => c.name === "LabelName" || c.name === "QuotedLabelName").map(labelName) : [];
+  const selector = (n) => {
+    let name2;
+    const matchers = [];
+    for (const c of children(n)) {
+      if (c.name === "Identifier") name2 = text2(c);
+      if (c.name !== "LabelMatchers") continue;
+      for (const m of children(c)) {
+        if (m.name === "QuotedLabelName") {
+          name2 = labelName(m);
+          continue;
+        }
+        const parts = children(m);
+        const op = parts.find((p) => p.name === "MatchOp");
+        const value = parts.find((p) => p.name === "StringLiteral");
+        const label = parts[0];
+        if (!op || !value || !label) continue;
+        matchers.push({ name: labelName(label), op: text2(op), value: unquote(text2(value)) });
+      }
+    }
+    const metric = matchers.find((m) => m.name === "__name__" && m.op === "=");
+    if (name2 === void 0 && metric) name2 = metric.value;
+    return { kind: "selector", name: name2, matchers, text: text2(n) };
+  };
+  const build = (n) => {
+    const t2 = text2(n);
+    if (transparent.has(n.name)) {
+      const inner = children(n)[0];
+      return inner ? build(inner) : { kind: "number", text: t2 };
+    }
+    switch (n.name) {
+      case "NumberDurationLiteral":
+        return { kind: "number", text: t2 };
+      case "StringLiteral":
+        return { kind: "string", value: unquote(t2), text: t2 };
+      case "VectorSelector":
+        return selector(n);
+      case "UnaryExpr": {
+        const inner = children(n).pop();
+        return { kind: "unary", expr: inner ? build(inner) : { kind: "number", text: t2 }, text: t2 };
+      }
+      case "FunctionCall": {
+        const id = n.getChild("FunctionIdentifier");
+        const body = n.getChild("FunctionCallBody");
+        return {
+          kind: "call",
+          func: id ? text2(id) : "",
+          args: body ? children(body).map(build) : [],
+          text: t2
+        };
+      }
+      case "AggregateExpr": {
+        const op = n.getChild("AggregateOp");
+        const mod = n.getChild("AggregateModifier");
+        const body = n.getChild("FunctionCallBody");
+        const args = body ? children(body).map(build) : [];
+        const labels = grouping(mod?.getChild("GroupingLabels") ?? null);
+        const isWithout = mod?.getChild("Without") != null;
+        return {
+          kind: "aggregate",
+          op: op ? text2(op).toLowerCase() : "",
+          by: mod && !isWithout ? labels : void 0,
+          without: isWithout ? labels : void 0,
+          param: args.length > 1 ? args[0] : void 0,
+          expr: args[args.length - 1] ?? { kind: "number", text: "" },
+          text: t2
+        };
+      }
+      case "BinaryExpr": {
+        const parts = children(n);
+        const opNode = parts.find((p) => binaryOps.has(p.name));
+        const clause = n.getChild("MatchingModifierClause");
+        const matching = { on: false, labels: [], card: "one-to-one", include: [], fill: false };
+        if (clause) {
+          const groups = clause.getChildren("GroupingLabels");
+          matching.on = clause.getChild("On") != null;
+          matching.labels = grouping(groups[0] ?? null);
+          if (clause.getChild("GroupLeft")) matching.card = "many-to-one";
+          if (clause.getChild("GroupRight")) matching.card = "one-to-many";
+          matching.include = grouping(groups[1] ?? null);
+        }
+        matching.fill = n.getChild("FillModifier") != null;
+        const first = parts[0];
+        const last = parts[parts.length - 1];
+        return {
+          kind: "binary",
+          op: opNode ? text2(opNode).toLowerCase() : "",
+          bool: n.getChild("BoolModifier") != null,
+          lhs: first ? build(first) : { kind: "number", text: "" },
+          rhs: last ? build(last) : { kind: "number", text: "" },
+          matching,
+          text: t2
+        };
+      }
+    }
+    return { kind: "call", func: `<${n.name}>`, args: [], text: t2 };
+  };
+  return build(top);
+}
 
 // src/duration.ts
 var unitMs = {
@@ -7404,6 +11628,1150 @@ function formatDuration(ms) {
     if (ms >= unitMs[unit] && ms % unitMs[unit] === 0) return `${String(ms / unitMs[unit])}${unit}`;
   }
   return `${String(ms)}ms`;
+}
+
+// src/labels.ts
+var unknown = () => ({ known: false, may: /* @__PURE__ */ new Set(), must: /* @__PURE__ */ new Set(), fixed: /* @__PURE__ */ new Map() });
+var empty = () => ({ known: true, may: /* @__PURE__ */ new Set(), must: /* @__PURE__ */ new Set(), fixed: /* @__PURE__ */ new Map() });
+var clone = (l) => ({
+  known: l.known,
+  may: new Set(l.may),
+  must: new Set(l.must),
+  fixed: new Map(l.fixed)
+});
+function drop(l, names) {
+  for (const n of names) {
+    l.may.delete(n);
+    l.must.delete(n);
+    l.fixed.delete(n);
+  }
+}
+function keepOnly(l, names) {
+  const keep = new Set(names);
+  return {
+    known: true,
+    may: new Set([...l.may].filter((n) => keep.has(n))),
+    must: new Set([...l.must].filter((n) => keep.has(n))),
+    fixed: new Map([...l.fixed].filter(([n]) => keep.has(n)))
+  };
+}
+function matchesEmpty(pattern) {
+  try {
+    return new RegExp(`^(?:${pattern})$`).test("");
+  } catch {
+    return void 0;
+  }
+}
+function applyMatchers(l, matchers) {
+  for (const m of matchers) {
+    if (m.name === "__name__") continue;
+    let present;
+    if (m.op === "=") present = m.value !== "";
+    else if (m.op === "!=") present = m.value === "" ? true : void 0;
+    else {
+      const empty2 = matchesEmpty(m.value);
+      if (empty2 !== void 0) present = m.op === "=~" ? empty2 ? void 0 : true : empty2 || void 0;
+    }
+    if (present === false) drop(l, [m.name]);
+    if (present) {
+      l.may.add(m.name);
+      l.must.add(m.name);
+    }
+    if (m.op === "=" && present) l.fixed.set(m.name, m.value);
+  }
+}
+var scalarFunctions = /* @__PURE__ */ new Set([
+  "scalar",
+  "time",
+  "pi",
+  "range",
+  "step",
+  "start",
+  "end",
+  "min_of",
+  "max_of"
+]);
+var noLabelFunctions = /* @__PURE__ */ new Set(["vector", ...scalarFunctions]);
+var histogramFunctions = /* @__PURE__ */ new Set(["histogram_quantile", "histogram_fraction"]);
+var opaqueFunctions = /* @__PURE__ */ new Set(["info", "histogram_quantiles"]);
+var keepInput = /* @__PURE__ */ new Set(["topk", "bottomk", "limitk", "limit_ratio"]);
+function valueType(e) {
+  switch (e.kind) {
+    case "number":
+      return "scalar";
+    case "string":
+      return "string";
+    case "unary":
+      return valueType(e.expr);
+    case "binary":
+      return valueType(e.lhs) === "vector" || valueType(e.rhs) === "vector" ? "vector" : "scalar";
+    case "call":
+      return scalarFunctions.has(e.func) ? "scalar" : "vector";
+    default:
+      return "vector";
+  }
+}
+function joinResult(many, one, include) {
+  if (!many.known) return unknown();
+  const out = clone(many);
+  drop(out, include);
+  for (const n of include) {
+    if (!one.known || one.may.has(n)) out.may.add(n);
+    if (one.known && one.must.has(n)) out.must.add(n);
+    const v = one.known ? one.fixed.get(n) : void 0;
+    if (v !== void 0) out.fixed.set(n, v);
+  }
+  return out;
+}
+function neverMatches(lhs, rhs, m) {
+  if (!lhs.known || !rhs.known) return void 0;
+  const inSignature = (n) => n !== "__name__" && (m.on ? m.labels.includes(n) : !m.labels.includes(n));
+  const sides = [
+    [lhs, rhs, "left", "right"],
+    [rhs, lhs, "right", "left"]
+  ];
+  for (const [a, b, an, bn] of sides) {
+    for (const n of [...a.must].sort()) {
+      if (inSignature(n) && !b.may.has(n)) {
+        return `every ${an}-hand series has ${n}, which the ${bn}-hand side never has`;
+      }
+    }
+  }
+  for (const [n, v] of [...lhs.fixed].sort()) {
+    const w = rhs.fixed.get(n);
+    if (inSignature(n) && w !== void 0 && w !== v && lhs.must.has(n) && rhs.must.has(n)) {
+      return `${n} is "${v}" on the left and "${w}" on the right`;
+    }
+  }
+  return void 0;
+}
+var LabelInference = class {
+  constructor(env) {
+    this.env = env;
+  }
+  env;
+  memo = /* @__PURE__ */ new Map();
+  resolving = /* @__PURE__ */ new Set();
+  /** Labels of the expression's result; problems found on the way are passed to report. */
+  infer(e, report = () => void 0) {
+    switch (e.kind) {
+      case "number":
+      case "string":
+        return empty();
+      case "unary":
+        return this.infer(e.expr, report);
+      case "selector":
+        return this.selector(e.name, e.matchers);
+      case "aggregate":
+        return this.aggregate(e, report);
+      case "call":
+        return this.call(e, report);
+      case "binary":
+        return this.binary(e, report);
+    }
+  }
+  /** Labels of a recording rule's series, combining every definition of the name. */
+  record(name2) {
+    const cached = this.memo.get(name2);
+    if (cached) return cached;
+    if (this.resolving.has(name2)) return unknown();
+    this.resolving.add(name2);
+    let out;
+    for (const def of this.env.records.get(name2) ?? []) {
+      const l = def.expr ? clone(this.infer(def.expr)) : unknown();
+      for (const [k, v] of Object.entries(def.labels)) {
+        l.may.add(k);
+        if (v === "") drop(l, [k]);
+        else {
+          l.must.add(k);
+          l.fixed.set(k, v);
+        }
+      }
+      out = out ? union(out, l) : l;
+    }
+    this.resolving.delete(name2);
+    const result = out ?? unknown();
+    this.memo.set(name2, result);
+    return result;
+  }
+  selector(name2, matchers) {
+    if (name2 === void 0) return unknown();
+    let l;
+    if (this.env.records.has(name2)) l = clone(this.record(name2));
+    else {
+      const info = this.env.metrics.get(name2);
+      if (!info) return unknown();
+      l = empty();
+      for (const n of info.labels) l.may.add(n);
+      for (const n of info.always) l.must.add(n);
+      for (const n of this.env.targetLabels) {
+        if (l.may.has(n)) l.may.add(`exported_${n}`);
+        l.may.add(n);
+      }
+    }
+    if (!l.known) return l;
+    applyMatchers(l, matchers);
+    return l;
+  }
+  aggregate(e, report) {
+    if (e.param) this.infer(e.param, report);
+    const input = this.infer(e.expr, report);
+    if (input.known) {
+      for (const n of e.by ?? []) {
+        if (n !== "__name__" && !input.may.has(n)) report({ kind: "by", label: n, node: e, input });
+      }
+    }
+    if (keepInput.has(e.op)) return input;
+    let out;
+    if (e.without) {
+      if (!input.known) return input;
+      out = clone(input);
+      drop(out, e.without);
+    } else if (e.by) {
+      out = input.known ? keepOnly(input, e.by) : { ...empty(), may: new Set(e.by) };
+    } else out = empty();
+    if (e.op === "count_values" && e.param?.kind === "string") {
+      out.may.add(e.param.value);
+      out.must.add(e.param.value);
+      out.fixed.delete(e.param.value);
+    }
+    return out;
+  }
+  call(e, report) {
+    const args = e.args.map((a) => this.infer(a, report));
+    if (noLabelFunctions.has(e.func)) return empty();
+    if (e.func === "absent" || e.func === "absent_over_time") {
+      const out2 = empty();
+      const arg = e.args[0];
+      if (arg?.kind === "selector") {
+        for (const m of arg.matchers) {
+          if (m.op === "=" && m.name !== "__name__" && m.value !== "") {
+            out2.may.add(m.name);
+            out2.must.add(m.name);
+            out2.fixed.set(m.name, m.value);
+          }
+        }
+      }
+      return out2;
+    }
+    if (opaqueFunctions.has(e.func) || e.func.startsWith("<")) return unknown();
+    const i = e.args.findIndex((a) => valueType(a) === "vector");
+    const input = args[i];
+    if (!input) return empty();
+    if (!input.known) return input;
+    const out = clone(input);
+    if (e.func === "label_replace" || e.func === "label_join") {
+      const dst = e.args[1];
+      if (dst?.kind !== "string") return unknown();
+      drop(out, [dst.value]);
+      out.may.add(dst.value);
+    }
+    if (histogramFunctions.has(e.func)) drop(out, ["le"]);
+    return out;
+  }
+  binary(e, report) {
+    const lhs = this.infer(e.lhs, report);
+    const rhs = this.infer(e.rhs, report);
+    const lv = valueType(e.lhs) === "vector";
+    const rv = valueType(e.rhs) === "vector";
+    if (!lv && !rv) return empty();
+    if (!lv) return rhs;
+    if (!rv) return lhs;
+    const m = e.matching;
+    if (lhs.known && rhs.known && m.on) {
+      for (const n of m.labels) {
+        if (!lhs.may.has(n) && !rhs.may.has(n)) report({ kind: "on", label: n, node: e, lhs, rhs });
+      }
+    }
+    const one = m.card === "many-to-one" ? rhs : lhs;
+    if (m.card !== "one-to-one" && one.known) {
+      for (const n of m.include) {
+        if (!one.may.has(n)) report({ kind: "include", label: n, node: e, one });
+      }
+    }
+    if (e.op !== "or" && !m.fill) {
+      const reason = neverMatches(lhs, rhs, m);
+      if (reason) report({ kind: "nomatch", reason, node: e, lhs, rhs });
+    }
+    if (e.op === "or") return lhs.known && rhs.known ? union(lhs, rhs) : unknown();
+    if (e.op === "and" || e.op === "unless") return lhs;
+    if (m.card === "many-to-one") return joinResult(lhs, rhs, m.include);
+    if (m.card === "one-to-many") return joinResult(rhs, lhs, m.include);
+    if (m.on) return lhs.known ? keepOnly(lhs, m.labels) : { ...empty(), may: new Set(m.labels) };
+    if (!lhs.known) return lhs;
+    const out = clone(lhs);
+    drop(out, m.labels);
+    return out;
+  }
+};
+function union(a, b) {
+  if (!a.known || !b.known) return unknown();
+  return {
+    known: true,
+    may: /* @__PURE__ */ new Set([...a.may, ...b.may]),
+    must: new Set([...a.must].filter((n) => b.must.has(n))),
+    fixed: new Map([...a.fixed].filter(([n, v]) => b.fixed.get(n) === v))
+  };
+}
+
+// src/metrics.ts
+import { readFile } from "node:fs/promises";
+
+// src/metrics.json
+var metrics_default = {
+  $comment: "Labels that exporters put on their metrics, read from each project's source code at the linked commit. 'always' lists labels that are never empty. Target labels (job, instance, ...) are not included.",
+  families: [
+    {
+      names: ["alertmanager_cluster_failed_peers"],
+      type: "gauge",
+      labels: [],
+      always: [],
+      source: "https://github.com/prometheus/alertmanager/blob/47403693800ba753b79f61c0fbca5e7d1d74281c/cluster/cluster.go",
+      note: "Only registered when clustering is enabled (--cluster.listen-address set)."
+    },
+    {
+      names: ["alertmanager_cluster_members"],
+      type: "gauge",
+      labels: [],
+      always: [],
+      source: "https://github.com/prometheus/alertmanager/blob/47403693800ba753b79f61c0fbca5e7d1d74281c/cluster/delegate.go",
+      note: "Only registered when clustering is enabled."
+    },
+    {
+      names: ["alertmanager_config_hash", "alertmanager_config_last_reload_successful"],
+      type: "gauge",
+      labels: [],
+      always: [],
+      source: "https://github.com/prometheus/alertmanager/blob/47403693800ba753b79f61c0fbca5e7d1d74281c/config/coordinator.go"
+    },
+    {
+      names: ["alertmanager_notifications_failed_total"],
+      type: "counter",
+      labels: ["integration", "receiver_name", "reason"],
+      always: ["integration", "reason"],
+      source: [
+        "https://github.com/prometheus/alertmanager/blob/47403693800ba753b79f61c0fbca5e7d1d74281c/notify/metrics.go",
+        "https://github.com/prometheus/alertmanager/blob/47403693800ba753b79f61c0fbca5e7d1d74281c/notify/retry_stage.go",
+        "https://github.com/prometheus/alertmanager/blob/47403693800ba753b79f61c0fbca5e7d1d74281c/notify/util.go"
+      ],
+      note: "reason is a fixed Reason.String() value (other, clientError, serverError, contextCanceled, ...); receiver_name only with --enable-feature=receiver-name-in-metrics."
+    },
+    {
+      names: ["alertmanager_notifications_total"],
+      type: "counter",
+      labels: ["integration", "receiver_name"],
+      always: ["integration"],
+      source: [
+        "https://github.com/prometheus/alertmanager/blob/47403693800ba753b79f61c0fbca5e7d1d74281c/notify/metrics.go",
+        "https://github.com/prometheus/alertmanager/blob/47403693800ba753b79f61c0fbca5e7d1d74281c/notify/retry_stage.go"
+      ],
+      note: "integration is the integration type name (email, slack, webhook, ...); receiver_name only present when --enable-feature=receiver-name-in-metrics."
+    },
+    {
+      names: [
+        "kube_daemonset_status_current_number_scheduled",
+        "kube_daemonset_status_desired_number_scheduled",
+        "kube_daemonset_status_number_available",
+        "kube_daemonset_status_number_misscheduled",
+        "kube_daemonset_status_updated_number_scheduled"
+      ],
+      type: "gauge",
+      labels: ["namespace", "daemonset"],
+      always: ["namespace", "daemonset"],
+      source: "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/daemonset.go"
+    },
+    {
+      names: [
+        "kube_deployment_metadata_generation",
+        "kube_deployment_spec_replicas",
+        "kube_deployment_status_observed_generation",
+        "kube_deployment_status_replicas_available",
+        "kube_deployment_status_replicas_updated"
+      ],
+      type: "gauge",
+      labels: ["namespace", "deployment"],
+      always: ["namespace", "deployment"],
+      source: "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/deployment.go",
+      note: "kube_deployment_spec_replicas is omitted when spec.replicas is nil"
+    },
+    {
+      names: ["kube_deployment_status_condition"],
+      type: "gauge",
+      labels: ["namespace", "deployment", "reason", "condition", "status"],
+      always: ["namespace", "deployment", "condition", "status"],
+      source: [
+        "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/deployment.go",
+        "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/utils.go"
+      ],
+      note: "status is true/false/unknown; reason is mapped to an allowlist or 'unknown', but an empty condition reason stays empty"
+    },
+    {
+      names: [
+        "kube_horizontalpodautoscaler_spec_max_replicas",
+        "kube_horizontalpodautoscaler_spec_min_replicas",
+        "kube_horizontalpodautoscaler_status_current_replicas",
+        "kube_horizontalpodautoscaler_status_desired_replicas"
+      ],
+      type: "gauge",
+      labels: ["namespace", "horizontalpodautoscaler"],
+      always: ["namespace", "horizontalpodautoscaler"],
+      source: "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/horizontalpodautoscaler.go"
+    },
+    {
+      names: ["kube_job_failed"],
+      type: "gauge",
+      labels: ["namespace", "job_name", "condition"],
+      always: ["namespace", "job_name", "condition"],
+      source: [
+        "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/job.go",
+        "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/utils.go"
+      ],
+      note: "condition is true/false/unknown (status of the Failed condition), not the condition type; only emitted when a Failed condition exists"
+    },
+    {
+      names: ["kube_job_owner"],
+      type: "gauge",
+      labels: ["namespace", "job_name", "owner_kind", "owner_name", "owner_is_controller"],
+      always: ["namespace", "job_name"],
+      source: "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/job.go",
+      note: "owner_* are all empty strings when the job has no ownerReferences"
+    },
+    {
+      names: ["kube_job_status_active", "kube_job_status_start_time"],
+      type: "gauge",
+      labels: ["namespace", "job_name"],
+      always: ["namespace", "job_name"],
+      source: "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/job.go",
+      note: "job name label is job_name, not job"
+    },
+    {
+      names: ["kube_node_info"],
+      type: "gauge",
+      labels: [
+        "node",
+        "kernel_version",
+        "os_image",
+        "container_runtime_version",
+        "kubelet_version",
+        "kubeproxy_version",
+        "provider_id",
+        "pod_cidr",
+        "system_uuid",
+        "internal_ip"
+      ],
+      always: ["node", "kubeproxy_version"],
+      source: "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/node.go",
+      note: "kubeproxy_version is hardcoded to 'deprecated'; internal_ip is deprecated (to be removed in v3)"
+    },
+    {
+      names: ["kube_node_role"],
+      type: "gauge",
+      labels: ["node", "role"],
+      always: ["node", "role"],
+      source: "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/node.go",
+      note: "one series per node-role.kubernetes.io/<role> node label; role is the suffix"
+    },
+    {
+      names: ["kube_node_spec_taint"],
+      type: "gauge",
+      labels: ["node", "key", "value", "effect"],
+      always: ["node", "key", "effect"],
+      source: "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/node.go",
+      note: "value is empty for taints without a value"
+    },
+    {
+      names: ["kube_node_spec_unschedulable"],
+      type: "gauge",
+      labels: ["node"],
+      always: ["node"],
+      source: "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/node.go"
+    },
+    {
+      names: ["kube_node_status_allocatable", "kube_node_status_capacity"],
+      type: "gauge",
+      labels: ["node", "resource", "unit"],
+      always: ["node", "resource", "unit"],
+      source: "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/node.go",
+      note: "unit is core/byte/integer"
+    },
+    {
+      names: ["kube_node_status_condition"],
+      type: "gauge",
+      labels: ["node", "condition", "status"],
+      always: ["node", "condition", "status"],
+      source: [
+        "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/node.go",
+        "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/utils.go"
+      ],
+      note: "status is true/false/unknown"
+    },
+    {
+      names: ["kube_persistentvolume_status_phase"],
+      type: "gauge",
+      labels: ["persistentvolume", "phase"],
+      always: ["persistentvolume", "phase"],
+      source: "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/persistentvolume.go",
+      note: "phase is one of Pending/Available/Bound/Released/Failed; no series when phase is empty"
+    },
+    {
+      names: ["kube_persistentvolumeclaim_access_mode"],
+      type: "gauge",
+      labels: ["namespace", "persistentvolumeclaim", "access_mode"],
+      always: ["namespace", "persistentvolumeclaim", "access_mode"],
+      source: "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/persistentvolumeclaim.go"
+    },
+    {
+      names: ["kube_pod_container_resource_limits", "kube_pod_container_resource_requests"],
+      type: "gauge",
+      labels: ["namespace", "pod", "uid", "container", "node", "resource", "unit"],
+      always: ["namespace", "pod", "uid", "container", "resource", "unit"],
+      source: "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/pod.go",
+      note: "node is spec.nodeName, empty for unscheduled pods; only regular containers (not init)"
+    },
+    {
+      names: ["kube_pod_container_status_waiting_reason"],
+      type: "gauge",
+      labels: ["namespace", "pod", "uid", "container", "reason"],
+      always: ["namespace", "pod", "uid", "container"],
+      source: "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/pod.go",
+      note: "emitted only for containers in Waiting state; reason is the raw waiting reason"
+    },
+    {
+      names: ["kube_pod_info"],
+      type: "gauge",
+      labels: [
+        "namespace",
+        "pod",
+        "uid",
+        "host_ip",
+        "pod_ip",
+        "node",
+        "created_by_kind",
+        "created_by_name",
+        "priority_class",
+        "host_network"
+      ],
+      always: ["namespace", "pod", "uid"],
+      source: "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/pod.go",
+      note: "host_network is true/false; node/host_ip/pod_ip empty until scheduled/running (host_network was added in recent versions, so it is not in always)"
+    },
+    {
+      names: ["kube_pod_owner"],
+      type: "gauge",
+      labels: ["namespace", "pod", "uid", "owner_kind", "owner_name", "owner_is_controller"],
+      always: ["namespace", "pod", "uid"],
+      source: "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/pod.go",
+      note: "owner_* are all empty strings when the pod has no ownerReferences"
+    },
+    {
+      names: ["kube_pod_status_phase"],
+      type: "gauge",
+      labels: ["namespace", "pod", "uid", "phase"],
+      always: ["namespace", "pod", "uid", "phase"],
+      source: "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/pod.go",
+      note: "phase is one of Pending/Succeeded/Failed/Unknown/Running"
+    },
+    {
+      names: ["kube_pod_status_ready"],
+      type: "gauge",
+      labels: ["namespace", "pod", "uid", "condition"],
+      always: ["namespace", "pod", "uid", "condition"],
+      source: [
+        "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/pod.go",
+        "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/utils.go"
+      ],
+      note: "condition is true/false/unknown"
+    },
+    {
+      names: ["kube_pod_status_reason"],
+      type: "gauge",
+      labels: ["namespace", "pod", "uid", "reason"],
+      always: ["namespace", "pod", "uid", "reason"],
+      source: "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/pod.go",
+      note: "reason from a fixed list (Evicted, NodeLost, ...) or 'Other'; only emitted for matching reasons"
+    },
+    {
+      names: [
+        "kube_poddisruptionbudget_status_current_healthy",
+        "kube_poddisruptionbudget_status_desired_healthy",
+        "kube_poddisruptionbudget_status_expected_pods"
+      ],
+      type: "gauge",
+      labels: ["namespace", "poddisruptionbudget"],
+      always: ["namespace", "poddisruptionbudget"],
+      source: "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/poddisruptionbudget.go"
+    },
+    {
+      names: ["kube_replicaset_owner"],
+      type: "gauge",
+      labels: ["namespace", "replicaset", "owner_kind", "owner_name", "owner_is_controller"],
+      always: ["namespace", "replicaset"],
+      source: "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/replicaset.go",
+      note: "owner_* are all empty strings when the replicaset has no ownerReferences"
+    },
+    {
+      names: ["kube_resourcequota"],
+      type: "gauge",
+      labels: ["namespace", "resourcequota", "resource", "type"],
+      always: ["namespace", "resourcequota", "resource", "type"],
+      source: "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/resourcequota.go",
+      note: "type is hard or used"
+    },
+    {
+      names: ["kube_state_metrics_list_total", "kube_state_metrics_watch_total"],
+      type: "counter",
+      labels: ["result", "resource"],
+      always: ["result", "resource"],
+      source: "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/pkg/watch/watch.go",
+      note: "self metric on the telemetry port; result is success/error, resource is the Go type string (e.g. *v1.Pod)"
+    },
+    {
+      names: ["kube_state_metrics_shard_ordinal"],
+      type: "gauge",
+      labels: ["shard_ordinal"],
+      always: ["shard_ordinal"],
+      source: [
+        "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/pkg/sharding/metrics.go",
+        "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/builder.go"
+      ],
+      note: "self metric on the telemetry port; shard_ordinal is the shard index as a decimal string"
+    },
+    {
+      names: ["kube_state_metrics_total_shards"],
+      type: "gauge",
+      labels: [],
+      always: [],
+      source: "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/pkg/sharding/metrics.go",
+      note: "self metric on the telemetry port"
+    },
+    {
+      names: [
+        "kube_statefulset_metadata_generation",
+        "kube_statefulset_replicas",
+        "kube_statefulset_status_observed_generation",
+        "kube_statefulset_status_replicas_ready",
+        "kube_statefulset_status_replicas_updated"
+      ],
+      type: "gauge",
+      labels: ["namespace", "statefulset"],
+      always: ["namespace", "statefulset"],
+      source: "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/statefulset.go",
+      note: "kube_statefulset_replicas is omitted when spec.replicas is nil"
+    },
+    {
+      names: ["kube_statefulset_status_current_revision", "kube_statefulset_status_update_revision"],
+      type: "gauge",
+      labels: ["namespace", "statefulset", "revision"],
+      always: ["namespace", "statefulset"],
+      source: "https://github.com/kubernetes/kube-state-metrics/blob/53b985eafaf66fbb166977be57defab02cdfefad/internal/store/statefulset.go",
+      note: "revision comes from status.currentRevision / status.updateRevision and can be empty before the controller sets it"
+    },
+    {
+      names: ["node_bonding_active", "node_bonding_slaves"],
+      type: "gauge",
+      labels: ["master"],
+      always: ["master"],
+      source: "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/bonding_linux.go",
+      note: "master = bond interface name from /sys/class/net/bonding_masters (strings.Fields token)"
+    },
+    {
+      names: ["node_cpu_seconds_total"],
+      type: "counter",
+      labels: ["cpu", "mode"],
+      always: ["cpu", "mode"],
+      source: [
+        "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/cpu_common.go",
+        "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/cpu_linux.go"
+      ],
+      note: "Linux collector: cpu = strconv.Itoa(cpuID); mode in user,nice,system,idle,iowait,irq,softirq,steal"
+    },
+    {
+      names: ["node_disk_io_time_seconds_total", "node_disk_io_time_weighted_seconds_total"],
+      type: "counter",
+      labels: ["device"],
+      always: ["device"],
+      source: [
+        "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/diskstats_common.go",
+        "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/diskstats_linux.go"
+      ],
+      note: "Linux collector: device = DeviceName from /proc/diskstats"
+    },
+    {
+      names: ["node_filefd_allocated", "node_filefd_maximum"],
+      type: "gauge",
+      labels: [],
+      always: [],
+      source: "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/filefd_linux.go",
+      note: "Names built dynamically from /proc/sys/fs/file-nr fields; no labels"
+    },
+    {
+      names: [
+        "node_filesystem_avail_bytes",
+        "node_filesystem_free_bytes",
+        "node_filesystem_size_bytes",
+        "node_filesystem_files",
+        "node_filesystem_files_free"
+      ],
+      type: "gauge",
+      labels: ["device", "mountpoint", "fstype", "device_error"],
+      always: ["mountpoint", "fstype"],
+      source: [
+        "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/filesystem_common.go",
+        "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/filesystem_linux.go"
+      ],
+      note: "Linux collector: device_error is in the label set but always empty on these series (they are skipped when statfs fails), so it is absent in Prometheus; device = mount source"
+    },
+    {
+      names: ["node_filesystem_readonly"],
+      type: "gauge",
+      labels: ["device", "mountpoint", "fstype", "device_error"],
+      always: ["mountpoint", "fstype"],
+      source: [
+        "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/filesystem_common.go",
+        "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/filesystem_linux.go"
+      ],
+      note: "Linux collector: device_error is empty normally, set to the statfs error text or 'mountpoint timeout' when the mount fails (readonly is still emitted then)"
+    },
+    {
+      names: ["node_load1"],
+      type: "gauge",
+      labels: [],
+      always: [],
+      source: "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/loadavg.go"
+    },
+    {
+      names: ["node_md_disks"],
+      type: "gauge",
+      labels: ["device", "state"],
+      always: ["device", "state"],
+      source: "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/mdadm_linux.go",
+      note: "device = md name from /proc/mdstat; state in active,failed,spare"
+    },
+    {
+      names: ["node_md_disks_required"],
+      type: "gauge",
+      labels: ["device"],
+      always: ["device"],
+      source: "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/mdadm_linux.go",
+      note: "device = md name from /proc/mdstat"
+    },
+    {
+      names: [
+        "node_memory_Buffers_bytes",
+        "node_memory_Cached_bytes",
+        "node_memory_MemAvailable_bytes",
+        "node_memory_MemFree_bytes",
+        "node_memory_MemTotal_bytes",
+        "node_memory_Slab_bytes"
+      ],
+      type: "gauge",
+      labels: [],
+      always: [],
+      source: [
+        "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/meminfo.go",
+        "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/meminfo_linux.go"
+      ],
+      note: "Linux collector: names built dynamically from /proc/meminfo keys (BuildFQName(node, memory, key)); no labels"
+    },
+    {
+      names: [
+        "node_network_receive_bytes_total",
+        "node_network_receive_drop_total",
+        "node_network_receive_errs_total",
+        "node_network_receive_packets_total",
+        "node_network_transmit_bytes_total",
+        "node_network_transmit_drop_total",
+        "node_network_transmit_errs_total",
+        "node_network_transmit_packets_total"
+      ],
+      type: "counter",
+      labels: ["device", "ifalias"],
+      always: ["device"],
+      source: [
+        "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/netdev_common.go",
+        "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/netdev_linux.go"
+      ],
+      note: "Linux collector: ifalias only with --collector.netdev.label-ifalias (may be empty); *_drop/*_errs names are the default legacy names, --collector.netdev.enable-detailed-metrics renames them to *_dropped/*_errors"
+    },
+    {
+      names: ["node_network_up"],
+      type: "gauge",
+      labels: ["device"],
+      always: ["device"],
+      source: [
+        "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/netclass_linux.go",
+        "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/netclass_rtnl_linux.go"
+      ],
+      note: "Linux netclass collector (sysfs or netlink variant); device = interface name"
+    },
+    {
+      names: ["node_nf_conntrack_entries", "node_nf_conntrack_entries_limit"],
+      type: "gauge",
+      labels: [],
+      always: [],
+      source: "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/conntrack_linux.go"
+    },
+    {
+      names: ["node_systemd_service_restart_total"],
+      type: "counter",
+      labels: ["name"],
+      always: ["name"],
+      source: "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/systemd_linux.go",
+      note: "Only with --collector.systemd.enable-restarts-metrics; name = .service unit name"
+    },
+    {
+      names: ["node_systemd_unit_state"],
+      type: "gauge",
+      labels: ["name", "state", "type"],
+      always: ["name", "state"],
+      source: "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/systemd_linux.go",
+      note: "state in active,activating,deactivating,inactive,failed; type is set only for .service/.mount units (empty otherwise)"
+    },
+    {
+      names: ["node_textfile_scrape_error"],
+      type: "gauge",
+      labels: [],
+      always: [],
+      source: "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/textfile.go",
+      note: "Defined by the textfile collector itself, no labels"
+    },
+    {
+      names: ["node_timex_maxerror_seconds", "node_timex_offset_seconds", "node_timex_sync_status"],
+      type: "gauge",
+      labels: [],
+      always: [],
+      source: "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/timex.go"
+    },
+    {
+      names: ["node_uname_info"],
+      type: "gauge",
+      labels: ["sysname", "release", "version", "machine", "nodename", "domainname"],
+      always: ["sysname", "release", "version", "machine"],
+      source: [
+        "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/uname.go",
+        "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/uname_linux.go"
+      ],
+      note: "Linux collector: values from uname(2); domainname is often '(none)', nodename left out of always"
+    },
+    {
+      names: ["node_vmstat_pgmajfault"],
+      type: "untyped",
+      labels: [],
+      always: [],
+      source: "https://github.com/prometheus/node_exporter/blob/2ae7dd881ed9e551fb75abc811bef974b2c31819/collector/vmstat_linux.go",
+      note: "Name built dynamically from /proc/vmstat field; exposed as untyped (counter in practice); field set controlled by --collector.vmstat.fields (default includes pg.*fault)"
+    },
+    {
+      names: ["process_start_time_seconds"],
+      type: "gauge",
+      labels: [],
+      always: [],
+      source: "https://github.com/prometheus/client_golang/blob/7c6a403efe48803ef2f576009e92ac19d205a6d3/prometheus/process_collector.go",
+      note: "client_golang process collector, registered by most Go exporters; no labels"
+    },
+    {
+      names: ["prometheus_config_last_reload_successful"],
+      type: "gauge",
+      labels: [],
+      always: [],
+      source: "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/cmd/prometheus/main.go"
+    },
+    {
+      names: ["prometheus_engine_queries", "prometheus_engine_queries_concurrent_max"],
+      type: "gauge",
+      labels: [],
+      always: [],
+      source: "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/promql/engine.go"
+    },
+    {
+      names: [
+        "prometheus_notifications_alertmanagers_discovered",
+        "prometheus_notifications_queue_capacity"
+      ],
+      type: "gauge",
+      labels: [],
+      always: [],
+      source: "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/notifier/metric.go",
+      note: "queue_capacity is a plain Gauge without labels."
+    },
+    {
+      names: ["prometheus_notifications_errors_total", "prometheus_notifications_sent_total"],
+      type: "counter",
+      labels: ["alertmanager"],
+      always: ["alertmanager"],
+      source: [
+        "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/notifier/metric.go",
+        "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/notifier/sendloop.go",
+        "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/notifier/alertmanager.go"
+      ],
+      note: "alertmanager = Alertmanager URL string built from __scheme__/__address__/__alerts_path__ (path always /.../api/v2/alerts), so never empty."
+    },
+    {
+      names: ["prometheus_notifications_queue_length"],
+      type: "gauge",
+      labels: ["alertmanager"],
+      always: ["alertmanager"],
+      source: [
+        "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/notifier/metric.go",
+        "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/notifier/sendloop.go"
+      ],
+      note: "Per-Alertmanager queue in this version (sendloop); older versions (before per-AM send loops) exposed it without labels."
+    },
+    {
+      names: [
+        "prometheus_operator_list_operations_failed_total",
+        "prometheus_operator_list_operations_total",
+        "prometheus_operator_watch_operations_failed_total",
+        "prometheus_operator_watch_operations_total"
+      ],
+      type: "counter",
+      labels: ["controller"],
+      always: ["controller"],
+      source: [
+        "https://github.com/prometheus-operator/prometheus-operator/blob/ec345381c7c054f9330290233743a71a5467f34c/pkg/operator/operator.go",
+        "https://github.com/prometheus-operator/prometheus-operator/blob/ec345381c7c054f9330290233743a71a5467f34c/pkg/prometheus/server/operator.go"
+      ],
+      note: "controller is a const label from WrapRegistererWith: prometheus, prometheus-agent, alertmanager or thanos."
+    },
+    {
+      names: ["prometheus_operator_managed_resources"],
+      type: "gauge",
+      labels: ["controller", "resource", "state"],
+      always: ["controller", "resource", "state"],
+      source: [
+        "https://github.com/prometheus-operator/prometheus-operator/blob/ec345381c7c054f9330290233743a71a5467f34c/pkg/operator/operator.go",
+        "https://github.com/prometheus-operator/prometheus-operator/blob/ec345381c7c054f9330290233743a71a5467f34c/pkg/prometheus/resource_selector.go"
+      ],
+      note: "resource is a CRD kind constant (ServiceMonitor, PodMonitor, Probe, ScrapeConfig, PrometheusRule, AlertmanagerConfig); state = selected|rejected."
+    },
+    {
+      names: ["prometheus_operator_node_address_lookup_errors_total"],
+      type: "counter",
+      labels: [],
+      always: [],
+      source: [
+        "https://github.com/prometheus-operator/prometheus-operator/blob/ec345381c7c054f9330290233743a71a5467f34c/pkg/kubelet/controller.go",
+        "https://github.com/prometheus-operator/prometheus-operator/blob/ec345381c7c054f9330290233743a71a5467f34c/cmd/operator/main.go"
+      ],
+      note: "Kubelet endpoints controller registers on the unwrapped registry, so no controller label."
+    },
+    {
+      names: ["prometheus_operator_ready"],
+      type: "gauge",
+      labels: ["controller"],
+      always: ["controller"],
+      source: [
+        "https://github.com/prometheus-operator/prometheus-operator/blob/ec345381c7c054f9330290233743a71a5467f34c/pkg/operator/operator.go",
+        "https://github.com/prometheus-operator/prometheus-operator/blob/ec345381c7c054f9330290233743a71a5467f34c/pkg/prometheus/server/operator.go"
+      ],
+      note: "controller = prometheus|prometheus-agent|alertmanager|thanos."
+    },
+    {
+      names: [
+        "prometheus_operator_reconcile_errors_total",
+        "prometheus_operator_reconcile_operations_total",
+        "prometheus_operator_status_update_errors_total",
+        "prometheus_operator_status_update_operations_total"
+      ],
+      type: "counter",
+      labels: ["controller"],
+      always: ["controller"],
+      source: [
+        "https://github.com/prometheus-operator/prometheus-operator/blob/ec345381c7c054f9330290233743a71a5467f34c/pkg/operator/resource_reconciler.go",
+        "https://github.com/prometheus-operator/prometheus-operator/blob/ec345381c7c054f9330290233743a71a5467f34c/pkg/prometheus/server/operator.go"
+      ],
+      note: "Registered on the controller-wrapped registerer; controller = prometheus|prometheus-agent|alertmanager|thanos."
+    },
+    {
+      names: ["prometheus_operator_syncs"],
+      type: "gauge",
+      labels: ["controller", "status"],
+      always: ["controller", "status"],
+      source: "https://github.com/prometheus-operator/prometheus-operator/blob/ec345381c7c054f9330290233743a71a5467f34c/pkg/operator/operator.go",
+      note: "status = ok|failed."
+    },
+    {
+      names: [
+        "prometheus_remote_storage_queue_highest_sent_timestamp_seconds",
+        "prometheus_remote_storage_queue_highest_timestamp_seconds",
+        "prometheus_remote_storage_shards_desired",
+        "prometheus_remote_storage_shards_max"
+      ],
+      type: "gauge",
+      labels: ["remote_name", "url"],
+      always: ["remote_name", "url"],
+      source: [
+        "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/storage/remote/queue_manager.go",
+        "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/storage/remote/write.go",
+        "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/storage/remote/storage.go"
+      ],
+      note: "Const labels per queue (remote_name = name or config hash prefix, url = redacted URL). Not to be confused with the deprecated unlabeled prometheus_remote_storage_highest_timestamp_in_seconds."
+    },
+    {
+      names: ["prometheus_remote_storage_samples_failed_total", "prometheus_remote_storage_samples_total"],
+      type: "counter",
+      labels: ["remote_name", "url"],
+      always: ["remote_name", "url"],
+      source: [
+        "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/storage/remote/queue_manager.go",
+        "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/storage/remote/write.go",
+        "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/storage/remote/storage.go"
+      ],
+      note: "Const labels per queue: remote_name = remote_write name or first 6 chars of config hash; url = redacted remote_write URL (required in config)."
+    },
+    {
+      names: ["prometheus_rule_evaluation_failures_total", "prometheus_rule_group_iterations_missed_total"],
+      type: "counter",
+      labels: ["rule_group"],
+      always: ["rule_group"],
+      source: "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/rules/group.go",
+      note: 'rule_group = GroupKey(file, name) = "<file>;<group>".'
+    },
+    {
+      names: ["prometheus_rule_group_rules"],
+      type: "gauge",
+      labels: ["rule_group"],
+      always: ["rule_group"],
+      source: "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/rules/group.go",
+      note: 'rule_group = "<file>;<group>".'
+    },
+    {
+      names: ["prometheus_sd_kubernetes_failures_total"],
+      type: "counter",
+      labels: [],
+      always: [],
+      source: "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/discovery/kubernetes/metrics.go",
+      note: "Shared across all kubernetes_sd configs; no role/config labels."
+    },
+    {
+      names: ["prometheus_sd_refresh_failures_total"],
+      type: "counter",
+      labels: ["mechanism", "config"],
+      always: ["mechanism", "config"],
+      source: [
+        "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/discovery/metrics_refresh.go",
+        "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/discovery/refresh/refresh.go",
+        "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/discovery/manager.go"
+      ],
+      note: "mechanism is a fixed SD name (dns, ec2, gce, http, ...); config is the scrape job_name or the Alertmanager set key (config-N). Older 2.x versions exposed only mechanism."
+    },
+    {
+      names: ["prometheus_target_metadata_cache_entries"],
+      type: "gauge",
+      labels: ["scrape_job"],
+      always: ["scrape_job"],
+      source: "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/scrape/metrics.go",
+      note: "scrape_job = scrape pool / job_name (required non-empty)."
+    },
+    {
+      names: [
+        "prometheus_target_scrape_pool_exceeded_label_limits_total",
+        "prometheus_target_scrape_pool_exceeded_target_limit_total",
+        "prometheus_target_scrapes_exceeded_body_size_limit_total",
+        "prometheus_target_scrapes_exceeded_sample_limit_total",
+        "prometheus_target_scrapes_sample_duplicate_timestamp_total",
+        "prometheus_target_scrapes_sample_out_of_order_total"
+      ],
+      type: "counter",
+      labels: [],
+      always: [],
+      source: "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/scrape/metrics.go"
+    },
+    {
+      names: ["prometheus_target_sync_failed_total"],
+      type: "counter",
+      labels: ["scrape_job"],
+      always: ["scrape_job"],
+      source: [
+        "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/scrape/metrics.go",
+        "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/scrape/scrape.go"
+      ],
+      note: "scrape_job = job_name."
+    },
+    {
+      names: ["prometheus_tsdb_compactions_failed_total", "prometheus_tsdb_reloads_failures_total"],
+      type: "counter",
+      labels: [],
+      always: [],
+      source: "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/tsdb/db.go"
+    },
+    {
+      names: ["prometheus_tsdb_head_samples_appended_total"],
+      type: "counter",
+      labels: ["type"],
+      always: ["type"],
+      source: [
+        "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/tsdb/head.go",
+        "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/tsdb/head_append.go"
+      ],
+      note: "type is float or histogram (label added in 2.x with native histograms; earlier versions had no labels)."
+    },
+    {
+      names: [
+        "up",
+        "scrape_duration_seconds",
+        "scrape_samples_scraped",
+        "scrape_samples_post_metric_relabeling",
+        "scrape_series_added"
+      ],
+      type: "gauge",
+      labels: [],
+      always: [],
+      source: "https://github.com/prometheus/prometheus/blob/8ce8879f82c12994370f2efe1337f91c65465dcc/scrape/scrape.go",
+      note: "Synthetic per-target series; carry only target labels (job, instance and relabeled target labels), none set by the exporter."
+    }
+  ]
+};
+
+// src/metrics.ts
+var types = ["counter", "gauge", "untyped", "histogram", "summary"];
+var isStrings = (v) => Array.isArray(v) && v.every((x) => typeof x === "string");
+function parseMetricFile(data) {
+  const families = data?.families;
+  if (!Array.isArray(families)) throw new Error('expected an object with a "families" array');
+  return families.map((f, i) => {
+    const fam = f ?? {};
+    const where = `families[${String(i)}]`;
+    if (!isStrings(fam.names) || fam.names.length === 0)
+      throw new Error(`${where}.names must be a list of names`);
+    if (!isStrings(fam.labels)) throw new Error(`${where}.labels must be a list of label names`);
+    if (fam.always !== void 0 && !isStrings(fam.always))
+      throw new Error(`${where}.always must be a list of label names`);
+    if (fam.type !== void 0 && !types.includes(fam.type))
+      throw new Error(`${where}.type must be one of ${types.join(", ")}`);
+    return fam;
+  });
+}
+function metricTable(...sets) {
+  const table = /* @__PURE__ */ new Map();
+  for (const families of sets) {
+    for (const f of families) {
+      const always = (f.always ?? []).filter((l) => f.labels.includes(l));
+      for (const name2 of f.names) {
+        if (f.type === "histogram") {
+          table.set(`${name2}_bucket`, { labels: [...f.labels, "le"], always: [...always, "le"] });
+          table.set(`${name2}_sum`, { labels: f.labels, always });
+          table.set(`${name2}_count`, { labels: f.labels, always });
+        } else if (f.type === "summary") {
+          table.set(name2, { labels: [...f.labels, "quantile"], always: [...always, "quantile"] });
+          table.set(`${name2}_sum`, { labels: f.labels, always });
+          table.set(`${name2}_count`, { labels: f.labels, always });
+        } else table.set(name2, { labels: f.labels, always });
+      }
+    }
+  }
+  return table;
+}
+var builtinFamilies = parseMetricFile(metrics_default);
+async function loadMetricTable(file) {
+  if (file === void 0) return metricTable(builtinFamilies);
+  let families;
+  try {
+    families = parseMetricFile(JSON.parse(await readFile(file, "utf8")));
+  } catch (err) {
+    throw new Error(`${file}: ${err.message}`, { cause: err });
+  }
+  return metricTable(builtinFamilies, families);
 }
 
 // src/promql.ts
@@ -7445,8 +12813,8 @@ function calls(expr) {
   const out = [];
   const re = /\b([a-zA-Z_][a-zA-Z0-9_]*)\s*(?:(?:by|without)\s*\([^()]*\)\s*)?\(/g;
   for (let m = re.exec(s); m; m = re.exec(s)) {
-    const name = m[1] ?? "";
-    if (keywords.has(name)) continue;
+    const name2 = m[1] ?? "";
+    if (keywords.has(name2)) continue;
     const open = m.index + m[0].length;
     let depth = 1;
     let i = open;
@@ -7454,7 +12822,7 @@ function calls(expr) {
       if (s[i] === "(") depth++;
       else if (s[i] === ")") depth--;
     }
-    out.push({ name, args: s.slice(open, depth === 0 ? i - 1 : s.length) });
+    out.push({ name: name2, args: s.slice(open, depth === 0 ? i - 1 : s.length) });
   }
   return out;
 }
@@ -7559,19 +12927,102 @@ var checks = [
     severity: "high",
     title: "Invalid rule",
     description: "The rule or file is malformed: Prometheus would refuse to load it."
+  },
+  {
+    id: "PR012",
+    severity: "high",
+    title: "Grouping by a label the input never has",
+    description: "by (...), on (...) or group_left/group_right (...) names a label that the series never carry, so the per-label result silently collapses into one series without it."
+  },
+  {
+    id: "PR013",
+    severity: "high",
+    title: "Vector match that never matches",
+    description: "The two sides of a binary operation can never have the same matching labels, so the result is always empty and the alert can never fire."
   }
 ];
+var kubernetesTargetLabels = [
+  "job",
+  "instance",
+  "namespace",
+  "service",
+  "endpoint",
+  "pod",
+  "container",
+  "cluster"
+];
+function parseTargetLabels(list) {
+  const out = list.split(",").map((s) => s.trim()).filter(Boolean).flatMap((s) => s === "kubernetes" ? kubernetesTargetLabels : [s]);
+  return [...new Set(out)];
+}
+var defaultTargetLabels = ["job", "instance"];
+var builtinMetrics = metricTable(builtinFamilies);
 var defaultOptions = {
   scrapeIntervalMs: 6e4,
   minWindowFactor: 2,
   severities: ["critical", "warning", "info"]
 };
+function recordIndex(files) {
+  const index = /* @__PURE__ */ new Map();
+  for (const file of files) {
+    for (const rule of file.rules) {
+      if (rule.kind !== "record" || rule.errors.length || !rule.name) continue;
+      const defs = index.get(rule.name) ?? [];
+      defs.push({ expr: parsePromQL(rule.expr), labels: rule.labels });
+      index.set(rule.name, defs);
+    }
+  }
+  return index;
+}
 var counterFunctions = /* @__PURE__ */ new Set(["rate", "irate", "increase", "delta", "idelta", "deriv"]);
 var resetSensitive = /* @__PURE__ */ new Set(["rate", "irate", "increase", "resets"]);
 function finding(file, rule, f) {
   return { ...f, file: file.file, line: rule.line, target: rule.name || rule.group };
 }
-function checkRule(file, rule, opt) {
+var short = (s, max = 80) => {
+  const one = s.replace(/\s+/g, " ").trim();
+  return one.length > max ? `${one.slice(0, max - 1)}\u2026` : one;
+};
+function describe(l) {
+  const names = [...l.may].sort();
+  return names.length ? names.join(", ") : "no labels";
+}
+function labelFinding(name2, i) {
+  switch (i.kind) {
+    case "by":
+      return {
+        ruleId: "PR012",
+        severity: "high",
+        message: `${name2}: ${i.node.op} by (${(i.node.by ?? []).join(", ")}) groups by ${i.label}, which its input never has`,
+        help: `The input of ${short(i.node.text)} can only carry: ${describe(i.input)}. The result is one series without ${i.label} instead of one per ${i.label}; take the label from another metric with a join, or remove it from by().`
+      };
+    case "on":
+      return {
+        ruleId: "PR012",
+        severity: "high",
+        message: `${name2}: on (${i.label}) in ${short(i.node.text, 60)} matches on a label neither side has`,
+        help: `Left side: ${describe(i.lhs)}. Right side: ${describe(i.rhs)}. Matching on a missing label does not separate anything.`
+      };
+    case "include":
+      return {
+        ruleId: "PR012",
+        severity: "high",
+        message: `${name2}: ${short(i.node.text, 60)} copies ${i.label} from a side that never has it`,
+        help: `The "one" side can only carry: ${describe(i.one)}. group_left/group_right removes ${i.label} from the result instead of adding it.`
+      };
+    case "nomatch": {
+      const op = i.node.op;
+      const effect = op === "unless" ? "so unless never removes anything" : "so the result is always empty and an alert on it can never fire";
+      return {
+        ruleId: "PR013",
+        severity: "high",
+        message: `${name2}: the two sides of ${op} in ${short(i.node.text, 60)} never match: ${i.reason}`,
+        help: `Left side: ${describe(i.lhs)}. Right side: ${describe(i.rhs)}. Without a matching label set every pair is dropped, ${effect}; add on (...) or ignoring (...).`
+      };
+    }
+  }
+}
+function checkRule(file, rule, opt, labels) {
   const out = [];
   const add = (f) => {
     if (rule.ignore.includes(f.ruleId) || rule.ignore.includes("ALL")) return;
@@ -7638,6 +13089,11 @@ function checkRule(file, rule, opt) {
       help: "For example job:http_requests:rate5m."
     });
   }
+  const expr = parsePromQL(rule.expr);
+  if (expr)
+    labels.infer(expr, (i) => {
+      add(labelFinding(rule.name || rule.group, i));
+    });
   const minWindow = opt.scrapeIntervalMs * opt.minWindowFactor;
   for (const call of calls(rule.expr)) {
     if (counterFunctions.has(call.name)) {
@@ -7673,7 +13129,12 @@ function checkRule(file, rule, opt) {
   }
   return out;
 }
-function lint(file, opt = defaultOptions) {
+function lint(file, opt = defaultOptions, records = recordIndex([file])) {
+  const labels = new LabelInference({
+    metrics: opt.metrics ?? builtinMetrics,
+    targetLabels: opt.targetLabels ?? defaultTargetLabels,
+    records
+  });
   const findings = file.errors.map((e) => ({
     ruleId: "PR011",
     severity: "high",
@@ -7684,7 +13145,7 @@ function lint(file, opt = defaultOptions) {
   }));
   const seen = /* @__PURE__ */ new Map();
   for (const rule of file.rules) {
-    findings.push(...checkRule(file, rule, opt));
+    findings.push(...checkRule(file, rule, opt, labels));
     if (rule.kind !== "alert" || rule.errors.length) continue;
     const key = `${rule.group}\0${rule.name}\0${JSON.stringify(Object.entries(rule.labels).sort())}`;
     const first = seen.get(key);
@@ -7785,14 +13246,14 @@ function sarif(findings, rules, version2) {
 }
 
 // src/scan.ts
-import { readdir, readFile, stat } from "node:fs/promises";
+import { readdir, readFile as readFile2, stat } from "node:fs/promises";
 import path from "node:path";
 
 // src/parse.ts
 var import_yaml = __toESM(require_dist(), 1);
-function ignoredChecks(comment) {
+function ignoredChecks(comment2) {
   const out = [];
-  for (const m of comment.matchAll(/promrule-lint-ignore\s+([A-Za-z0-9, ]+)/g)) {
+  for (const m of comment2.matchAll(/promrule-lint-ignore\s+([A-Za-z0-9, ]+)/g)) {
     out.push(
       ...(m[1] ?? "").split(/[\s,]+/).filter(Boolean).map((x) => x.toUpperCase())
     );
@@ -7885,7 +13346,7 @@ async function findRuleFiles(root) {
       if (e.isDirectory()) {
         if (!skipDirs.has(e.name)) await walk(p);
       } else if (/\.ya?ml$/.test(e.name)) {
-        const src = await readFile(p, "utf8");
+        const src = await readFile2(p, "utf8");
         if (looksLikeRules.test(src) && hasRule.test(src)) out.push(p);
       }
     }
@@ -7894,21 +13355,24 @@ async function findRuleFiles(root) {
   return out;
 }
 async function scan(paths, cwd, opt) {
-  const result = { findings: [], files: 0, rules: 0 };
+  const parsed = [];
   for (const p of paths) {
     for (const file of await findRuleFiles(p)) {
       const rel = path.relative(cwd, file).split(path.sep).join("/") || file;
-      const parsed = parseRuleFile(rel, await readFile(file, "utf8"));
-      result.files++;
-      result.rules += parsed.rules.length;
-      result.findings.push(...lint(parsed, opt));
+      parsed.push(parseRuleFile(rel, await readFile2(file, "utf8")));
     }
+  }
+  const records = recordIndex(parsed);
+  const result = { findings: [], files: parsed.length, rules: 0 };
+  for (const file of parsed) {
+    result.rules += file.rules.length;
+    result.findings.push(...lint(file, opt, records));
   }
   return result;
 }
 
 // src/cli.ts
-var version = true ? "0.1.0" : "dev";
+var version = true ? "0.2.0" : "dev";
 var usage = `usage: promrule-lint [options] [path ...]
 
 Lints Prometheus alerting and recording rules. Paths default to the current
@@ -7918,6 +13382,9 @@ options:
   --scrape-interval <d>     scrape interval the rules run against (default: ${formatDuration(defaultOptions.scrapeIntervalMs)})
   --min-window-factor <n>   a range must cover this many scrape intervals (default: ${String(defaultOptions.minWindowFactor)})
   --severities <list>       allowed severity values, comma separated (default: ${defaultOptions.severities.join(",")})
+  --target-labels <list>    labels the scrape adds to every series, comma separated; "kubernetes" adds
+                            namespace, service, endpoint, pod, container and cluster (default: ${defaultTargetLabels.join(",")})
+  --metrics-labels <file>   JSON file with the labels of more metrics, added to the built-in table
   --format <format>         text, json, markdown or sarif (default: text)
   --fail-on <severity>      exit 1 on findings at least this severe: high, medium, low or none (default: medium)
   --list-checks             print the checks and exit
@@ -7934,6 +13401,8 @@ async function main(argv, io) {
         "scrape-interval": { type: "string" },
         "min-window-factor": { type: "string" },
         severities: { type: "string" },
+        "target-labels": { type: "string" },
+        "metrics-labels": { type: "string" },
         format: { type: "string", default: "text" },
         "fail-on": { type: "string", default: "medium" },
         "list-checks": { type: "boolean", default: false },
@@ -7996,8 +13465,10 @@ ${usage}`);
   if (values.severities !== void 0) {
     opt.severities = values.severities.split(",").map((s) => s.trim()).filter(Boolean);
   }
+  if (values["target-labels"] !== void 0) opt.targetLabels = parseTargetLabels(values["target-labels"]);
   let result;
   try {
+    opt.metrics = await loadMetricTable(values["metrics-labels"]);
     result = await scan(positionals.length ? positionals : ["."], io.cwd, opt);
   } catch (err) {
     io.stderr(`error: ${err.message}
