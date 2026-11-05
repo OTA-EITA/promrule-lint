@@ -1,8 +1,9 @@
 // GitHub Action entry point. Inputs arrive as INPUT_* environment variables;
 // outputs, annotations and the job summary use the files GitHub provides.
 import { appendFileSync, writeFileSync } from "node:fs";
-import { checks, defaultOptions } from "./checks.js";
+import { checks, defaultOptions, defaultTargetLabels, parseTargetLabels } from "./checks.js";
 import { parseDuration } from "./duration.js";
+import { loadMetricTable } from "./metrics.js";
 import { render } from "./report.js";
 import { scan } from "./scan.js";
 import { severityRank } from "./types.js";
@@ -36,11 +37,16 @@ async function run(): Promise<void> {
     .map((s) => s.trim())
     .filter(Boolean);
   const sarifFile = input("sarif-file", "promrule-lint.sarif");
+  const targetLabels = parseTargetLabels(input("target-labels", defaultTargetLabels.join(",")));
+  const metricsFile = input("metrics-labels", "");
+  const metrics = await loadMetricTable(metricsFile === "" ? undefined : metricsFile);
 
   const result = await scan(input("path", ".").split(/\s+/), process.cwd(), {
     scrapeIntervalMs: scrape,
     minWindowFactor: factor,
     severities,
+    targetLabels,
+    metrics,
   });
   if (result.files === 0) throw new Error("no Prometheus rule files found");
 
