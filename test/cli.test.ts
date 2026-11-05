@@ -1,4 +1,4 @@
-import { mkdtempSync, symlinkSync } from "node:fs";
+import { mkdtempSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -65,6 +65,26 @@ describe("main", () => {
     expect(sarif.runs[0]?.results).toHaveLength(16);
   });
 
+  it("--target-labels and --metrics-labels feed the label checks", async () => {
+    const k8s = await run(["--target-labels", "kubernetes", fx("labels")]);
+    expect(k8s.code).toBe(1);
+    expect(k8s.stdout).toContain("test/fixtures/labels/bugs.yml:8  HIGH   PR012");
+    expect(k8s.stdout).toContain("test/fixtures/labels/bugs.yml:20  HIGH   PR013");
+    expect(k8s.stdout).toContain("2 file(s), 2 finding(s): 2 high, 0 medium, 0 low");
+
+    const file = path.join(mkdtempSync(path.join(tmpdir(), "prl-")), "metrics.json");
+    writeFileSync(file, JSON.stringify({ families: [{ names: ["my_team_info"], labels: ["tenant"] }] }));
+    const custom = await run([
+      "--target-labels",
+      "kubernetes",
+      "--metrics-labels",
+      file,
+      fx("labels/fine.yml"),
+    ]);
+    expect(custom.stdout).toContain("fine.yml:76  HIGH   PR012  CustomMetric:");
+    expect(custom.stdout).toContain("copies team from a side that never has it");
+  });
+
   it("prints help, version and checks", async () => {
     expect((await run(["-h"])).stdout).toContain("usage: promrule-lint");
     expect((await run(["--version"])).stdout).toBe("promrule-lint dev\n");
@@ -80,6 +100,7 @@ describe("main", () => {
     [["--min-window-factor", "0.5"], /--min-window-factor must be/],
     [["/does/not/exist"], /ENOENT/],
     [[path.join(root, "src")], /no Prometheus rule files found/],
+    [["--metrics-labels", path.join(root, "package.json"), fx("good")], /package\.json: expected an object/],
   ])("rejects %j", async (args, msg) => {
     const r = await run(args);
     expect(r.code).toBe(2);
