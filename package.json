@@ -39,7 +39,7 @@
     "coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "@lezer/common": "1.5.4",
+    "@lezer/common": "1.5.5",
     "@lezer/highlight": "1.2.5",
     "@lezer/lr": "1.4.11",
     "@prometheus-io/lezer-promql": "0.315.1",
